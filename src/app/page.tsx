@@ -1,7 +1,7 @@
+import Wrapper from "@/components/ui/wrapper";
+
 export default function Home() {
   return (
-    <div>
-      Hello Tennis_Net_App
-    </div>
+      <Wrapper className="mx-10">Landing page</Wrapper>
   );
 }
