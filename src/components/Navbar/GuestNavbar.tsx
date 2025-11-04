@@ -18,7 +18,7 @@ const GuestNavbar = ({ navItems }: GuestNavbarProps) => {
     return (
         <div>
             <div className="flex flex-row items-center gap-1">
-                <div className="hidden md:flex md:gap-x-4">
+                <div className="hidden lg:flex lg:gap-x-4">
                     {navItems.map(({ href, label, icon: Icon }) => {
                         const active = pathname === href;
                         return (
@@ -40,13 +40,13 @@ const GuestNavbar = ({ navItems }: GuestNavbarProps) => {
                     })}
                 </div>
                 <span
-                    className="hidden md:flex h-6 w-px bg-gray-300"
+                    className="hidden lg:flex h-6 w-px bg-gray-300"
                     aria-hidden="true"
                 />
                 <Button asChild variant="ghost" size="sm" className="px-2">
                     <Link href="/login" aria-label="Log in">
                         <LogIn className="h-4 w-4" />
-                        <span className="sr-only md:not-sr-only md:whitespace-nowrap">Log in</span>
+                        <span className="sr-only md:not-sr-only md:whitespace-nowrap">Login</span>
                     </Link>
                 </Button>
                 <MobileSidebar navItems={navItems} />

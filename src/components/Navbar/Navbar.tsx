@@ -325,12 +325,12 @@ export default function ClientNavbar() {
     const isLoggedin = pathname === "/user";
 
     return <nav className="w-full bg-white sticky z-50 h-16">
-        <Wrapper className="px-5 flex flex-row justify-between items-center h-14 border-b border-gray-300">
+        <Wrapper className="flex flex-row justify-between items-center h-14 border-b border-gray-300">
             <div>
                 <Logo />
             </div>
             <div>
-                {!isLoggedin ? <GuestNavbar navItems={navItems} /> : <UserNavbar />}
+                {!isLoggedin ? <GuestNavbar navItems={navItems} /> : <UserNavbar navItems={navItems} />}
             </div>
         </Wrapper>
     </nav>;
