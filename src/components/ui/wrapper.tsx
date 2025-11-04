@@ -8,7 +8,7 @@ interface WrapperProps {
 
 const Wrapper = ({ className, children }: WrapperProps) => {
   return (
-    <div className={cn("mx-auto", className)}>
+    <div className={cn("px-5 md:px-20", className)}>
       {children}
     </div>
   );

@@ -4,6 +4,9 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar/Navbar";
 // import { Toaster } from "@/components/ui/toaster";
+import { use } from 'react'
+
+type Params = Promise<{ slug: string }>
 
 const inter = Inter({ subsets: ["latin"] });
 
