@@ -7,7 +7,7 @@ const Logo = () => {
     return <div><Link href="/" className="text-center">
         <h1
             className={cn(
-                " text-green-700 text-xl text-center md:text-2xl",
+                " text-green-700 text-xl text-center md:text-3xl",
                 pacifico.className
             )}
         >

@@ -1,12 +1,13 @@
 "use client"
-import { type NavItems } from "@/types/NavItem";
-import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import MessagesSidebar from "./MessagesSidebar";
+import { type NavItems } from "@/types/NavItem";
 
 type GuestNavbarProps = {
     navItems: NavItems;

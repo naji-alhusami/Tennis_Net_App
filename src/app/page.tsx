@@ -1,7 +1,7 @@
-import Wrapper from "@/components/ui/wrapper";
+import WelcomeHome from "@/components/Home/WelcomeHome";
 
 export default function Home() {
   return (
-      <Wrapper className="mx-10">Landing page</Wrapper>
+      <><WelcomeHome /></>
   );
 }

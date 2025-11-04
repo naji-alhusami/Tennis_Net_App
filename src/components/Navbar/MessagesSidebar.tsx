@@ -1,3 +1,5 @@
+import { MessageCircle } from "lucide-react";
+
 import {
   Sheet,
   SheetContent,
@@ -5,7 +7,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../ui/sheet";
-import { MessageCircle } from "lucide-react";
 
 const MessagesSidebar = () => {
   return (

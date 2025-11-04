@@ -120,3 +120,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.mask-fade-rl-40 {
+  -webkit-mask-image: linear-gradient(to left, black, transparent 40%);
+  mask-image: linear-gradient(to left, black, transparent 40%);
+}
