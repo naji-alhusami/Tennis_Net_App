@@ -316,7 +316,7 @@ export default function ClientNavbar() {
         { href: "/", label: "Home", icon: Home },
         { href: "/courts", label: "Courts", icon: MapPin },
         { href: "/pricing", label: "Pricing", icon: DollarSign },
-        { href: "/events", label: "Events", icon: Calendar },
+        // { href: "/events", label: "Events", icon: Calendar },
         { href: "/about", label: "About", icon: Info },
     ];
 

@@ -1,7 +1,11 @@
+"use client"
 import Link from "next/link";
 import { LogIn } from "lucide-react";
 import { type NavItems } from "@/types/NavItem";
 import MobileSidebar from "./MobileSidebar";
+import { Button } from "../ui/button";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 type GuestNavbarProps = {
     navItems: NavItems;
@@ -9,14 +13,42 @@ type GuestNavbarProps = {
 
 
 const GuestNavbar = ({ navItems }: GuestNavbarProps) => {
-    console.log(navItems)
+    const pathname = usePathname()
+
     return (
         <div>
-            <div className="flex items-center gap-1">
-                <Link href="/login" aria-label="Log in" className="mx-5">
-                    <LogIn className="h-5 w-5 text-gray-400 hover:text-green-600" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Log in</span>
-                </Link>
+            <div className="flex flex-row items-center gap-1">
+                <div className="hidden md:flex md:gap-x-4">
+                    {navItems.map(({ href, label, icon: Icon }) => {
+                        const active = pathname === href;
+                        return (
+                            <Button
+                                key={href}
+                                asChild
+                                variant={active ? "secondary" : "ghost"}
+                                className={cn(
+                                    "justify-start",
+                                    active && "bg-green-200 hover:bg-green-300 font-bold"
+                                )}
+                            >
+                                <Link href={href} aria-current={active ? "page" : undefined}>
+                                    {Icon ? <Icon className="mr-1 h-4 w-4" /> : null}
+                                    {label}
+                                </Link>
+                            </Button>
+                        );
+                    })}
+                </div>
+                <span
+                    className="hidden md:flex h-6 w-px bg-gray-300"
+                    aria-hidden="true"
+                />
+                <Button asChild variant="ghost" size="sm" className="px-2">
+                    <Link href="/login" aria-label="Log in">
+                        <LogIn className="h-4 w-4" />
+                        <span className="sr-only md:not-sr-only md:whitespace-nowrap">Log in</span>
+                    </Link>
+                </Button>
                 <MobileSidebar navItems={navItems} />
             </div>
         </div>

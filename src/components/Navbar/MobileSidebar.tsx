@@ -92,6 +92,7 @@ const MobileSidebar = ({ navItems }: MobileSidebarProps) => {
   const pathname = usePathname();
 
   return (
+    <div className="md:hidden">
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" aria-label="Open navigation menu" className="cursor-pointer">
@@ -113,7 +114,7 @@ const MobileSidebar = ({ navItems }: MobileSidebarProps) => {
                 variant={active ? "secondary" : "ghost"}
                 className={cn(
                   "justify-start",
-                  active && "bg-green-200 font-semibold hover:bg-green-300"
+                  active && "bg-green-200 font-semibold hover:bg-green-300 font-bold"
                 )}
               >
                 <Link href={href} aria-current={active ? "page" : undefined}>
@@ -126,6 +127,7 @@ const MobileSidebar = ({ navItems }: MobileSidebarProps) => {
         </nav>
       </SheetContent>
     </Sheet>
+    </div>
   )
 }
 
