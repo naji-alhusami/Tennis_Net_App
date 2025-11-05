@@ -45,7 +45,7 @@ const GuestNavbar = ({ navItems }: GuestNavbarProps) => {
                     aria-hidden="true"
                 />
                 <Button asChild variant="ghost" size="sm" className="px-2">
-                    <Link href="/login" aria-label="Log in">
+                    <Link href="/auth/login" aria-label="Log in">
                         <LogIn className="h-4 w-4" />
                         <span className="sr-only md:not-sr-only md:whitespace-nowrap">Login</span>
                     </Link>
