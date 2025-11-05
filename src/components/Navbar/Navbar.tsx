@@ -6,7 +6,7 @@ import Logo from "../ui/logo";
 import Wrapper from "../ui/wrapper";
 import GuestNavbar from "./GuestNavbar";
 import UserNavbar from "./UserNavbar";
-import { type NavItems } from "@/types/NavItem";
+import { type NavItems } from "@/types/NavItems";
 
 export default function ClientNavbar() {
 

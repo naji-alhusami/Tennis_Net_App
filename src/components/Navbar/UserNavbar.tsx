@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import MessagesSidebar from "./MessagesSidebar";
-import { type NavItems } from "@/types/NavItem";
+import { type NavItems } from "@/types/NavItems";
 
 type GuestNavbarProps = {
     navItems: NavItems;
