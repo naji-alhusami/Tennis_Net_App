@@ -2,22 +2,23 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { FcGoogle } from "react-icons/fc";
 
 import { Button } from "@/components/ui/button";
-import { LoginAuthValidator, PAuthValidator } from "@/lib/validators/AccountValidators";
+import { LoginAuthValidator, type LoginFormData } from "@/lib/validators/AccountValidators";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { pacifico } from "@/app/fonts";
-
+import { Separator } from "../ui/separator";
 
 export default function LoginForm() {
-    const form = useForm<PAuthValidator>({
+    const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
         defaultValues: { email: "", password: "" },
     });
 
-    const onSubmit = (values: PAuthValidator) => {
+    const onSubmit = (values: LoginFormData) => {
         console.log(values);
     };
 
@@ -70,6 +71,19 @@ export default function LoginForm() {
                             </Button>
                         </Link>
                     </div>
+                    <div className="w-full flex items-center justify-center space-x-2">
+                        <Separator className="flex-1 bg-gray-300" />
+                        <p className="px-2 text-sm text-gray-500">OR</p>
+                        <Separator className="flex-1 bg-gray-300" />
+                    </div>
+                    <Button variant="outline" className="w-full font-semibold cursor-pointer">
+                        Continue with Google
+                        <FcGoogle />
+                    </Button>
+                    <Button variant="outline" className="w-full font-semibold cursor-pointer">
+                        Continue with Google
+                        <FcGoogle />
+                    </Button>
                 </form>
             </Form>
         </div>
