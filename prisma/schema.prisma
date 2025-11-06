@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  fullName          String?
+  avatar String
+  email         String?   @unique
+  // emailVerified DateTime?
+  password      String?
+  createdAt     DateTime  @default(now())
+  // updatedAt     DateTime  @updatedAt
+
+  conversationIds String[]       @db.ObjectId
+  conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
+
+  seenMessagesIds String[]  @db.ObjectId
+  seenMessages    Message[] @relation("Seen", fields: [seenMessagesIds], references: [id])
+
+  account  Account[]
+  messages Message[]
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  text      String?
+  createdAt DateTime @default(now())
+
+  senderId String @db.ObjectId
+
+
+  seenIds String[] @db.ObjectId
+  seen    User[]   @relation("Seen", fields: [seenIds], references: [id])
+
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  senderId String @db.ObjectId
+  Sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+}
