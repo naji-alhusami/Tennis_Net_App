@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../src/generated/prisma"
 }
 
@@ -14,24 +14,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CourtType {
+  CLAY
+  HARD
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  fullName          String?
-  avatar String
-  email         String?   @unique
-  // emailVerified DateTime?
-  password      String?
-  createdAt     DateTime  @default(now())
-  // updatedAt     DateTime  @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  fullName  String?
+  avatar    String?
+  email     String?  @unique
+  password  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  conversationIds String[]       @db.ObjectId
-  conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
-
-  seenMessagesIds String[]  @db.ObjectId
-  seenMessages    Message[] @relation("Seen", fields: [seenMessagesIds], references: [id])
-
-  account  Account[]
-  messages Message[]
+  // Relationships
+  sentMessages    Message[]     @relation("sentMessages")
+  receivedMessages Message[]     @relation("receivedMessages")
+  reservations    Reservation[]
 }
 
 model Message {
@@ -39,15 +45,47 @@ model Message {
   text      String?
   createdAt DateTime @default(now())
 
-  senderId String @db.ObjectId
+  // foreign keys
+  senderId   String @db.ObjectId
+  receiverId String @db.ObjectId
 
+  // Relationships
+  sender   User    @relation("sentMessages", fields: [senderId], references: [id])
+  receiver User    @relation("receivedMessages", fields: [receiverId], references: [id])
+}
 
-  seenIds String[] @db.ObjectId
-  seen    User[]   @relation("Seen", fields: [seenIds], references: [id])
+model Court {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  courtNo   Int?
+  type      CourtType
+  indoor    Boolean?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  conversationId String       @db.ObjectId
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  // Relationships
+  reservations Reservation[]
 
-  senderId String @db.ObjectId
-  Sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  @@index([type])
+  @@index([courtNo])
+}
+
+model Reservation {
+  id        String            @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String            @db.ObjectId
+  courtId   String            @db.ObjectId
+  start     DateTime
+  end       DateTime
+  status    ReservationStatus @default(PENDING)
+  note      String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  // Relationships
+  user  User  @relation(fields: [userId], references: [id])
+  court Court @relation(fields: [courtId], references: [id])
+
+  @@index([userId, start])
+  @@index([courtId, start])
+  @@index([start, end])
 }
