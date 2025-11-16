@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
+import { Instagram } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { LoginAuthValidator, type LoginFormData } from "@/lib/validators/AccountValidators";
@@ -81,8 +82,8 @@ export default function LoginForm() {
                         <FcGoogle />
                     </Button>
                     <Button variant="outline" className="w-full font-semibold cursor-pointer">
-                        Continue with Google
-                        <FcGoogle />
+                        Continue with Instagram
+                        <Instagram size={16} color="#ff00c8" />
                     </Button>
                 </form>
             </Form>
