@@ -1,8 +1,8 @@
 import NextAuth, { AuthOptions } from "next-auth";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import InstagramProvider from "next-auth/providers/instagram";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcryprt from "bcrypt";
 
 import prisma from "../../../../../lib/prisma";
