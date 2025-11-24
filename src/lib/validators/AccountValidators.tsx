@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SignupAuthValidator = z.object({
-    fullName: z.string().min(4, { message: "Name is Required." }),
+    name: z.string().min(4, { message: "Name is Required." }),
     email: z.email(),
     password: z
         .string()

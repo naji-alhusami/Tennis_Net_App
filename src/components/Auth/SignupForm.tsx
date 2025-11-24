@@ -14,7 +14,7 @@ import { pacifico } from "@/app/fonts";
 export default function SignupForm() {
     const form = useForm<SignupFormData>({
         resolver: zodResolver(SignupAuthValidator),
-        defaultValues: { fullName: "", email: "", password: "" },
+        defaultValues: { name:"", email: "", password: "" },
     });
 
     const onSubmit = (values: SignupFormData) => {
@@ -32,7 +32,7 @@ export default function SignupForm() {
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     <FormField
                         control={form.control}
-                        name="fullName"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Full Name</FormLabel>

@@ -3,7 +3,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import InstagramProvider from "next-auth/providers/instagram";
-import bcryprt from "bcrypt";
+import bcrypt from "bcrypt";
 
 import prisma from "../../../../../lib/prisma";
 
@@ -39,7 +39,7 @@ export const authOptions: AuthOptions = {
           throw new Error("Invalid Credentials");
         }
 
-        const isCorrectPassword = await bcryprt.compare(
+        const isCorrectPassword = await bcrypt.compare(
           credentials.password,
           user.hashedPassword
         );
@@ -48,7 +48,12 @@ export const authOptions: AuthOptions = {
           throw new Error("Invalid Credentials");
         }
 
-        return user;
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        };
       },
     }),
   ],
@@ -56,6 +61,27 @@ export const authOptions: AuthOptions = {
   debug: process.env.NODE_ENV === "development",
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.name = user.name;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.name = token.name;
+      }
+      return session;
+    },
+  },
+  pages: {
+    signIn: "/",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
