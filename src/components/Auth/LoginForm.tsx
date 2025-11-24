@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
@@ -14,14 +16,27 @@ import { pacifico } from "@/app/fonts";
 import { Separator } from "../ui/separator";
 
 export default function LoginForm() {
+    const router = useRouter()
     const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
         defaultValues: { email: "", password: "" },
     });
 
-    const onSubmit = (values: LoginFormData) => {
+    const onSubmit = async (values: LoginFormData) => {
         console.log(values);
-        signIn
+        const response = await signIn("credentials", {
+            redirect: false,
+            email: values.email,
+            password: values.password,
+        });
+
+
+        if (response?.error) {
+            console.log("Login failed:", response.error);
+            return;
+        }
+
+        router.push('/')
     };
 
     return (
