@@ -14,8 +14,11 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { pacifico } from "@/app/fonts";
 import { Separator } from "../ui/separator";
+import { useState } from "react";
+import { Spinner } from "../ui/spinner";
 
 export default function LoginForm() {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const router = useRouter()
     const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
@@ -24,19 +27,25 @@ export default function LoginForm() {
 
     const onSubmit = async (values: LoginFormData) => {
         console.log(values);
-        const response = await signIn("credentials", {
-            redirect: false,
-            email: values.email,
-            password: values.password,
-        });
+        try {
+            setIsLoading(true)
+            const response = await signIn("credentials", {
+                redirect: false,
+                email: values.email,
+                password: values.password,
+            });
 
+            router.push('/')
+            if (response?.error) {
+                console.log("Login failed:", response.error);
+                return;
+            }
 
-        if (response?.error) {
-            console.log("Login failed:", response.error);
-            return;
+        } catch (error) {
+            console.error("Signup error:", error);
+        } finally {
+            setIsLoading(false)
         }
-
-        router.push('/')
     };
 
     return (
@@ -74,8 +83,22 @@ export default function LoginForm() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 font-bold cursor-pointer">
-                        Login
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className={cn(
+                            "cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold",
+                            isLoading && "opacity-70 cursor-not-allowed"
+                        )}
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <Spinner />
+                                <span>Please wait...</span>
+                            </span>
+                        ) : (
+                            "Login"
+                        )}
                     </Button>
 
                     <div className="flex items-center justify-between">

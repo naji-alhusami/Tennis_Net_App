@@ -11,17 +11,33 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { pacifico } from "@/app/fonts";
 
+import { Spinner } from "@/components/ui/spinner"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+
 export default function SignupForm() {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+
     const form = useForm<SignupFormData>({
         resolver: zodResolver(SignupAuthValidator),
-        defaultValues: { name:"", email: "", password: "" },
+        defaultValues: { name: "", email: "", password: "" },
     });
 
-    const onSubmit = (values: SignupFormData) => {
-        console.log(values);
-        axios.post('/api/signup', values)
-    };
+    const onSubmit = async (values: SignupFormData) => {
+        try {
+            setIsLoading(true);
+            const response = await axios.post("/api/signup", values);
+            console.log("Signup success:", response.data);
 
+            router.push("/auth/login");
+        } catch (error) {
+            console.error("Signup error:", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
             <h1 className={cn("text-green-700 text-6xl pb-20 text-center md:text-7xl", pacifico.className)}>
@@ -69,8 +85,22 @@ export default function SignupForm() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold">
-                        Signup
+                    <Button
+                        type="submit"
+                        disabled={isLoading}
+                        className={cn(
+                            "cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold",
+                            isLoading && "opacity-70 cursor-not-allowed"
+                        )}
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <Spinner />
+                                <span>Please wait...</span>
+                            </span>
+                        ) : (
+                            "Signup"
+                        )}
                     </Button>
 
                     <div className="flex items-center justify-between">
@@ -81,6 +111,6 @@ export default function SignupForm() {
                     </div>
                 </form>
             </Form>
-        </div>
+        </div >
     );
 }
