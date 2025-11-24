@@ -2,8 +2,9 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from 'axios'
 
-import { SignupAuthValidator, type SignupFormData} from "@/lib/validators/AccountValidators";
+import { SignupAuthValidator, type SignupFormData } from "@/lib/validators/AccountValidators";
 import { cn } from "@/lib/utils";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,7 @@ export default function SignupForm() {
 
     const onSubmit = (values: SignupFormData) => {
         console.log(values);
+        axios.post('/api/signup', values)
     };
 
     return (
