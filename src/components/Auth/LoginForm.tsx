@@ -19,6 +19,8 @@ import { Spinner } from "../ui/spinner";
 
 export default function LoginForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [loginError, setLoginError] = useState<string | null>(null);
+
     const router = useRouter()
     const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
@@ -29,20 +31,24 @@ export default function LoginForm() {
         console.log(values);
         try {
             setIsLoading(true)
+            setLoginError(null)
+
             const response = await signIn("credentials", {
                 redirect: false,
                 email: values.email,
                 password: values.password,
             });
 
-            router.push('/')
             if (response?.error) {
                 console.log("Login failed:", response.error);
+                setLoginError(response.error)
                 return;
             }
 
+            router.push('/')
         } catch (error) {
             console.error("Signup error:", error);
+            setLoginError("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false)
         }
@@ -66,7 +72,9 @@ export default function LoginForm() {
                                 <FormControl>
                                     <Input type="email" placeholder="you@example.com" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <div className="h-5">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
@@ -79,10 +87,19 @@ export default function LoginForm() {
                                 <FormControl>
                                     <Input type="password" placeholder="••••••••" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <div className="h-5">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
+                    <div className="h-2">
+                        {loginError && (
+                            <p className="text-sm text-red-600 font-bold">
+                                {loginError}
+                            </p>
+                        )}
+                    </div>
                     <Button
                         type="submit"
                         disabled={isLoading}
@@ -100,6 +117,7 @@ export default function LoginForm() {
                             "Login"
                         )}
                     </Button>
+
 
                     <div className="flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">
