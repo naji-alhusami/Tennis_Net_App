@@ -53,7 +53,7 @@ export default function SignupForm() {
                             <FormItem>
                                 <FormLabel>Full Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" placeholder="Roger Federer" {...field} />
+                                    <Input type="text" placeholder="Your Name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

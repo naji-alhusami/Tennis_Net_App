@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const domain = "http://localhost:3000/";
 
 export const sendVerificationEmail = async (email: string, token: string) => {
-  const confirmationLink = `${domain}/verify-email?token=${token}`;
+  const confirmationLink = `${domain}/verifyEmail?token=${token}`;
 
   await resend.emails.send({
     from:"onboarding@resend.dev",
@@ -16,7 +16,7 @@ export const sendVerificationEmail = async (email: string, token: string) => {
       <tr>
         <td align="center">
           <div style="max-width: 40rem; padding: 20px; text-align: center; border: 5px solid #1c7f47;">
-            <h2 style="color: #db981b">Welcome To TENNIS_NET</h2>
+            <h2 style="color: #db981b">Welcome To TENNIS NET</h2>
             <p style="color: #1c7f47; font-size: 1.5rem"><b>Congratulations!</b></p>
             <p style="color: black; padding: 10px;">The last step is to verify your email by clicking on the button below.</p>
             <a href="${confirmationLink}" style="background-color: #1c7f47; color: white; text-decoration: none; padding: 17px; font-size: 1rem; font-weight: bold;">Confirm Your Email</a>
