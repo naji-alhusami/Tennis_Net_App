@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
 import { Instagram } from "lucide-react";
+import AuthError from 'next-auth';
 
 import { Button } from "@/components/ui/button";
 import { LoginAuthValidator, type LoginFormData } from "@/lib/validators/AccountValidators";
@@ -21,7 +22,7 @@ export default function LoginForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [loginError, setLoginError] = useState<string | null>(null);
 
-    const router = useRouter()
+    // const router = useRouter()
     const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
         defaultValues: { email: "", password: "" },
@@ -34,7 +35,7 @@ export default function LoginForm() {
             setLoginError(null)
 
             const response = await signIn("credentials", {
-                redirect: false,
+                redirectTo: "/",
                 email: values.email,
                 password: values.password,
             });
@@ -45,9 +46,13 @@ export default function LoginForm() {
                 return;
             }
 
-            router.push('/')
+            // router.push('/')
         } catch (error) {
-            console.error("Signup error:", error);
+            if (error instanceof AuthError) {
+                console.log(error);
+
+            }
+            console.error("Login error:", error);
             setLoginError("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false)

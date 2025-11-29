@@ -1,0 +1,66 @@
+import NextAuth from "next-auth";
+import Google from "next-auth/providers/google";
+import Instagram from "next-auth/providers/instagram";
+import Credentials from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcrypt";
+import prisma from "./lib/prisma";
+
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  adapter: PrismaAdapter(prisma),
+  providers: [
+    // TODO: I should go back to verfiy email function for google and instagram
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
+    }),
+    Instagram({
+      clientId: process.env.AUTH_INSTAGRAM_ID as string,
+      clientSecret: process.env.AUTH_INSTAGRAM_SECRET as string,
+    }),
+    Credentials({
+      credentials: {
+        email: { label: "email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(rawCredentials) {
+        const { email, password } = rawCredentials as {
+          email: string;
+          password: string;
+        };
+
+        if (email || password) {
+          throw new Error("Missing email or password");
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
+
+        if (!user || !user.hashedPassword) {
+          throw new Error("Invalid email or password");
+        }
+
+        const isCorrectPassword = await bcrypt.compare(
+          password,
+          user.hashedPassword
+        );
+
+        if (!isCorrectPassword) {
+          throw new Error("Invalid email or password");
+        }
+
+        if (!user.emailVerified) {
+          throw new Error("Please confirm your email address");
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          name: user.name,
+        };
+      },
+    }),
+  ],
+});
