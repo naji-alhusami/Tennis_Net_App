@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from 'axios'
+import { toast } from "sonner"
 
 import { SignupAuthValidator, type SignupFormData } from "@/lib/validators/AccountValidators";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,7 @@ export default function SignupForm() {
 
             const response = await axios.post("/api/signup", values);
 
+            toast.success("Signup Successful! Please Check Your Email To Verify Your Account.")
             if (response.data.error) {
                 setSignupError(response.data.error);
                 return;
@@ -53,7 +55,7 @@ export default function SignupForm() {
             setIsLoading(false);
         }
     };
-    
+
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
             <h1 className={cn("text-green-700 text-6xl pb-20 text-center md:text-7xl", pacifico.className)}>
@@ -131,7 +133,6 @@ export default function SignupForm() {
                             "Signup"
                         )}
                     </Button>
-
                     <div className="flex items-center justify-between">
                         <p className="text-sm text-muted-foreground">Already have an account?</p>
                         <Link href="/auth/login">

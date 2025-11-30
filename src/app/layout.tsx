@@ -3,8 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar/Navbar";
-// import { Toaster } from "@/components/ui/toaster";
-import { use } from 'react'
+import { Toaster } from "sonner";
+// import { use } from 'react'
 
 type Params = Promise<{ slug: string }>
 
@@ -25,8 +25,8 @@ export default function RootLayout({
       <body className={cn("relative h-full font-sans antialiased")}>
         <main className="relative flex flex-col min-h-screen">
           <Navbar />
+          <Toaster richColors position="top-center" />
           <div className="flex-grow flex-1">{children}</div>
-          {/* <Toaster /> */}
         </main>
       </body>
     </html>
