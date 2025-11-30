@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,7 +22,7 @@ export default function LoginForm() {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [loginError, setLoginError] = useState<string | null>(null);
 
-    // const router = useRouter()
+    const router = useRouter()
     const form = useForm<LoginFormData>({
         resolver: zodResolver(LoginAuthValidator),
         defaultValues: { email: "", password: "" },
@@ -35,7 +35,7 @@ export default function LoginForm() {
             setLoginError(null)
 
             const response = await signIn("credentials", {
-                redirectTo: "/",
+                redirect: false,
                 email: values.email,
                 password: values.password,
             });
@@ -46,7 +46,7 @@ export default function LoginForm() {
                 return;
             }
 
-            // router.push('/')
+            router.push('/')
         } catch (error) {
             if (error instanceof AuthError) {
                 console.log(error);

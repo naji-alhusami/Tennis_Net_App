@@ -8,16 +8,29 @@ import prisma from "./lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
+
+  session: {
+    strategy: "jwt",
+  },
+
+  debug: process.env.NODE_ENV === "development",
+
+  pages: {
+    signIn: "/",
+  },
+
   providers: [
     // TODO: I should go back to verfiy email function for google and instagram
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
     }),
+
     Instagram({
       clientId: process.env.AUTH_INSTAGRAM_ID as string,
       clientSecret: process.env.AUTH_INSTAGRAM_SECRET as string,
     }),
+
     Credentials({
       credentials: {
         email: { label: "email", type: "text" },
@@ -29,10 +42,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           password: string;
         };
 
-        if (email || password) {
+        if (!email || !password) {
           throw new Error("Missing email or password");
         }
-
+        
         const user = await prisma.user.findUnique({
           where: { email },
         });
@@ -63,4 +76,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+
+  callbacks: {
+    // Optional: block OAuth (Google/Instagram) if email not verified
+    // async signIn({ user, account }) {
+    //   if (account?.provider !== "credentials") {
+    //     const existingUser = await prisma.user.findUnique({
+    //       where: { email: user.email ?? undefined },
+    //     });
+
+    //     // user logged in with Google/Instagram but email not verified in DB
+    //     if (!existingUser?.emailVerified) {
+    //       return false; // Auth.js will redirect back with ?error=AccessDenied
+    //     }
+    //   }
+
+    //   return true;
+    // },
+
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.name = user.name;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.name = token.name;
+      }
+      return session;
+    },
+  },
 });

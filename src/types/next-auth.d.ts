@@ -11,10 +11,10 @@ declare module "next-auth" {
   }
 
   // either delete this completely:
-  // interface User {
-  //   role: "PLAYER" | "COACH";
-  //   id: string;
-  // }
+  interface User {
+    role: "PLAYER" | "COACH";
+    id: string;
+  }
 
   // OR, if you really want it, make `role` optional to avoid adapter conflicts:
   // interface User {
