@@ -15,10 +15,10 @@ import { Spinner } from "@/components/ui/spinner"
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-
 export default function SignupForm() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [signupError, setSignupError] = useState<string | null>(null);
 
     const form = useForm<SignupFormData>({
         resolver: zodResolver(SignupAuthValidator),
@@ -28,16 +28,32 @@ export default function SignupForm() {
     const onSubmit = async (values: SignupFormData) => {
         try {
             setIsLoading(true);
+            setSignupError(null)
+
             const response = await axios.post("/api/signup", values);
-            console.log("Signup success:", response.data);
+
+            if (response.data.error) {
+                setSignupError(response.data.error);
+                return;
+            }
 
             router.push("/auth/login");
         } catch (error) {
-            console.error("Signup error:", error);
+            let message = "Something went wrong. Please try again.";
+
+            if (axios.isAxiosError(error)) {
+                const data = error.response?.data as { error?: string };
+                if (data?.error) {
+                    message = data.error;
+                }
+            }
+
+            setSignupError(message);
         } finally {
             setIsLoading(false);
         }
     };
+    
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
             <h1 className={cn("text-green-700 text-6xl pb-20 text-center md:text-7xl", pacifico.className)}>
@@ -55,7 +71,9 @@ export default function SignupForm() {
                                 <FormControl>
                                     <Input type="text" placeholder="Your Name" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <div className="h-5">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
@@ -68,7 +86,9 @@ export default function SignupForm() {
                                 <FormControl>
                                     <Input type="email" placeholder="you@example.com" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <div className="h-5">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
@@ -81,10 +101,19 @@ export default function SignupForm() {
                                 <FormControl>
                                     <Input type="password" placeholder="••••••••" {...field} />
                                 </FormControl>
-                                <FormMessage />
+                                <div className="h-5">
+                                    <FormMessage />
+                                </div>
                             </FormItem>
                         )}
                     />
+                    <div className="h-2">
+                        {signupError && (
+                            <p className="text-sm text-red-600 font-bold">
+                                {signupError}
+                            </p>
+                        )}
+                    </div>
                     <Button
                         type="submit"
                         disabled={isLoading}
