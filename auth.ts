@@ -5,6 +5,7 @@ import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import prisma from "./lib/prisma";
+import { getUserById } from "./data/getUserById";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -42,16 +43,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           password: string;
         };
 
-        if (!email || !password) {
-          throw new Error("Missing email or password");
-        }
-        
         const user = await prisma.user.findUnique({
           where: { email },
         });
 
         if (!user || !user.hashedPassword) {
-          throw new Error("Invalid email or password");
+          return null;
         }
 
         const isCorrectPassword = await bcrypt.compare(
@@ -60,11 +57,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         );
 
         if (!isCorrectPassword) {
-          throw new Error("Invalid email or password");
-        }
-
-        if (!user.emailVerified) {
-          throw new Error("Please confirm your email address");
+          return null;
         }
 
         return {
@@ -79,20 +72,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   callbacks: {
     // Optional: block OAuth (Google/Instagram) if email not verified
-    // async signIn({ user, account }) {
-    //   if (account?.provider !== "credentials") {
-    //     const existingUser = await prisma.user.findUnique({
-    //       where: { email: user.email ?? undefined },
-    //     });
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") {
+        return true;
+      }
 
-    //     // user logged in with Google/Instagram but email not verified in DB
-    //     if (!existingUser?.emailVerified) {
-    //       return false; // Auth.js will redirect back with ?error=AccessDenied
-    //     }
-    //   }
+      const existingUser = await getUserById(user?.id ?? "");
 
-    //   return true;
-    // },
+      // user logged in with Google/Instagram but email not verified in DB
+      if (!existingUser?.emailVerified) {
+        return false; // Auth.js will redirect back with ?error=AccessDenied
+      }
+
+      return true;
+    },
 
     async jwt({ token, user }) {
       if (user) {

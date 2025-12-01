@@ -40,9 +40,20 @@ export default function LoginForm() {
                 password: values.password,
             });
 
+            console.log(response);
             if (response?.error) {
-                console.log("Login failed:", response.error);
-                setLoginError(response.error)
+                switch (response.error) {
+                    case "CredentialsSignin":
+                        setLoginError("Invalid Email Or Password");
+                        break;
+                    case "AccessDenied":
+                        setLoginError(
+                            "Please Confirm Your Email Address"
+                        );
+                        break;
+                    default:
+                        setLoginError("Something went wrong. Please try again.");
+                }
                 return;
             }
 
@@ -98,9 +109,9 @@ export default function LoginForm() {
                             </FormItem>
                         )}
                     />
-                    <div className="h-2">
+                    <div className="h-2 text-center">
                         {loginError && (
-                            <p className="text-sm text-red-600 font-bold">
+                            <p className="text-md text-red-600 font-bold">
                                 {loginError}
                             </p>
                         )}

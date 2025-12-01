@@ -109,9 +109,9 @@ export default function SignupForm() {
                             </FormItem>
                         )}
                     />
-                    <div className="h-2">
+                    <div className="h-2 text-center">
                         {signupError && (
-                            <p className="text-sm text-red-600 font-bold">
+                            <p className="text-md text-red-600 font-bold">
                                 {signupError}
                             </p>
                         )}
