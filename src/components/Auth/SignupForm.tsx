@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from 'axios'
+import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 
 import { SignupAuthValidator, type SignupFormData } from "@/lib/validators/AccountValidators";
@@ -11,10 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { pacifico } from "@/app/fonts";
-
-import { Spinner } from "@/components/ui/spinner"
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function SignupForm() {
     const router = useRouter();

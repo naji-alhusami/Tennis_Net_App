@@ -1,9 +1,9 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
-import Instagram from "next-auth/providers/instagram";
-import Credentials from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import Google from "next-auth/providers/google";
+import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+
 import prisma from "./lib/prisma";
 import { getUserById } from "./data/getUserById";
 
@@ -21,15 +21,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 
   providers: [
-    // TODO: I should go back to verfiy email function for google and instagram
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
+      clientId: process.env.AUTH_GOOGLE_ID as string,
       clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
-    }),
-
-    Instagram({
-      clientId: process.env.AUTH_INSTAGRAM_ID as string,
-      clientSecret: process.env.AUTH_INSTAGRAM_SECRET as string,
+      allowDangerousEmailAccountLinking: true,
     }),
 
     Credentials({
@@ -71,19 +66,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    // Optional: block OAuth (Google/Instagram) if email not verified
-    async signIn({ user, account }) {
-      if (account?.provider !== "credentials") {
+    async signIn({ user, account, profile }) {
+      // 1) Credentials: check my emailVerified
+      if (account?.provider === "credentials") {
+        const existingUser = await getUserById(user?.id ?? "");
+
+        if (!existingUser?.emailVerified) {
+          return false; // ?error=AccessDenied
+        }
         return true;
       }
 
-      const existingUser = await getUserById(user?.id ?? "");
+      // 2) Google: trust email_verified from Google
+      if (account?.provider === "google") {
+        const googleEmailVerified = profile?.email_verified;
 
-      // user logged in with Google/Instagram but email not verified in DB
-      if (!existingUser?.emailVerified) {
-        return false; // Auth.js will redirect back with ?error=AccessDenied
+        // Block only if Google explicitly says false
+        if (!googleEmailVerified) {
+          return false; // ?error=AccessDenied
+        }
+
+        // No DB writes here!
+        return true;
       }
 
+      // Other providers
       return true;
     },
 
@@ -103,6 +110,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.name = token.name;
       }
       return session;
+    },
+  },
+
+  events: {
+    async signIn({ user, account }) {
+      // Only for Google users
+      if (account?.provider === "google") {
+        await prisma.user.update({
+          where: { id: user.id as string },
+          data: { emailVerified: new Date() },
+        });
+      }
     },
   },
 });

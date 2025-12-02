@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
@@ -46,11 +47,22 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
             <div className="px-2">
                 <MessagesSidebar />
             </div>
-            <Button asChild variant="ghost" size="sm" className="px-2">
+            {/* <Button asChild variant="ghost" size="sm" className="px-2">
                 <Link href="/login" aria-label="Log in">
                     <LogOut className="h-4 w-4" />
                     <span className="sr-only md:not-sr-only md:whitespace-nowrap">Logout</span>
                 </Link>
+            </Button> */}
+            <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="px-2 cursor-pointer"
+                onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                aria-label="Log out"
+            >
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only md:not-sr-only md:whitespace-nowrap">Logout</span>
             </Button>
             <span
                 className="flex h-6 w-px bg-gray-300 md:hidden"

@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FcGoogle } from "react-icons/fc";
-import { Instagram } from "lucide-react";
+import { toast } from "sonner"
 import AuthError from 'next-auth';
 
 import { Button } from "@/components/ui/button";
@@ -15,11 +16,12 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { pacifico } from "@/app/fonts";
 import { Separator } from "../ui/separator";
-import { useState } from "react";
 import { Spinner } from "../ui/spinner";
 
 export default function LoginForm() {
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    type LoadingAction = "credentials" | "google" | null;
+
+    const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
     const [loginError, setLoginError] = useState<string | null>(null);
 
     const router = useRouter()
@@ -31,11 +33,12 @@ export default function LoginForm() {
     const onSubmit = async (values: LoginFormData) => {
         console.log(values);
         try {
-            setIsLoading(true)
+            setLoadingAction("credentials");
             setLoginError(null)
 
             const response = await signIn("credentials", {
                 redirect: false,
+                // callbackUrl: "/user",
                 email: values.email,
                 password: values.password,
             });
@@ -56,8 +59,8 @@ export default function LoginForm() {
                 }
                 return;
             }
-
-            router.push('/')
+            toast.success("Logedin Successfully")
+            router.push('/user')
         } catch (error) {
             if (error instanceof AuthError) {
                 console.log(error);
@@ -66,7 +69,16 @@ export default function LoginForm() {
             console.error("Login error:", error);
             setLoginError("Something went wrong. Please try again.");
         } finally {
-            setIsLoading(false)
+            setLoadingAction(null);
+        }
+    };
+
+    const googleLoginHandler = async () => {
+        try {
+            setLoadingAction("google");
+            await signIn("google", { callbackUrl: "/user" });
+        } finally {
+            setLoadingAction(null);
         }
     };
 
@@ -116,7 +128,7 @@ export default function LoginForm() {
                             </p>
                         )}
                     </div>
-                    <Button
+                    {/* <Button
                         type="submit"
                         disabled={isLoading}
                         className={cn(
@@ -125,6 +137,23 @@ export default function LoginForm() {
                         )}
                     >
                         {isLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <Spinner />
+                                <span>Please wait...</span>
+                            </span>
+                        ) : (
+                            "Login"
+                        )}
+                    </Button> */}
+                    <Button
+                        type="submit"
+                        disabled={loadingAction !== null}
+                        className={cn(
+                            "cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold",
+                            loadingAction && "opacity-70 cursor-not-allowed",
+                        )}
+                    >
+                        {loadingAction === "credentials" ? (
                             <span className="flex items-center justify-center gap-2">
                                 <Spinner />
                                 <span>Please wait...</span>
@@ -150,14 +179,29 @@ export default function LoginForm() {
                         <p className="px-2 text-sm text-gray-500">OR</p>
                         <Separator className="flex-1 bg-gray-300" />
                     </div>
-                    <Button variant="outline" className="w-full font-semibold cursor-pointer">
-                        Continue with Google
-                        <FcGoogle />
+                    <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full font-semibold cursor-pointer flex items-center justify-center gap-2"
+                        disabled={loadingAction !== null}
+                        onClick={googleLoginHandler}
+                    >
+                        {loadingAction === "google" ? (
+                            <>
+                                <Spinner />
+                                <span>Please wait ...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Continue with Google</span>
+                                <FcGoogle />
+                            </>
+                        )}
                     </Button>
-                    <Button variant="outline" className="w-full font-semibold cursor-pointer">
+                    {/* <Button variant="outline" className="w-full font-semibold cursor-pointer">
                         Continue with Instagram
                         <Instagram size={16} color="#ff00c8" />
-                    </Button>
+                    </Button> */}
                 </form>
             </Form>
         </div>
