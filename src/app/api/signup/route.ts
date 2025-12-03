@@ -39,7 +39,8 @@ export async function POST(request: Request) {
     await sendVerificationEmail(email, verificationToken.token);
 
     return NextResponse.json({ success: true, user });
-  } catch {
+  } catch (error) {
+    console.error("SIGNUP ERROR:", error);
     return NextResponse.json(
       { error: "Error registering user" },
       { status: 500 }

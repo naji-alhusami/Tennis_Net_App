@@ -6,11 +6,7 @@ export const SignupAuthValidator = z.object({
     password: z
         .string()
         .min(6, { message: "Password must be at least 6 characters." }),
-    //   level: z.string({
-    //     required_error: "Level is Required.",
-    //   }),
 });
-
 export type SignupFormData = z.infer<typeof SignupAuthValidator>;
 
 export const LoginAuthValidator = z.object({
@@ -19,10 +15,14 @@ export const LoginAuthValidator = z.object({
         .string()
         .min(6, { message: "Password must be at least 6 characters." }),
 });
-
 export type LoginFormData = z.infer<typeof LoginAuthValidator>;
 
-
-// export const AuthValidator = z.union([SignupAuthValidator, LoginAuthValidator]);
-
-// export type PAuthValidator = z.infer<typeof AuthValidator>;
+export const RoleAuthValidator = z.object({
+    role: z
+        .enum(["PLAYER", "COACH"])
+        .optional()
+        .refine((value) => value !== undefined, {
+            message: "Please select a role.",
+        }),
+});
+export type RoleFormData = z.infer<typeof RoleAuthValidator>;

@@ -3,10 +3,10 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from 'axios'
+// import axios from 'axios'
 import { Spinner } from "@/components/ui/spinner"
 import { useRouter } from "next/navigation";
-import { toast } from "sonner"
+// import { toast } from "sonner"
 
 import { SignupAuthValidator, type SignupFormData } from "@/lib/validators/AccountValidators";
 import { cn } from "@/lib/utils";
@@ -26,33 +26,36 @@ export default function SignupForm() {
     });
 
     const onSubmit = async (values: SignupFormData) => {
-        try {
-            setIsLoading(true);
-            setSignupError(null)
+        console.log(values)
+        // try {
+        //     console.log(values)
 
-            const response = await axios.post("/api/signup", values);
+        //     setIsLoading(true);
+        //     setSignupError(null)
 
-            toast.success("Signup Successful! Please Check Your Email To Verify Your Account.")
-            if (response.data.error) {
-                setSignupError(response.data.error);
-                return;
-            }
+        //     const response = await axios.post("/api/signup", values);
 
-            router.push("/auth/login");
-        } catch (error) {
-            let message = "Something went wrong. Please try again.";
+        //     // toast.success("Signup Successful! Please Check Your Email To Verify Your Account.")
+        //     if (response.data.error) {
+        //         setSignupError(response.data.error);
+        //         return;
+        //     }
 
-            if (axios.isAxiosError(error)) {
-                const data = error.response?.data as { error?: string };
-                if (data?.error) {
-                    message = data.error;
-                }
-            }
+        //     router.push("/auth/role");
+        // } catch (error) {
+        //     let message = "Something went wrong. Please try again.";
 
-            setSignupError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        //     if (axios.isAxiosError(error)) {
+        //         const data = error.response?.data as { error?: string };
+        //         if (data?.error) {
+        //             message = data.error;
+        //         }
+        //     }
+
+        //     setSignupError(message);
+        // } finally {
+        //     setIsLoading(false);
+        // }
     };
 
     return (
@@ -70,7 +73,7 @@ export default function SignupForm() {
                             <FormItem>
                                 <FormLabel>Full Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" placeholder="Your Name" {...field} />
+                                    <Input type="text" placeholder="Your Name" autoComplete="name" {...field} />
                                 </FormControl>
                                 <div className="h-5">
                                     <FormMessage />
@@ -85,7 +88,7 @@ export default function SignupForm() {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="you@example.com" {...field} />
+                                    <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
                                 </FormControl>
                                 <div className="h-5">
                                     <FormMessage />
@@ -100,7 +103,7 @@ export default function SignupForm() {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="••••••••" {...field} />
+                                    <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
                                 </FormControl>
                                 <div className="h-5">
                                     <FormMessage />

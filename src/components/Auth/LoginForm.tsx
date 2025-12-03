@@ -76,7 +76,7 @@ export default function LoginForm() {
     const googleLoginHandler = async () => {
         try {
             setLoadingAction("google");
-            await signIn("google", { callbackUrl: "/user" });
+            await signIn("google", { callbackUrl: "/auth/GoogleRedirect" });
         } finally {
             setLoadingAction(null);
         }
@@ -98,7 +98,7 @@ export default function LoginForm() {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="you@example.com" {...field} />
+                                    <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
                                 </FormControl>
                                 <div className="h-5">
                                     <FormMessage />
@@ -113,7 +113,7 @@ export default function LoginForm() {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" placeholder="••••••••" {...field} />
+                                    <Input type="password" placeholder="••••••••" autoComplete="current-password" {...field} />
                                 </FormControl>
                                 <div className="h-5">
                                     <FormMessage />
