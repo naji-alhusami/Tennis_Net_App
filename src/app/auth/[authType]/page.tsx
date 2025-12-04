@@ -2,7 +2,6 @@ import Image from "next/image";
 
 import SignupForm from "@/components/Auth/SignupForm";
 import LoginForm from "@/components/Auth/LoginForm";
-import RoleForm from "@/components/Auth/RoleForm";
 
 export default async function AuthPage({
     params,
@@ -27,9 +26,7 @@ export default async function AuthPage({
 
             {/* overlay content layer */}
             <div className="relative z-10 grid  place-items-center p-4">
-                {authType === "signup" && <SignupForm />}
-                {authType === "login" && <LoginForm />}
-                {authType === "role" && <RoleForm />}
+                {authType === "signup" ? <SignupForm /> : <LoginForm />}
             </div>
         </div>
     );

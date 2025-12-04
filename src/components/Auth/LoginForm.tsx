@@ -31,19 +31,16 @@ export default function LoginForm() {
     });
 
     const onSubmit = async (values: LoginFormData) => {
-        console.log(values);
         try {
             setLoadingAction("credentials");
             setLoginError(null)
 
             const response = await signIn("credentials", {
                 redirect: false,
-                // callbackUrl: "/user",
                 email: values.email,
                 password: values.password,
             });
 
-            console.log(response);
             if (response?.error) {
                 switch (response.error) {
                     case "CredentialsSignin":
@@ -59,8 +56,9 @@ export default function LoginForm() {
                 }
                 return;
             }
-            toast.success("Logedin Successfully")
+            toast.success("Logged in successfully")
             router.push('/user')
+
         } catch (error) {
             if (error instanceof AuthError) {
                 console.log(error);
@@ -76,11 +74,12 @@ export default function LoginForm() {
     const googleLoginHandler = async () => {
         try {
             setLoadingAction("google");
-            await signIn("google", { callbackUrl: "/auth/GoogleRedirect" });
+            await signIn("google", { callbackUrl: "/user" });
         } finally {
             setLoadingAction(null);
         }
     };
+
 
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
@@ -128,23 +127,6 @@ export default function LoginForm() {
                             </p>
                         )}
                     </div>
-                    {/* <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className={cn(
-                            "cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold",
-                            isLoading && "opacity-70 cursor-not-allowed"
-                        )}
-                    >
-                        {isLoading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <Spinner />
-                                <span>Please wait...</span>
-                            </span>
-                        ) : (
-                            "Login"
-                        )}
-                    </Button> */}
                     <Button
                         type="submit"
                         disabled={loadingAction !== null}

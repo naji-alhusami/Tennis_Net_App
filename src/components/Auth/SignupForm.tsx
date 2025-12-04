@@ -14,6 +14,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { pacifico } from "@/app/fonts";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function SignupForm() {
     const router = useRouter();
@@ -26,37 +28,61 @@ export default function SignupForm() {
     });
 
     const onSubmit = async (values: SignupFormData) => {
-        console.log(values)
-        // try {
-        //     console.log(values)
+        try {
+            setIsLoading(true);
+            setSignupError(null)
 
-        //     setIsLoading(true);
-        //     setSignupError(null)
+            const response = await axios.post("/api/signup", values);
 
-        //     const response = await axios.post("/api/signup", values);
+            if (response.data.error) {
+                setSignupError(response.data.error);
+                return;
+            }
 
-        //     // toast.success("Signup Successful! Please Check Your Email To Verify Your Account.")
-        //     if (response.data.error) {
-        //         setSignupError(response.data.error);
-        //         return;
-        //     }
+            toast.success("Signup Successful! Please Check Your Email To Verify Your Account.")
+            router.push("/auth/login");
 
-        //     router.push("/auth/role");
-        // } catch (error) {
-        //     let message = "Something went wrong. Please try again.";
+        } catch (error) {
+            let message = "Something went wrong. Please try again.";
 
-        //     if (axios.isAxiosError(error)) {
-        //         const data = error.response?.data as { error?: string };
-        //         if (data?.error) {
-        //             message = data.error;
-        //         }
-        //     }
+            if (axios.isAxiosError(error)) {
+                const data = error.response?.data as { error?: string };
+                if (data?.error) {
+                    message = data.error;
+                }
+            }
 
-        //     setSignupError(message);
-        // } finally {
-        //     setIsLoading(false);
-        // }
+            setSignupError(message);
+        } finally {
+            setIsLoading(false);
+        }
     };
+    // const onSubmit = async (values: SignupFormData) => {
+    //     try {
+    //         setIsLoading(true);
+    //         setSignupError(null);
+
+    //         const { data } = await axios.post("/api/signup", values);
+
+    //         if (data.error) {
+    //             setSignupError(data.error);
+    //             return;
+    //         }
+
+    //         router.push(`/auth/role?userId=${data.user.id}`);
+    //     } catch (error) {
+    //         let message = "Something went wrong. Please try again.";
+
+    //         if (axios.isAxiosError(error)) {
+    //             const errData = error.response?.data as { error?: string };
+    //             if (errData?.error) message = errData.error;
+    //         }
+
+    //         setSignupError(message);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
