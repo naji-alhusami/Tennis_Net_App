@@ -4,7 +4,7 @@ import { getUserById } from "../../../data/getUserById";
 
 async function UserPage() {
     const session = await auth();
-    
+
     // Not logged in: go to login
     if (!session?.user) {
         redirect("/auth/login");

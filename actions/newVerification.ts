@@ -2,10 +2,13 @@
 
 import prisma from "../lib/prisma";
 import { getUserByEmail } from "../data/getUserByEmail";
-import { getVerificationTokenByToken } from "../data/getVerificationTokenByToken";
 
 export const newVerification = async (token: string) => {
-  const existingToken = await getVerificationTokenByToken(token);
+  const existingToken = await prisma.verificationToken.findFirst({
+    where: {
+      token: token,
+    },
+  });
 
   if (!existingToken) {
     return { error: " " };

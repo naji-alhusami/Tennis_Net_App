@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { role } = body;
 
-    console.log("role:", role);
     if (!role) {
       return NextResponse.json({ error: "Missing role" }, { status: 400 });
     }

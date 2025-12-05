@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-const publicRoutes = ["/", "/auth/login", "/auth/signup", "/api/auth"];
+const publicRoutes = ["/", "/auth/login", "/auth/signup", "/verifyEmail"];
 
 const authOnlyRoutes = ["/auth/login", "/auth/signup"];
 
 export const config = {
-  matcher: ["/((?!_next|.*\\..*).*)"],
+  matcher: [
+    // run on everything EXCEPT:
+    // - /api/*
+    // - /_next/*
+    // - static files like /favicon.ico
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };
 
 export const proxy = auth((req) => {

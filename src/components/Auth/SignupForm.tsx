@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import axios from 'axios'
 import { Spinner } from "@/components/ui/spinner"
 import { useRouter } from "next/navigation";
 // import { toast } from "sonner"
@@ -31,9 +30,9 @@ export default function SignupForm() {
         try {
             setIsLoading(true);
             setSignupError(null)
-
+            
             const response = await axios.post("/api/signup", values);
-
+            
             if (response.data.error) {
                 setSignupError(response.data.error);
                 return;
