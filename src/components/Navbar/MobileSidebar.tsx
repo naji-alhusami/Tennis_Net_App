@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { type NavItems } from "@/types/NavItems";
+import { type NavItems } from "@/lib/types/NavItems";
 
 type MobileSidebarProps = {
   navItems: NavItems;

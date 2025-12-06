@@ -5,7 +5,7 @@ import { motion, type Variants } from "framer-motion";
 
 import Header from "../ui/header";
 import { servicesData } from "./ServicesData";
-import { type ServiceItem } from "@/types/ServicesItems";
+import { type ServiceItem } from "@/lib/types/ServicesItems";
 
 
 export default function Services() {

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
-const publicRoutes = ["/", "/auth/login", "/auth/signup", "/verifyEmail"];
+const publicRoutes = ["/", "/auth/login", "/auth/signup", "/auth/verifyEmail"];
 
 const authOnlyRoutes = ["/auth/login", "/auth/signup"];
 

@@ -6,7 +6,7 @@ import Logo from "../ui/logo";
 import Wrapper from "../ui/wrapper";
 import GuestNavbar from "./GuestNavbar";
 import UserNavbar from "./UserNavbar";
-import { type NavItems } from "@/types/NavItems";
+import { type NavItems } from "@/lib/types/NavItems";
 
 export default function ClientNavbar() {
 
@@ -20,7 +20,7 @@ export default function ClientNavbar() {
 
     const pathname = usePathname();
 
-    const isLoggedin = pathname === "/user" || pathname === "/role";
+    const isLoggedin = pathname === "/user" || pathname === "/auth/role";
 
     return <nav className="w-full bg-white sticky z-50">
         <Wrapper className="flex flex-row justify-between items-center h-18 border-b border-gray-300">

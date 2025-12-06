@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { getUserById } from "../../../data/getUserById";
+import { getUserById } from "@/lib/data/users/getUserById";
 
 async function UserPage() {
     const session = await auth();
@@ -14,7 +14,7 @@ async function UserPage() {
 
     // Logged in but no role in DB: force go to role page
     if (!dbUser?.role) {
-        redirect("/role");
+        redirect("/auth/role");
     }
 
     return <div>Hello {dbUser.email}</div>;

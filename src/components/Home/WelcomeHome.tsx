@@ -2,8 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { buttonVariants } from "../ui/button";
-import SlowlyShow from "@/lib/SlowlyShow";
-import TypeWriter from "@/lib/TypeWriter";
+import SlowlyShow from "@/components/shared/SlowlyShow";
+import TypeWriter from "@/components/shared/TypeWriter";
 import Typewriter from "typewriter-effect"
 
 

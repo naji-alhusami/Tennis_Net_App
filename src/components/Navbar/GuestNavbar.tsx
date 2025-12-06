@@ -6,7 +6,7 @@ import { LogIn } from "lucide-react";
 import MobileSidebar from "./MobileSidebar";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { type NavItems } from "@/types/NavItems";
+import { type NavItems } from "@/lib/types/NavItems";
 
 type GuestNavbarProps = {
     navItems: NavItems;

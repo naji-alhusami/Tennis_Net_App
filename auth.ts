@@ -4,8 +4,8 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
 
-import prisma from "./lib/prisma";
-import { getUserById } from "./data/getUserById";
+import prisma from "./src/lib/prisma/prisma";
+import { getUserById } from "@/lib/data/users/getUserById";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),

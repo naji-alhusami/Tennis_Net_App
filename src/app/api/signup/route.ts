@@ -1,9 +1,9 @@
 import bcrypt from "bcrypt";
-import prisma from "../../../../lib/prisma";
+import prisma from "../../../lib/prisma/prisma";
 import { NextResponse } from "next/server";
-import { generateVerificationToken } from "@/lib/token";
-import { sendVerificationEmail } from "@/lib/mail";
-import { getUserByEmail } from "../../../../data/getUserByEmail";
+import { generateVerificationToken } from "@/lib/verification/generateVerificationToken";
+import { sendVerificationEmail } from "@/lib/verification/sendVerificationEmail";
+import { getUserByEmail } from "@/lib/data/users/getUserByEmail";
 
 export async function POST(request: Request) {
   try {

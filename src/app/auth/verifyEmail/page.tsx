@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import VerifyEmailForm from "@/components/VerifyEmailForm/VerifyEmailForm";
-import { newVerification } from "../../../actions/newVerification";
+import { newVerification } from "../../../lib/verification/newVerification";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 

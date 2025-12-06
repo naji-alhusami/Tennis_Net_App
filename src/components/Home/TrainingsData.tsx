@@ -1,4 +1,4 @@
-import { type TrainingLevel } from "@/types/TrainingLevels";
+import { type TrainingLevel } from "@/lib/types/TrainingLevels";
 
 
 

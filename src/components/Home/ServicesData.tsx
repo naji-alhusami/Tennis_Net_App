@@ -1,7 +1,7 @@
 // import icon1 from "./icon1.png"
 // import icon2 from "@/public/Images/icon2.png";
 // import icon3 from "@/public/Images/icon3.png";
-import { type ServiceItem } from "@/types/ServicesItems";
+import { type ServiceItem } from "@/lib/types/ServicesItems";
 
 export const servicesData: ServiceItem[] = [
     {
