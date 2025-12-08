@@ -121,7 +121,12 @@
   }
 }
 
-.mask-fade-rl-40 {
+/* .mask-fade-rl-40 {
   -webkit-mask-image: linear-gradient(to left, black, transparent 40%);
   mask-image: linear-gradient(to left, black, transparent 40%);
+} */
+
+.video-fade-left {
+  mask-image: linear-gradient(to right, transparent 0%, black 25%, black 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 100%);
 }
