@@ -47,12 +47,6 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
             <div className="px-2">
                 <MessagesSidebar />
             </div>
-            {/* <Button asChild variant="ghost" size="sm" className="px-2">
-                <Link href="/login" aria-label="Log in">
-                    <LogOut className="h-4 w-4" />
-                    <span className="sr-only md:not-sr-only md:whitespace-nowrap">Logout</span>
-                </Link>
-            </Button> */}
             <Button
                 type="button"
                 variant="ghost"

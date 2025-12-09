@@ -20,7 +20,7 @@ export default function ClientNavbar() {
 
     const pathname = usePathname();
 
-    const isLoggedin = pathname === "/user" || pathname === "/auth/role";
+    const isLoggedin = pathname === "/user" || pathname === "/auth/role" || pathname === '/player' || pathname === '/couch';
 
     return <nav className="w-full bg-white sticky z-50">
         <Wrapper className="flex flex-row justify-between items-center h-18 border-b border-gray-300">

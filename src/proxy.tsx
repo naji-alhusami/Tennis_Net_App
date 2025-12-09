@@ -7,11 +7,7 @@ const authOnlyRoutes = ["/auth/login", "/auth/signup"];
 
 export const config = {
   matcher: [
-    // run on everything EXCEPT:
-    // - /api/*
-    // - /_next/*
-    // - static files like /favicon.ico
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+    "/((?!api|_next|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|gif|webp|mp4|webm|ogg)).*)",
   ],
 };
 
