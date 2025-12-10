@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar/Navbar";
 import { Toaster } from "sonner";
+import { SessionProvider } from "next-auth/react";
 // import { use } from 'react'
 
 type Params = Promise<{ slug: string }>
@@ -24,9 +25,11 @@ export default function RootLayout({
     <html lang="en" className="h-full">
       <body className={cn("relative h-full font-sans antialiased")}>
         <main className="relative flex flex-col min-h-screen">
-          <Navbar />
-          <Toaster richColors position="top-center" />
-          <div className="flex-grow flex-1">{children}</div>
+          <SessionProvider>
+            <Navbar />
+            <Toaster richColors position="top-center" />
+            <div className="flex-grow flex-1">{children}</div>
+          </SessionProvider>
         </main>
       </body>
     </html>
