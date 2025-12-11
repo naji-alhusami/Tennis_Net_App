@@ -117,7 +117,7 @@ export default function ChartPieInteractive() {
         return (
             <Card data-chart={id} className="flex flex-col">
                 <CardHeader>
-                    <CardTitle>Pie Chart – Last 5 Months</CardTitle>
+                    <CardTitle>Matches Last 5 Months</CardTitle>
                     <CardDescription>No data available for the last 5 months.</CardDescription>
                 </CardHeader>
             </Card>
@@ -133,7 +133,7 @@ export default function ChartPieInteractive() {
             {/* Header with title + description + month selector */}
             <CardHeader className="flex-row items-start space-y-0 pb-0">
                 <div className="grid gap-1">
-                    <CardTitle>Pie Chart – Last 5 Months</CardTitle>
+                    <CardTitle>Matches Last 5 Months</CardTitle>
                     <CardDescription>
                         {/* show range e.g. "November 2025 → March 2026" */}
                         {lastFiveData[0].label} → {lastFiveData[lastFiveData.length - 1].label}

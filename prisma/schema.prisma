@@ -24,6 +24,12 @@ enum ReservationStatus {
   CANCELLED
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
   id             String    @id @default(auto()) @map("_id") @db.ObjectId
   name           String?
@@ -44,6 +50,29 @@ model User {
 
   // tennis
   reservations Reservation[] // All reservations this user has made
+
+  /**
+   * All friendships where this user is stored in `userOneId`.
+   * To get full friend list, combine friendshipsAsUserOne + friendshipsAsUserTwo.
+   */
+  friendshipsAsUserOne Friendship[] @relation("FriendshipUserOne")
+
+  /**
+   * All friendships where this user is stored in `userTwoId`.
+   */
+  friendshipsAsUserTwo Friendship[] @relation("FriendshipUserTwo")
+
+  /**
+   * All friend requests that this user has SENT to others.
+   * (fromUserId = this user's id)
+   */
+  friendRequestsSent FriendRequest[] @relation("FriendRequestsSent")
+
+  /**
+   * All friend requests that this user has RECEIVED from others.
+   * (toUserId = this user's id)
+   */
+  friendRequestsReceived FriendRequest[] @relation("FriendRequestsReceived")
 }
 
 model VerificationToken {
@@ -139,4 +168,40 @@ model Reservation {
   @@index([userId, start])
   @@index([courtId, start])
   @@index([start, end])
+}
+
+model FriendRequest {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  fromUserId String @db.ObjectId // user who SENDS the request
+  toUserId   String @db.ObjectId // user who RECEIVES the request
+
+  status      FriendRequestStatus @default(PENDING)
+  createdAt   DateTime            @default(now())
+  respondedAt DateTime? // when the request was accepted/rejected
+
+  // Relations back to User:
+  fromUser User @relation("FriendRequestsSent", fields: [fromUserId], references: [id])
+  toUser   User @relation("FriendRequestsReceived", fields: [toUserId], references: [id])
+
+  // Prevent duplicate requests from same sender to same receiver
+  @@unique([fromUserId, toUserId])
+  // Fast query for "all PENDING requests for this user"
+  @@index([toUserId, status])
+}
+
+model Friendship {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userOneId String   @db.ObjectId // first user in the pair
+  userTwoId String   @db.ObjectId // second user in the pair
+  createdAt DateTime @default(now())
+
+  // Relations back to User for each side of the friendship
+  userOne User @relation("FriendshipUserOne", fields: [userOneId], references: [id])
+  userTwo User @relation("FriendshipUserTwo", fields: [userTwoId], references: [id])
+
+  // Ensure only one friendship per pair of users (A-B is unique).
+  @@unique([userOneId, userTwoId])
+  // Optional indexes for faster lookups "who are this user's friends?"
+  @@index([userOneId])
+  @@index([userTwoId])
 }
