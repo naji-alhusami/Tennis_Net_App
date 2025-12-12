@@ -47,7 +47,7 @@ import { type NavItems } from "@/lib/types/NavItems";
 
 export default function Navbar() {
     const { data: session, status } = useSession();
-    console.log("data:", session)
+    // console.log("data:", session)
 
     const role = session?.user?.role as "PLAYER" | "COACH" | undefined;
 
