@@ -1,4 +1,4 @@
-export const dynamic = "force-dynamic" // ensure DB state is fresh on navigation
+export const dynamic = "force-dynamic"
 
 import { auth } from "@/auth"
 import FindPartner from "@/components/FindPartner/FindPartner"
