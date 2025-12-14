@@ -12,7 +12,7 @@ export default async function PartnersPage() {
     const currentUserId = session.user.id
 
     const users = await getAllUsers(currentUserId)
-    const players = users.filter((user) => user.role === "COACH")
+    const players = users.filter((user) => user.role === "PLAYER")
 
     const pendingRequests = await getAllPendingRequests(players, currentUserId)
     const requestedIds = new Set(pendingRequests.map((r) => r.toUserId))
