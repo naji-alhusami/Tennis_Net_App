@@ -11,6 +11,8 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Check, X } from "lucide-react"
+import axios from "axios"
+import { useRouter } from "next/navigation"
 
 type FriendRequest = {
     id: string
@@ -25,6 +27,26 @@ export default function FriendRequestsTable({
 }: {
     requests: FriendRequest[]
 }) {
+    const router = useRouter()
+
+    async function handleAccept(requestId: string) {
+        try {
+            await axios.post("/api/requests/accept", { requestId })
+            router.refresh()
+        } catch (error) {
+            console.error("Failed to accept request", error)
+        }
+    }
+
+    async function handleReject(requestId: string) {
+        try {
+            await axios.post("/api/requests/reject", { requestId })
+            router.refresh()
+        } catch (error) {
+            console.error("Failed to reject request", error)
+        }
+    }
+
     return (
         <Table className="border border-2">
             <TableHeader className="bg-gray-300">
@@ -75,18 +97,20 @@ export default function FriendRequestsTable({
                                 {/* Accept */}
                                 <Button
                                     size="icon"
-                                    className="rounded-full"
+                                    className="rounded-full bg-blue-600 hover:bg-blue-700 cursor-pointer"
                                     aria-label="Accept"
+                                    onClick={() => handleAccept(req.id)}
                                 >
-                                    <Check className="h-4 w-4" />
+                                    <Check className="h-4 w-4 text-white" />
                                 </Button>
 
                                 {/* Reject */}
                                 <Button
                                     size="icon"
                                     variant="destructive"
-                                    className="rounded-full"
+                                    className="rounded-full cursor-pointer"
                                     aria-label="Reject"
+                                    onClick={() => handleReject(req.id)}
                                 >
                                     <X className="h-4 w-4" />
                                 </Button>
