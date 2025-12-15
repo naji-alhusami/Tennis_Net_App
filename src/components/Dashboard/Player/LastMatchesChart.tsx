@@ -77,7 +77,7 @@ const chartConfig = {
     matches: { label: "Matches" },
 } satisfies ChartConfig
 
-export default function ChartPieInteractive() {
+export default function LastMatchesChart() {
     // ID used to bind ChartStyle / ChartContainer
     const id = "pie-interactive"
 
@@ -126,7 +126,7 @@ export default function ChartPieInteractive() {
 
     // 7) Render the actual chart
     return (
-        <Card data-chart={id} className="flex flex-col">
+        <Card data-chart={id} className="w-full h-full flex flex-col">
             {/* Injects CSS variables etc based on chartConfig */}
             <ChartStyle id={id} config={chartConfig} />
 
