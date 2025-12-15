@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import {
     Table,
@@ -11,7 +12,6 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Check, X } from "lucide-react"
-import axios from "axios"
 import { useRouter } from "next/navigation"
 
 type FriendRequest = {
@@ -60,14 +60,14 @@ export default function FriendRequestsTable({
 
             <TableBody>
                 {requests.length === 0 ? (
-                    <TableRow>
+                    <TableRow className="bg-white">
                         <TableCell colSpan={4} className="py-8 text-center text-sm text-muted-foreground">
                             There Are No New Requests.
                         </TableCell>
                     </TableRow>
                 ) : (
                     requests.map((req) => (
-                        <TableRow key={req.id}>
+                        <TableRow key={req.id} className="bg-white">
                             <TableCell className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-full overflow-hidden border">
                                     {req.image ? (
