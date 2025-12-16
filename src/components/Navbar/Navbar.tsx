@@ -60,7 +60,7 @@ export default function Navbar() {
 
     const playerNavItems: NavItems = [
         { href: "/player", label: "Dashboard", icon: Home },
-        { href: "/book", label: "Book Court", icon: Calendar },
+        { href: "/booking", label: "Book Court", icon: Calendar },
         { href: "/player/coaches", label: "Find Couch", icon: MapPin },
         { href: "/player/partners", label: "Find Partner", icon: Users },
         // { href: "/player/messages", label: "Messages", icon: MessageSquare },
