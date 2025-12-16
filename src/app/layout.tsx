@@ -28,7 +28,7 @@ export default function RootLayout({
           <SessionProvider>
             <Navbar />
             <Toaster richColors position="top-center" />
-            <div className="flex-grow flex-1">{children}</div>
+            <div>{children}</div>
           </SessionProvider>
         </main>
       </body>
