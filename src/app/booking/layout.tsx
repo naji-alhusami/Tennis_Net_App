@@ -113,7 +113,6 @@ import Image from "next/image"
 import { type ReactNode } from "react"
 import { useSelectedLayoutSegment } from "next/navigation"
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
-import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 
 const STEP_BY_SEGMENT: Record<string, number> = {
   court: 0,
@@ -125,7 +124,10 @@ const STEP_BY_SEGMENT: Record<string, number> = {
 
 export default function BookingLayout({ children }: { children: ReactNode }) {
   const segment = useSelectedLayoutSegment() ?? "court"
+  console.log("segment:", segment)
+  console.log("  useSelectedLayoutSegment():", useSelectedLayoutSegment())
   const currentStep = STEP_BY_SEGMENT[segment] ?? 0
+  console.log("currentStep:", currentStep)
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -137,11 +139,16 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
         className="object-cover opacity-90 pointer-events-none -z-10"
       />
 
-      <section className="relative z-10 w-full max-w-none p-5 md:px-13 xl:px-32 space-y-6">
+      {/* <section className="relative z-10 w-full max-w-none p-5 md:px-13 xl:px-32 space-y-6">
         <BookingSteps currentStep={currentStep} />
-        <BookingWizardFrame />
-        {/* optional: keep children ONLY if you still need route pages for something */}
-        {/* {children} */}
+        {children}
+      </section> */}
+      <section className="relative z-10 mx-auto w-full max-w-none px-4 pb-28 pt-4 space-y-6">
+        <BookingSteps currentStep={currentStep} />
+
+        <div className="w-full rounded-2xl bg-white border shadow-sm p-4">
+          {children}
+        </div>
       </section>
     </div>
   )

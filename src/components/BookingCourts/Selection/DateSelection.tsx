@@ -123,13 +123,13 @@ export default function DateSelection({ initialDate }: Props) {
     }
 
     return (
-        <div className="py-10">
+        <div className="flex justify-center">
             <Calendar
                 mode="single"
                 selected={date}
                 onSelect={onSelect}
                 disabled={{ before: startOfToday() }}
-                className="w-full border [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]"
+                className="rounded-xl border bg-white p-3"
                 buttonVariant="outline"
             />
         </div>

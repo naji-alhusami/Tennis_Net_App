@@ -189,7 +189,8 @@ import { useSelectedLayoutSegment, useSearchParams } from "next/navigation"
 
 import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
 import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNextButton"
+import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
+import { cn } from "@/lib/utils"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 type StepKey = (typeof ORDER)[number]
@@ -202,27 +203,54 @@ const REQUIRE: Record<StepKey, string[]> = {
     confirm: ["courtType", "date", "time", "players"],
 }
 
-function clampIndex(i: number) {
-    return Math.max(0, Math.min(ORDER.length - 1, i))
-}
+// function clampIndex(i: number) {
+//     return Math.max(0, Math.min(ORDER.length - 1, i))
+// }
 
-function StepCard({
-    children,
-    variant,
-}: {
-    children: React.ReactNode
-    variant: "active" | "peek"
-}) {
-    return (
-        <div
-            className={[
-                "rounded-2xl border bg-white/90 backdrop-blur-md shadow-xl",
-                variant === "active" ? "p-6" : "p-4",
-            ].join(" ")}
-        >
-            {children}
-        </div>
-    )
+// function StepCard({
+//     title,
+//     subtitle,
+//     children,
+//     variant,
+// }: {
+//     title?: string
+//     subtitle?: string
+//     children: React.ReactNode
+//     variant: "active" | "peek"
+// }) {
+//     return (
+//         <div
+//             className={cn(
+//                 "rounded-2xl border bg-white/90 backdrop-blur-md shadow-xl",
+//                 variant === "active" ? "p-2 sm:p-6" : "p-4"
+//             )}
+//         >
+//             {(title || subtitle) && (
+//                 <div className={cn("mb-4 text-center", variant === "peek" && "mb-3")}>
+//                     {title && (
+//                         <h2 className={cn("text-lg font-bold text-gray-900", variant === "peek" && "text-base")}>
+//                             {title}
+//                         </h2>
+//                     )}
+//                     {subtitle && (
+//                         <p className={cn("text-sm text-gray-600", variant === "peek" && "text-xs")}>
+//                             {subtitle}
+//                         </p>
+//                     )}
+//                 </div>
+//             )}
+
+//             {children}
+//         </div>
+//     )
+// }
+
+const STEP_META: Record<StepKey, { title: string; subtitle?: string }> = {
+    court: { title: "Choose your court", subtitle: "Clay or hard court" },
+    date: { title: "Choose your date to play", subtitle: "Pick a day from the calendar" },
+    time: { title: "Choose a time" },
+    players: { title: "Players" },
+    confirm: { title: "Confirm booking" },
 }
 
 function getStepComponent(key: StepKey, sp: URLSearchParams) {
@@ -237,21 +265,23 @@ function getStepComponent(key: StepKey, sp: URLSearchParams) {
 }
 
 export default function BookingWizardFrame() {
-    const seg = (useSelectedLayoutSegment() ?? "court") as StepKey
-    const idx = useMemo(() => clampIndex(ORDER.indexOf(seg)), [seg])
+    // const seg = (useSelectedLayoutSegment() ?? "court") as StepKey
+    // const idx = useMemo(() => clampIndex(ORDER.indexOf(seg)), [seg])
 
-    const prevKey = idx > 0 ? ORDER[idx - 1] : null
-    const currKey = ORDER[idx]
-    const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
+    // const prevKey = idx > 0 ? ORDER[idx - 1] : null
+    // const currKey = ORDER[idx]
+    // const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
 
     const spHook = useSearchParams()
     const sp = useMemo(() => new URLSearchParams(spHook.toString()), [spHook])
 
+    // const meta = STEP_META[currKey]
+
     return (
         <div className="w-full">
             {/* Mobile: only current step */}
-            <div className="md:hidden">
-                <StepCard variant="active">
+            <div className="lg:hidden">
+                <StepCard variant="active" title={meta.title} subtitle={meta.subtitle}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currKey}
@@ -267,20 +297,20 @@ export default function BookingWizardFrame() {
             </div>
 
             {/* Desktop: prev peek | current | next peek */}
-            <div className="hidden md:grid md:grid-cols-3 md:gap-6 md:items-start">
+            {/* <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start"> */}
                 {/* Prev peek */}
-                <div className="opacity-60 pointer-events-none">
+                {/* <div className="opacity-60 pointer-events-none">
                     {prevKey ? (
-                        <StepCard variant="peek" key={`peek-prev-${prevKey}`}>
+                        <StepCard variant="active" title={meta.title} subtitle={meta.subtitle}>
                             {getStepComponent(prevKey, sp)}
                         </StepCard>
                     ) : (
                         <div />
                     )}
-                </div>
+                </div> */}
 
                 {/* Current */}
-                <div>
+                {/* <div>
                     <StepCard variant="active">
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -294,10 +324,10 @@ export default function BookingWizardFrame() {
                             </motion.div>
                         </AnimatePresence>
                     </StepCard>
-                </div>
+                </div> */}
 
                 {/* Next peek */}
-                <div className="opacity-40 pointer-events-none select-none">
+                {/* <div className="opacity-40 pointer-events-none select-none">
                     {nextKey ? (
                         <StepCard variant="peek" key={`peek-next-${nextKey}`}>
                             {getStepComponent(nextKey, sp)}
@@ -305,16 +335,21 @@ export default function BookingWizardFrame() {
                     ) : (
                         <div />
                     )}
-                </div>
-            </div>
+                </div> */}
+            {/* </div> */}
 
             {/* Nav buttons always visible */}
-            <div className="mx-auto w-full max-w-3xl mt-6 rounded-2xl bg-white/90 backdrop-blur-md border shadow-xl p-4">
+            <div className="mx-auto w-full max-w-3xl mt-6 rounded-2xl bg-white/90 backdrop-blur-md border shadow-xl p-3">
                 <div className="flex gap-3">
                     {prevKey ? (
-                        <BookingNavButton variant="back" to={`/booking/${prevKey}`} label="BACK" />
+                        <BookingNavButton
+                            variant="back"
+                            to={`/booking/${prevKey}`}
+                            label="Back"
+                            className="flex-1 h-12"
+                        />
                     ) : (
-                        <div className="w-full" />
+                        <div className="flex-1" />
                     )}
 
                     {nextKey ? (
@@ -322,14 +357,16 @@ export default function BookingWizardFrame() {
                             variant="next"
                             to={`/booking/${nextKey}`}
                             require={REQUIRE[nextKey]}
-                            label="NEXT"
+                            label="Next"
+                            className="flex-1 h-12"
                         />
                     ) : (
                         <BookingNavButton
                             variant="next"
                             to={`/booking/confirm`}
                             require={REQUIRE.confirm}
-                            label="FINISH"
+                            label="Finish"
+                            className="flex-1 h-12"
                         />
                     )}
                 </div>

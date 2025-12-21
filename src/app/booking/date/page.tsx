@@ -24,7 +24,7 @@
 // }
 
 import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNextButton"
+import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
 

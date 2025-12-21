@@ -57,11 +57,13 @@ export function BookingNavButton({
     require = [],
     label,
     variant = "next",
+    className,
 }: {
     to: string
     require?: string[]
     label: string
     variant?: "next" | "back"
+    className?: string
 }) {
     const router = useRouter()
     const sp = useSearchParams()
@@ -79,10 +81,11 @@ export function BookingNavButton({
             onClick={onGo}
             disabled={variant === "next" ? !ok : false}
             className={cn(
-                "w-full font-bold",
-                variant === "next" && "bg-green-600 hover:bg-green-700",
+                "font-bold rounded-xl", // 👈 removed w-full
+                variant === "next" && "bg-green-600 hover:bg-green-700 text-white",
                 variant === "back" && "bg-white border text-gray-800 hover:bg-gray-50",
-                variant === "next" && !ok && "opacity-70 cursor-not-allowed"
+                variant === "next" && !ok && "opacity-70 cursor-not-allowed",
+                className
             )}
         >
             {label}

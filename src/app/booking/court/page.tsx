@@ -1,4 +1,4 @@
-import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNextButton"
+import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>
@@ -8,7 +8,8 @@ export default async function BooktingCourtStep(props: { searchParams: SearchPar
     const courtType = typeof searchParams.courtType === "string" ? searchParams.courtType : undefined
 
     return <div className="py-10">
-        <CourtSelection initialCourtType={courtType} />
-        <BookingNavButton variant="next" to="/booking/date" require={["courtType"]} label="NEXT" />
+        Test
+        {/* <CourtSelection initialCourtType={courtType} />
+        <BookingNavButton variant="next" to="/booking/date" require={["courtType"]} label="NEXT" /> */}
     </div>
 }

@@ -191,11 +191,11 @@ export default function CourtSelection({ initialCourtType }: { initialCourtType?
     }
 
     return (
-        <div className="relative z-10 grid place-items-center pt-10">
+        <div className="relative z-10 grid place-items-center pt-5">
             <div className="w-full max-w-lg bg-white backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">
-                <h1 className={cn("text-green-700 text-5xl pb-10 text-center md:text-6xl", pacifico.className)}>
+                {/* <h1 className={cn("text-green-700 text-5xl pb-10 text-center md:text-6xl", pacifico.className)}>
                     Court
-                </h1>
+                </h1> */}
 
                 <Select value={courtType} onValueChange={onChange}>
                     <SelectTrigger className="w-full">
