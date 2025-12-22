@@ -7,9 +7,14 @@ export default async function BooktingCourtStep(props: { searchParams: SearchPar
     const searchParams = await props.searchParams
     const courtType = typeof searchParams.courtType === "string" ? searchParams.courtType : undefined
 
-    return <div className="py-10">
-        Test
-        {/* <CourtSelection initialCourtType={courtType} />
-        <BookingNavButton variant="next" to="/booking/date" require={["courtType"]} label="NEXT" /> */}
+    return <div className="w-full h-[35rem] flex flex-col justify-between items-center">
+        <div>
+            Test
+            <CourtSelection initialCourtType={courtType} />
+        </div>
+        {/* <div className="w-full grid grid-cols-2 gap-3">
+            <BookingNavButton variant="back" to="/booking/date" requiredSearchParams={["courtType"]} label="BACK" />
+            <BookingNavButton variant="next" to="/booking/date" requiredSearchParams={["courtType"]} label="NEXT" />
+        </div> */}
     </div>
 }

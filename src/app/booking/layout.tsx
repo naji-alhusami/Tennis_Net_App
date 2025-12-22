@@ -112,9 +112,14 @@
 import Image from "next/image"
 import { type ReactNode } from "react"
 import { useSelectedLayoutSegment } from "next/navigation"
-import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 
-const STEP_BY_SEGMENT: Record<string, number> = {
+import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
+import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
+
+const ORDER = ["court", "date", "time", "players", "confirm"] as const
+type StepKey = (typeof ORDER)[number]
+
+const STEP_BY_SEGMENT: Record<StepKey, number> = {
   court: 0,
   date: 1,
   time: 2,
@@ -123,11 +128,23 @@ const STEP_BY_SEGMENT: Record<string, number> = {
 }
 
 export default function BookingLayout({ children }: { children: ReactNode }) {
-  const segment = useSelectedLayoutSegment() ?? "court"
-  console.log("segment:", segment)
-  console.log("  useSelectedLayoutSegment():", useSelectedLayoutSegment())
+  const segment = (useSelectedLayoutSegment() ?? "court") as StepKey
+
   const currentStep = STEP_BY_SEGMENT[segment] ?? 0
-  console.log("currentStep:", currentStep)
+
+  const backDisabled = currentStep === 0
+  const nextDisabled = currentStep === ORDER.length - 1
+
+  const backTo = `/booking/${ORDER[Math.max(0, currentStep - 1)]}`
+  const nextTo = `/booking/${ORDER[Math.min(ORDER.length - 1, currentStep + 1)]}`
+
+  const requiredForNext: Record<StepKey, string[]> = {
+    court: ["courtType"],
+    date: ["courtType", "date"],
+    time: ["courtType", "date", "time"],
+    players: ["courtType", "date", "time", "players"],
+    confirm: ["courtType", "date", "time", "players"],
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -143,11 +160,26 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
         <BookingSteps currentStep={currentStep} />
         {children}
       </section> */}
-      <section className="relative z-10 mx-auto w-full max-w-none px-4 pb-28 pt-4 space-y-6">
+      <section className="relative z-10 mx-auto w-full max-w-none px-4 pb-28 pt-4 space-y-6 ">
         <BookingSteps currentStep={currentStep} />
 
-        <div className="w-full rounded-2xl bg-white border shadow-sm p-4">
+        <div className="rounded-2xl bg-white border shadow-sm p-4">
           {children}
+          <div className="grid grid-cols-2 gap-3">
+            <BookingNavButton
+              variant="back"
+              to={backTo}
+              label="BACK"
+              disabled={backDisabled}
+            />
+            <BookingNavButton
+              variant="next"
+              to={nextTo}
+              label="NEXT"
+              disabled={nextDisabled}
+              requiredSearchParams={requiredForNext[segment]}
+            />
+          </div>
         </div>
       </section>
     </div>
