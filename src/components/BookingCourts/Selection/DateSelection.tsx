@@ -129,7 +129,7 @@ export default function DateSelection({ initialDate }: Props) {
                 selected={date}
                 onSelect={onSelect}
                 disabled={{ before: startOfToday() }}
-                className="rounded-xl border bg-white p-3"
+                className="rounded-xl  bg-white p-3"
                 buttonVariant="outline"
             />
         </div>

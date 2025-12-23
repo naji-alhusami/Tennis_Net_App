@@ -38,7 +38,7 @@ export function BookingNavButton({
             className={cn(
                 "w-full font-bold rounded-xl",
                 variant === "next" && "bg-green-600 hover:bg-green-700 text-white cursor-pointer",
-                variant === "back" && "bg-white border text-gray-800 hover:bg-gray-50 cursor-pointer",
+                variant === "back" && "bg-gray-600 border border-black border-1 text-white hover:bg-gray-900 cursor-pointer",
                 isDisabled && "opacity-70 cursor-not-allowed",
                 className
             )}

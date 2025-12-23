@@ -107,8 +107,8 @@
 //   )
 // }
 
-
 "use client"
+
 import Image from "next/image"
 import { type ReactNode } from "react"
 import { useSelectedLayoutSegment } from "next/navigation"
@@ -129,7 +129,6 @@ const STEP_BY_SEGMENT: Record<StepKey, number> = {
 
 export default function BookingLayout({ children }: { children: ReactNode }) {
   const segment = (useSelectedLayoutSegment() ?? "court") as StepKey
-
   const currentStep = STEP_BY_SEGMENT[segment] ?? 0
 
   const backDisabled = currentStep === 0
@@ -147,7 +146,7 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative h-screen overflow-hidden">
       <Image
         src="/courses.jpg"
         alt="background"
@@ -156,15 +155,20 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
         className="object-cover opacity-90 pointer-events-none -z-10"
       />
 
-      {/* <section className="relative z-10 w-full max-w-none p-5 md:px-13 xl:px-32 space-y-6">
-        <BookingSteps currentStep={currentStep} />
-        {children}
-      </section> */}
-      <section className="relative z-10 mx-auto w-full max-w-none px-4 pb-28 pt-4 space-y-6 ">
+      <section className="relative z-10 mx-auto w-full max-w-none px-4 pt-4 space-y-6 md:px-13 xl:px-32">
         <BookingSteps currentStep={currentStep} />
 
-        <div className="rounded-2xl bg-white border shadow-sm p-4">
-          {children}
+        <div className="rounded-2xl bg-white border shadow-sm flex flex-col overflow-hidden min-h-[54vh]">
+          <h1 className="font-bold text-center uppercase py-8 text-2xl px-4">
+            SELECT YOUR {segment}
+          </h1>
+
+          <div className="px-4 pb-4">
+            {children}
+          </div>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border shadow-sm">
           <div className="grid grid-cols-2 gap-3">
             <BookingNavButton
               variant="back"
