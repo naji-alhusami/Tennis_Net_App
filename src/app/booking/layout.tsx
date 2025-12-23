@@ -146,7 +146,7 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="relative min-h-dvh overflow-hidden">
       <Image
         src="/courses.jpg"
         alt="background"
@@ -155,10 +155,10 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
         className="object-cover opacity-90 pointer-events-none -z-10"
       />
 
-      <section className="relative z-10 mx-auto w-full max-w-none px-4 pt-4 space-y-6 md:px-13 xl:px-32">
+      <section className="relative z-10 mx-auto h-screen w-full max-w-none px-4 pt-4 space-y-6 md:px-13 xl:px-32">
         <BookingSteps currentStep={currentStep} />
 
-        <div className="rounded-2xl bg-white border shadow-sm flex flex-col overflow-hidden min-h-[54vh]">
+        <div className="rounded-2xl bg-white border shadow-sm flex flex-col overflow-hidden ">
           <h1 className="font-bold text-center uppercase py-8 text-2xl px-4">
             SELECT YOUR {segment}
           </h1>
@@ -168,21 +168,23 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border shadow-sm">
-          <div className="grid grid-cols-2 gap-3">
-            <BookingNavButton
-              variant="back"
-              to={backTo}
-              label="BACK"
-              disabled={backDisabled}
-            />
-            <BookingNavButton
-              variant="next"
-              to={nextTo}
-              label="NEXT"
-              disabled={nextDisabled}
-              requiredSearchParams={requiredForNext[segment]}
-            />
+        <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
+          <div className="p-4 rounded-2xl bg-white border shadow-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <BookingNavButton
+                variant="back"
+                to={backTo}
+                label="BACK"
+                disabled={backDisabled}
+              />
+              <BookingNavButton
+                variant="next"
+                to={nextTo}
+                label="NEXT"
+                disabled={nextDisabled}
+                requiredSearchParams={requiredForNext[segment]}
+              />
+            </div>
           </div>
         </div>
       </section>

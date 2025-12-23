@@ -53,6 +53,8 @@
 
 "use client"
 
+import { motion, useReducedMotion } from "framer-motion"
+
 const STEPS = [
   { key: "court", label: "Court" },
   { key: "date", label: "Date" },
@@ -64,6 +66,10 @@ const STEPS = [
 type Props = { currentStep: number }
 
 export default function BookingSteps({ currentStep }: Props) {
+  const reduceMotion = useReducedMotion()
+  console.log("reduceMotion:", reduceMotion)
+  const progress = currentStep / (STEPS.length - 1)
+
   return (
     <div className="w-full">
       {/* Stepper container */}
@@ -71,14 +77,17 @@ export default function BookingSteps({ currentStep }: Props) {
         <div className="relative">
           {/* Track */}
           <div className="absolute left-4 right-4 top-5 h-1 bg-gray-200 rounded" />
-          <div
-            className="absolute left-4 top-5 h-1 bg-green-600 rounded"
-            style={{
-              width:
-                currentStep === 0
-                  ? "0px"
-                  : `calc((100% - 2rem) * ${currentStep} / ${STEPS.length - 1})`,
-            }}
+          <motion.div
+            className="absolute left-4 right-4 top-5 h-1 bg-green-600 rounded origin-left"
+            initial={false} // Do NOT animate on first render
+            animate={{ scaleX: progress }} // Animate horizontal scale based on current step
+            transition={
+              reduceMotion
+                ? { duration: 0 } // Instantly update if user prefers reduced motion
+                : { type: "spring", // Natural spring-based animation
+                  stiffness: 140, // Controls animation speed
+                  damping: 22 } // Prevents bouncing
+            }
           />
 
           {/* Steps */}
@@ -90,17 +99,23 @@ export default function BookingSteps({ currentStep }: Props) {
               return (
                 <div key={step.key} className="flex flex-col items-center gap-2">
                   {/* Circle */}
-                  <div
+                  <motion.div
+                    layout // Smoothly animates layout changes (size, border, ring)
                     className={[
                       "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm",
-                      "transition-all",
                       isDone && "bg-green-600 text-white",
-                      isActive && "bg-white text-green-700 ring-4 ring-green-200 border border-green-600",
+                      isActive &&
+                      "bg-white text-green-700 ring-4 ring-green-200 border border-green-600",
                       !isDone && !isActive && "bg-gray-200 text-gray-700",
                     ].join(" ")}
+                    transition={
+                      reduceMotion ? 
+                      { duration: 0 } : // No animation if reduced motion is enabled
+                      { type: "spring", stiffness: 300, damping: 25 }
+                    }
                   >
                     {index + 1}
-                  </div>
+                  </motion.div>
 
                   {/* Label */}
                   <span
@@ -117,6 +132,6 @@ export default function BookingSteps({ currentStep }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
