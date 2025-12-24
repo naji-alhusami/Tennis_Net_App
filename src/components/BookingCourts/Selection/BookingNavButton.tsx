@@ -1,49 +1,53 @@
 "use client"
-import { useRouter, useSearchParams } from "next/navigation"
 
+import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
 export function BookingNavButton({
-    to,
-    requiredSearchParams = [],
-    label,
-    variant = "next",
-    className,
-    disabled = false,
+  to,
+  requiredSearchParams = [],
+  label,
+  variant = "next",
+  className,
+  disabled = false,
 }: {
-    to: string
-    requiredSearchParams?: string[]
-    label: string
-    variant?: "next" | "back"
-    className?: string
-    disabled?: boolean
+  to: string
+  requiredSearchParams?: string[]
+  label: string
+  variant?: "next" | "back"
+  className?: string
+  disabled?: boolean
 }) {
-    const router = useRouter()
-    const searchParams = useSearchParams()
+  const router = useRouter()
+  const spHook = useSearchParams()
 
-    const canProceed = requiredSearchParams.every((key) => !!searchParams.get(key))
-    const isDisabled = disabled || (variant === "next" && !canProceed)
+  const canProceed = requiredSearchParams.every((key) => !!spHook.get(key))
+  const isDisabled = disabled || (variant === "next" && !canProceed)
 
-    const onGo = () => {
-        if (isDisabled) return
-        router.push(`${to}?${searchParams.toString()}`)
-    }
+  const onGo = () => {
+    if (isDisabled) return
 
-    return (
-        <Button
-            type="button"
-            onClick={onGo}
-            disabled={isDisabled}
-            className={cn(
-                "w-full font-bold rounded-xl",
-                variant === "next" && "bg-green-600 hover:bg-green-700 text-white cursor-pointer",
-                variant === "back" && "bg-gray-600 border border-black border-1 text-white hover:bg-gray-900 cursor-pointer",
-                isDisabled && "opacity-70 cursor-not-allowed",
-                className
-            )}
-        >
-            {label}
-        </Button>
-    )
+    const sp = new URLSearchParams(spHook.toString())
+    sp.set("__dir", variant === "next" ? "1" : "-1")
+
+    router.push(`${to}?${sp.toString()}`)
+  }
+
+  return (
+    <Button
+      type="button"
+      onClick={onGo}
+      disabled={isDisabled}
+      className={cn(
+        "w-full font-bold rounded-xl",
+        variant === "next" && "bg-green-600 hover:bg-green-700 text-white cursor-pointer",
+        variant === "back" && "bg-gray-600 border border-black border-1 text-white hover:bg-gray-900 cursor-pointer",
+        isDisabled && "opacity-70 cursor-not-allowed",
+        className
+      )}
+    >
+      {label}
+    </Button>
+  )
 }

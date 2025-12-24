@@ -110,11 +110,11 @@
 "use client"
 
 import Image from "next/image"
-import { type ReactNode } from "react"
 import { useSelectedLayoutSegment } from "next/navigation"
 
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
+import BookingWizard from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 type StepKey = (typeof ORDER)[number]
@@ -127,7 +127,7 @@ const STEP_BY_SEGMENT: Record<StepKey, number> = {
   confirm: 4,
 }
 
-export default function BookingLayout({ children }: { children: ReactNode }) {
+export default function BookingLayout() {
   const segment = (useSelectedLayoutSegment() ?? "court") as StepKey
   const currentStep = STEP_BY_SEGMENT[segment] ?? 0
 
@@ -156,16 +156,11 @@ export default function BookingLayout({ children }: { children: ReactNode }) {
       />
 
       <section className="relative z-10 mx-auto h-screen w-full max-w-none px-4 pt-4 space-y-6 md:px-13 xl:px-32">
+
         <BookingSteps currentStep={currentStep} />
 
-        <div className="rounded-2xl bg-white border shadow-sm flex flex-col overflow-hidden ">
-          <h1 className="font-bold text-center uppercase py-8 text-2xl px-4">
-            SELECT YOUR {segment}
-          </h1>
-
-          <div className="px-4 pb-4">
-            {children}
-          </div>
+        <div className="pb-4">
+          <BookingWizard />
         </div>
 
         <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">

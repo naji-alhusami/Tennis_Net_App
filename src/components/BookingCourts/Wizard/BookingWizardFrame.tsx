@@ -1,376 +1,190 @@
-// "use client"
-
-// import { AnimatePresence, motion } from "framer-motion"
-// import { useMemo } from "react"
-// import { useSelectedLayoutSegment } from "next/navigation"
-
-// import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
-// import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-// // later: TimeSelection, PlayersSelection, ConfirmStep
-
-// const ORDER = ["court", "date", "time", "players", "confirm"] as const
-// type StepKey = (typeof ORDER)[number]
-
-// function clampIndex(i: number) {
-//     return Math.max(0, Math.min(ORDER.length - 1, i))
-// }
-
-// function getStepComponent(key: StepKey) {
-//     switch (key) {
-//         case "court":
-//             return <CourtSelection />
-//         case "date":
-//             return <DateSelection />
-//         // TODO:
-//         // case "time": return <TimeSelection />
-//         // case "players": return <PlayersSelection />
-//         // case "confirm": return <ConfirmStep />
-//         default:
-//             return <div />
-//     }
-// }
-
-// export default function BookingWizardFrame() {
-//     const seg = (useSelectedLayoutSegment() ?? "court") as StepKey
-//     const idx = useMemo(() => clampIndex(ORDER.indexOf(seg)), [seg])
-
-//     const prevKey = idx > 0 ? ORDER[idx - 1] : null
-//     const currKey = ORDER[idx]
-//     const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
-
-//     // Used to slide direction (left on Next, right on Back)
-//     return (
-//         <div className="w-full">
-//             {/* Mobile: ONLY current step, animated */}
-//             <div className="md:hidden">
-//                 <AnimatePresence mode="wait">
-//                     <motion.div
-//                         key={currKey}
-//                         initial={{ x: 40, opacity: 0 }}
-//                         animate={{ x: 0, opacity: 1 }}
-//                         exit={{ x: -40, opacity: 0 }}
-//                         transition={{ duration: 0.22 }}
-//                     >
-//                         {getStepComponent(currKey)}
-//                     </motion.div>
-//                 </AnimatePresence>
-//             </div>
-
-//             {/* Desktop: prev peek | current | next peek (disabled) */}
-//             <div className="hidden md:grid md:grid-cols-3 md:gap-6 md:items-start">
-//                 {/* Prev peek */}
-//                 <div className="opacity-60 pointer-events-none">
-//                     {prevKey ? getStepComponent(prevKey) : <div />}
-//                 </div>
-
-//                 {/* Current (animated) */}
-//                 <div>
-//                     <AnimatePresence mode="wait">
-//                         <motion.div
-//                             key={currKey}
-//                             initial={{ x: 60, opacity: 0 }}
-//                             animate={{ x: 0, opacity: 1 }}
-//                             exit={{ x: -60, opacity: 0 }}
-//                             transition={{ duration: 0.25 }}
-//                         >
-//                             {getStepComponent(currKey)}
-//                         </motion.div>
-//                     </AnimatePresence>
-//                 </div>
-
-//                 {/* Next peek (disabled) */}
-//                 <div className="opacity-40 pointer-events-none select-none">
-//                     {nextKey ? getStepComponent(nextKey) : <div />}
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
-
-
-// "use client"
-
-// import { AnimatePresence, motion } from "framer-motion"
-// import { useMemo } from "react"
-// import { useSelectedLayoutSegment } from "next/navigation"
-
-// import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
-// import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-// import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNextButton"
-
-// const ORDER = ["court", "date", "time", "players", "confirm"] as const
-// type StepKey = (typeof ORDER)[number]
-
-// const REQUIRE: Record<StepKey, string[]> = {
-//     court: [],
-//     date: ["courtType"],
-//     time: ["courtType", "date"],
-//     players: ["courtType", "date", "time"],
-//     confirm: ["courtType", "date", "time", "players"],
-// }
-
-// function clampIndex(i: number) {
-//     return Math.max(0, Math.min(ORDER.length - 1, i))
-// }
-
-// function getStepComponent(key: StepKey) {
-//     switch (key) {
-//         case "court":
-//             return <CourtSelection />
-//         case "date":
-//             return <DateSelection />
-//         default:
-//             return <div className="rounded-2xl bg-white/80 p-6">TODO: {key}</div>
-//     }
-// }
-
-// export default function BookingWizardFrame() {
-//     const seg = (useSelectedLayoutSegment() ?? "court") as StepKey
-//     const idx = useMemo(() => clampIndex(ORDER.indexOf(seg)), [seg])
-
-//     const prevKey = idx > 0 ? ORDER[idx - 1] : null
-//     const currKey = ORDER[idx]
-//     const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
-
-//     return (
-//         <div className="w-full">
-//             {/* Current step (animated) */}
-//             <AnimatePresence mode="wait">
-//                 <motion.div
-//                     key={currKey}
-//                     initial={{ x: 40, opacity: 0 }}
-//                     animate={{ x: 0, opacity: 1 }}
-//                     exit={{ x: -40, opacity: 0 }}
-//                     transition={{ duration: 0.22 }}
-//                 >
-//                     {getStepComponent(currKey)}
-//                 </motion.div>
-//             </AnimatePresence>
-
-//             {/* Nav buttons */}
-//             <div className="mx-auto w-full max-w-3xl mt-6 rounded-2xl bg-white/90 backdrop-blur-md border shadow-xl p-4">
-//                 <div className="flex gap-3">
-//                     {prevKey ? (
-//                         <BookingNavButton
-//                             variant="back"
-//                             to={`/booking/${prevKey}`}
-//                             label="BACK"
-//                         />
-//                     ) : (
-//                         <div className="w-full" />
-//                     )}
-
-//                     {nextKey ? (
-//                         <BookingNavButton
-//                             variant="next"
-//                             to={`/booking/${nextKey}`}
-//                             require={REQUIRE[nextKey]}
-//                             label="NEXT"
-//                         />
-//                     ) : (
-//                         <BookingNavButton
-//                             variant="next"
-//                             to={`/booking/confirm`}
-//                             require={REQUIRE.confirm}
-//                             label="FINISH"
-//                         />
-//                     )}
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
-
 "use client"
 
-import { AnimatePresence, motion } from "framer-motion"
-import { useMemo } from "react"
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import { useSelectedLayoutSegment, useSearchParams } from "next/navigation"
+import { useMemo } from "react"
 
 import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
 import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
-import { cn } from "@/lib/utils"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 type StepKey = (typeof ORDER)[number]
 
-const REQUIRE: Record<StepKey, string[]> = {
-    court: [],
-    date: ["courtType"],
-    time: ["courtType", "date"],
-    players: ["courtType", "date", "time"],
-    confirm: ["courtType", "date", "time", "players"],
-}
-
-// function clampIndex(i: number) {
-//     return Math.max(0, Math.min(ORDER.length - 1, i))
-// }
-
-// function StepCard({
-//     title,
-//     subtitle,
-//     children,
-//     variant,
-// }: {
-//     title?: string
-//     subtitle?: string
-//     children: React.ReactNode
-//     variant: "active" | "peek"
-// }) {
-//     return (
-//         <div
-//             className={cn(
-//                 "rounded-2xl border bg-white/90 backdrop-blur-md shadow-xl",
-//                 variant === "active" ? "p-2 sm:p-6" : "p-4"
-//             )}
-//         >
-//             {(title || subtitle) && (
-//                 <div className={cn("mb-4 text-center", variant === "peek" && "mb-3")}>
-//                     {title && (
-//                         <h2 className={cn("text-lg font-bold text-gray-900", variant === "peek" && "text-base")}>
-//                             {title}
-//                         </h2>
-//                     )}
-//                     {subtitle && (
-//                         <p className={cn("text-sm text-gray-600", variant === "peek" && "text-xs")}>
-//                             {subtitle}
-//                         </p>
-//                     )}
-//                 </div>
-//             )}
-
-//             {children}
-//         </div>
-//     )
-// }
-
-const STEP_META: Record<StepKey, { title: string; subtitle?: string }> = {
-    court: { title: "Choose your court", subtitle: "Clay or hard court" },
-    date: { title: "Choose your date to play", subtitle: "Pick a day from the calendar" },
-    time: { title: "Choose a time" },
-    players: { title: "Players" },
-    confirm: { title: "Confirm booking" },
-}
-
-function getStepComponent(key: StepKey, sp: URLSearchParams) {
-    switch (key) {
+function getStepComponent(step: StepKey) {
+    switch (step) {
         case "court":
-            return <CourtSelection initialCourtType={sp.get("courtType") ?? undefined} />
+            return <CourtSelection />
         case "date":
-            return <DateSelection initialDate={sp.get("date") ?? undefined} />
+            return <DateSelection />
         default:
-            return <div className="p-6 text-gray-600">TODO: {key}</div>
+            return <div className="p-6">TODO: {step}</div>
     }
 }
 
+function StepCard({
+    title,
+    children,
+    disabled = false,
+}: {
+    title: string
+    children: React.ReactNode
+    disabled?: boolean
+}) {
+    return (
+        <div
+            className={[
+                "rounded-2xl bg-white border shadow-sm overflow-hidden",
+                disabled ? "opacity-50 pointer-events-none select-none" : "",
+            ].join(" ")}
+        >
+            <h1 className="font-bold text-center uppercase py-5 text-lg px-4 border-b">
+                {title}
+            </h1>
+            <div className="px-4 py-4">{children}</div>
+        </div>
+    )
+}
+
+const cardVariants = {
+    enter: (direction: number) => ({
+        x: direction > 0 ? 60 : -60,
+        opacity: 0,
+    }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({
+        x: direction > 0 ? -60 : 60,
+        opacity: 0,
+    }),
+}
+
+const xlPeek = {
+    enter: ({ dir }: { dir: number; dim: boolean }) => ({
+        x: dir > 0 ? 40 : -40,
+        opacity: 0,
+        scale: 0.98,
+    }),
+    center: ({ dim }: { dir: number; dim: boolean }) => ({
+        x: 0,
+        opacity: dim ? 0.55 : 1,
+        scale: dim ? 0.98 : 1,
+    }),
+    exit: ({ dir }: { dir: number; dim: boolean }) => ({
+        x: dir > 0 ? -40 : 40,
+        opacity: 0,
+        scale: 0.98,
+    }),
+}
+
 export default function BookingWizardFrame() {
-    // const seg = (useSelectedLayoutSegment() ?? "court") as StepKey
-    // const idx = useMemo(() => clampIndex(ORDER.indexOf(seg)), [seg])
+    const segment = (useSelectedLayoutSegment() ?? "court") as StepKey
+    const idx = useMemo(() => Math.max(0, ORDER.indexOf(segment)), [segment])
 
-    // const prevKey = idx > 0 ? ORDER[idx - 1] : null
-    // const currKey = ORDER[idx]
-    // const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
+    const prevKey = idx > 0 ? ORDER[idx - 1] : null
+    const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
 
-    const spHook = useSearchParams()
-    const sp = useMemo(() => new URLSearchParams(spHook.toString()), [spHook])
-
-    // const meta = STEP_META[currKey]
+   
+    const sp = useSearchParams()
+    const direction = useMemo(() => {
+        const v = Number(sp.get("__dir") ?? "1")
+        return v === -1 ? -1 : 1
+    }, [sp])
 
     return (
         <div className="w-full">
-            {/* Mobile: only current step */}
-            <div className="lg:hidden">
-                <StepCard variant="active" title={meta.title} subtitle={meta.subtitle}>
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currKey}
-                            initial={{ x: 40, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: -40, opacity: 0 }}
-                            transition={{ duration: 0.22 }}
-                        >
-                            {getStepComponent(currKey, sp)}
-                        </motion.div>
-                    </AnimatePresence>
-                </StepCard>
+            {/*  Mobile */}
+            <div className="lg:hidden relative overflow-hidden">
+                <AnimatePresence mode="wait" custom={direction}>
+                    <motion.div
+                        key={segment}
+                        custom={direction}
+                        variants={cardVariants}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
+                        transition={{ duration: 0.28, ease: "easeOut" }}
+                    >
+                        <StepCard title={`SELECT YOUR ${segment}`}>
+                            {getStepComponent(segment)}
+                        </StepCard>
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
-            {/* Desktop: prev peek | current | next peek */}
-            {/* <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start"> */}
-                {/* Prev peek */}
-                {/* <div className="opacity-60 pointer-events-none">
-                    {prevKey ? (
-                        <StepCard variant="active" title={meta.title} subtitle={meta.subtitle}>
-                            {getStepComponent(prevKey, sp)}
-                        </StepCard>
-                    ) : (
-                        <div />
-                    )}
-                </div> */}
+            <LayoutGroup id="booking-wizard-xl">
+                <div className="hidden lg:grid lg:grid-cols-3 lg:gap-6 lg:items-start">
+                    <AnimatePresence mode="popLayout" initial={false}>
+                        {/* Left slot */}
+                        <div key="slot-left" className="min-w-0">
+                            {prevKey ? (
+                                <motion.div
+                                    key={`card-${prevKey}`}
+                                    layout
+                                    layoutId={`step-${prevKey}`}
+                                    custom={{ dir: direction, dim: true }}
+                                    variants={xlPeek}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                                    style={{ originY: 0 }}
+                                    className="will-change-transform"
+                                >
+                                    <StepCard title={`SELECT YOUR ${prevKey}`} disabled>
+                                        {getStepComponent(prevKey)}
+                                    </StepCard>
+                                </motion.div>
+                            ) : (
+                                <div />
+                            )}
+                        </div>
 
-                {/* Current */}
-                {/* <div>
-                    <StepCard variant="active">
-                        <AnimatePresence mode="wait">
+                        {/* Middle slot */}
+                        <div key="slot-mid" className="min-w-0">
                             <motion.div
-                                key={currKey}
-                                initial={{ x: 60, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: -60, opacity: 0 }}
-                                transition={{ duration: 0.25 }}
+                                key={`card-${segment}`}
+                                layout
+                                layoutId={`step-${segment}`}
+                                custom={{ dir: direction, dim: false }}
+                                variants={xlPeek}
+                                initial="enter"
+                                animate="center"
+                                exit="exit"
+                                transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                                className="will-change-transform"
                             >
-                                {getStepComponent(currKey, sp)}
+                                <StepCard title={`SELECT YOUR ${segment}`}>
+                                    {getStepComponent(segment)}
+                                </StepCard>
                             </motion.div>
-                        </AnimatePresence>
-                    </StepCard>
-                </div> */}
+                        </div>
 
-                {/* Next peek */}
-                {/* <div className="opacity-40 pointer-events-none select-none">
-                    {nextKey ? (
-                        <StepCard variant="peek" key={`peek-next-${nextKey}`}>
-                            {getStepComponent(nextKey, sp)}
-                        </StepCard>
-                    ) : (
-                        <div />
-                    )}
-                </div> */}
-            {/* </div> */}
-
-            {/* Nav buttons always visible */}
-            <div className="mx-auto w-full max-w-3xl mt-6 rounded-2xl bg-white/90 backdrop-blur-md border shadow-xl p-3">
-                <div className="flex gap-3">
-                    {prevKey ? (
-                        <BookingNavButton
-                            variant="back"
-                            to={`/booking/${prevKey}`}
-                            label="Back"
-                            className="flex-1 h-12"
-                        />
-                    ) : (
-                        <div className="flex-1" />
-                    )}
-
-                    {nextKey ? (
-                        <BookingNavButton
-                            variant="next"
-                            to={`/booking/${nextKey}`}
-                            require={REQUIRE[nextKey]}
-                            label="Next"
-                            className="flex-1 h-12"
-                        />
-                    ) : (
-                        <BookingNavButton
-                            variant="next"
-                            to={`/booking/confirm`}
-                            require={REQUIRE.confirm}
-                            label="Finish"
-                            className="flex-1 h-12"
-                        />
-                    )}
+                        {/* Right slot */}
+                        <div key="slot-right" className="min-w-0">
+                            {nextKey ? (
+                                <motion.div
+                                    key={`card-${nextKey}`} 
+                                    layout
+                                    layoutId={`step-${nextKey}`}
+                                    custom={{ dir: direction, dim: true }}
+                                    variants={xlPeek}
+                                    initial="enter"
+                                    animate="center"
+                                    exit="exit"
+                                    transition={{ type: "spring", stiffness: 520, damping: 40 }}
+                                    style={{ originY: 0 }}
+                                    className="will-change-transform"
+                                >
+                                    <StepCard title={`SELECT YOUR ${nextKey}`} disabled>
+                                        {getStepComponent(nextKey)}
+                                    </StepCard>
+                                </motion.div>
+                            ) : (
+                                <div />
+                            )}
+                        </div>
+                    </AnimatePresence>
                 </div>
-            </div>
+            </LayoutGroup>
         </div>
     )
 }
