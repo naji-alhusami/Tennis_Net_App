@@ -6,6 +6,7 @@ import { useMemo } from "react"
 
 import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
 import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
+import TimeSelection from "../Selection/TimeSelection"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 type StepKey = (typeof ORDER)[number]
@@ -17,7 +18,7 @@ function getStepComponent(step: StepKey) {
         case "date":
             return <DateSelection />
         default:
-            return <div className="p-6">TODO: {step}</div>
+            return <TimeSelection />
     }
 }
 
