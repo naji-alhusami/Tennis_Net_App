@@ -163,7 +163,7 @@ export default function BookingLayout() {
           <BookingWizard />
         </div>
 
-        <div className="absolute bottom-40 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
           <div className="p-4 rounded-2xl bg-white border shadow-sm">
             <div className="grid grid-cols-2 gap-3">
               <BookingNavButton
