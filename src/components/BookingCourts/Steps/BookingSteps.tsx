@@ -1,5 +1,6 @@
 "use client"
 import { motion, useReducedMotion } from "framer-motion"
+import { useSearchParams } from "next/navigation"
 
 const STEPS = [
   { key: "court", label: "Court" },
@@ -13,8 +14,17 @@ type Props = { currentStep: number }
 
 export default function BookingSteps({ currentStep }: Props) {
   const reduceMotion = useReducedMotion()
-  
+  const sp = useSearchParams()
+
   const progress = currentStep / (STEPS.length - 1)
+
+  // direction from URL: "1" (next) or "-1" (back)
+  const dir = sp.get("__dir")
+  const goingBack = dir === "-1"
+
+  const prevIndex = goingBack ? currentStep + 1 : currentStep - 1
+  const clampedPrevIndex = Math.min(STEPS.length - 1, Math.max(0, prevIndex))
+  const initialScaleX = clampedPrevIndex / (STEPS.length - 1)
 
   return (
     <div className="w-full">
@@ -25,14 +35,17 @@ export default function BookingSteps({ currentStep }: Props) {
           <div className="absolute left-4 right-4 top-5 h-1 bg-gray-200 rounded" />
           <motion.div
             className="absolute left-4 right-4 top-5 h-1 bg-green-600 rounded origin-left"
-            initial={false} // Do NOT animate on first render
+            key={`${currentStep}-${dir ?? "0"}`}
+            initial={{ scaleX: initialScaleX }}
             animate={{ scaleX: progress }} // Animate horizontal scale based on current step
             transition={
               reduceMotion
                 ? { duration: 0 } // Instantly update if user prefers reduced motion
-                : { type: "spring", // Natural spring-based animation
+                : {
+                  type: "spring", // Natural spring-based animation
                   stiffness: 140, // Controls animation speed
-                  damping: 22 } // Prevents bouncing
+                  damping: 22
+                } // Prevents bouncing
             }
           />
 
@@ -55,9 +68,9 @@ export default function BookingSteps({ currentStep }: Props) {
                       !isDone && !isActive && "bg-gray-200 text-gray-700",
                     ].join(" ")}
                     transition={
-                      reduceMotion ? 
-                      { duration: 0 } : // No animation if reduced motion is enabled
-                      { type: "spring", stiffness: 300, damping: 25 }
+                      reduceMotion ?
+                        { duration: 0 } : // No animation if reduced motion is enabled
+                        { type: "spring", stiffness: 300, damping: 25 }
                     }
                   >
                     {index + 1}
