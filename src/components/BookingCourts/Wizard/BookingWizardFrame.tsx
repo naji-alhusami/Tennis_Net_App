@@ -3,12 +3,12 @@
 import { useMemo } from "react"
 import { useSearchParams } from "next/navigation"
 
-import CourtSelection from "@/components/BookingCourts/Selection/CourtSelection"
-import DateSelection from "@/components/BookingCourts/Selection/DateSelection"
-import TimeSelection from "@/components/BookingCourts/Selection/TimeSelection"
+import CourtSelection from "@/components/BookingCourts/Selection/1-CourtSelection"
+import DateSelection from "@/components/BookingCourts/Selection/2-DateSelection"
+import TimeSelection from "@/components/BookingCourts/Selection/3-TimeSelection"
+import PlayersSelection from "@/components/BookingCourts/Selection/4-PlayersSelection"
 import { WizardShell } from "@/components/BookingCourts/Wizard/WizardShell"
 import { useBookingWizardState } from "@/components/BookingCourts/Wizard/useBookingWizardState"
-import PlayersSelection from "@/components/BookingCourts/Selection/PlayersSelection"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 export type StepKey = (typeof ORDER)[number]
