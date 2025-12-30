@@ -193,6 +193,7 @@ model Friendship {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userOneId String   @db.ObjectId // first user in the pair
   userTwoId String   @db.ObjectId // second user in the pair
+  pairKey   String   @unique
   createdAt DateTime @default(now())
 
   // Relations back to User for each side of the friendship
@@ -200,8 +201,10 @@ model Friendship {
   userTwo User @relation("FriendshipUserTwo", fields: [userTwoId], references: [id])
 
   // Ensure only one friendship per pair of users (A-B is unique).
-  @@unique([userOneId, userTwoId])
+  // @@unique([userOneId, userTwoId])
   // Optional indexes for faster lookups "who are this user's friends?"
+
   @@index([userOneId])
   @@index([userTwoId])
+  @@index([pairKey])
 }

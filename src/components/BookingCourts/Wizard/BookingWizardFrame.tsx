@@ -13,7 +13,13 @@ import PlayersSelection from "@/components/BookingCourts/Selection/PlayersSelect
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 export type StepKey = (typeof ORDER)[number]
 
-export default function BookingWizardFrame({ segment }: { segment: StepKey }) {
+export default function BookingWizardFrame({
+    segment,
+    friends,
+}: {
+    segment: StepKey
+    friends: Array<{ id: string; name: string | null; image: string | null; email: string | null }>
+}) {
     const idx = useMemo(() => Math.max(0, ORDER.indexOf(segment)), [segment])
 
     const prevKey = idx > 0 ? ORDER[idx - 1] : null
@@ -44,7 +50,7 @@ export default function BookingWizardFrame({ segment }: { segment: StepKey }) {
                 )
 
             case "players":
-                return <PlayersSelection />
+                return <PlayersSelection friends={friends} max={2} />
 
             case "confirm":
                 return <div className="p-6">TODO: Confirm UI</div>
