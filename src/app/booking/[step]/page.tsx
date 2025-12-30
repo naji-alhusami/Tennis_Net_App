@@ -4,11 +4,19 @@ import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 import { getMyFriends } from "@/lib/data/getMyFriends"
+import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
+
+type StepKey = "court" | "date" | "time" | "players" | "confirm"
+
+type SearchParams = Promise<{ players?: string | string[];[key: string]: string | string[] | undefined }>
+type Params = Promise<{ step: StepKey | string }>
 
 export default async function Page({
     params,
+    searchParams,
 }: {
-    params: Promise<{ step: string }>
+    params: Params
+    searchParams: SearchParams
 }) {
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
@@ -16,7 +24,17 @@ export default async function Page({
     const userId = session.user.id
     // get all frineds
     const friends = await getMyFriends(userId)
-    
+
+    const sp = await searchParams
+
+
+    const playerIds =
+        typeof sp.players === "string"
+            ? [sp.players]
+            : sp.players ?? []
+
+    const players = await getPlayersNamesByIds(playerIds)
+
     // Defines all booking steps in order
     // as const makes each value fixed (not just a generic string)
     const STEPS = ["court", "date", "time", "players", "confirm"] as const
@@ -57,7 +75,7 @@ export default async function Page({
 
             {/*  wizard */}
             <div className="mt-6">
-                <BookingWizardFrame segment={step} friends={friends} />
+                <BookingWizardFrame segment={step} friends={friends} selectedPlayers={players} />
             </div>
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">

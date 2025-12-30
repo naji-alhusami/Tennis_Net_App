@@ -9,16 +9,31 @@ import TimeSelection from "@/components/BookingCourts/Selection/3-TimeSelection"
 import PlayersSelection from "@/components/BookingCourts/Selection/4-PlayersSelection"
 import { WizardShell } from "@/components/BookingCourts/Wizard/WizardShell"
 import { useBookingWizardState } from "@/components/BookingCourts/Wizard/useBookingWizardState"
+import ConfirmSelection from "../Selection/5-ConfirmSelection"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
 export type StepKey = (typeof ORDER)[number]
 
+export type User = {
+    id: string
+    name: string | null
+    image: string | null
+    email: string | null
+}
+
+export type PlayerLite = {
+    id: string
+    name: string | null
+}
+
 export default function BookingWizardFrame({
     segment,
     friends,
+    selectedPlayers,
 }: {
     segment: StepKey
-    friends: Array<{ id: string; name: string | null; image: string | null; email: string | null }>
+    friends: User[]
+    selectedPlayers: PlayerLite[]
 }) {
     const idx = useMemo(() => Math.max(0, ORDER.indexOf(segment)), [segment])
 
@@ -53,7 +68,7 @@ export default function BookingWizardFrame({
                 return <PlayersSelection friends={friends} max={2} />
 
             case "confirm":
-                return <div className="p-6">TODO: Confirm UI</div>
+                return <ConfirmSelection selectedPlayers={selectedPlayers} />
 
             default:
                 return <div className="p-6">TODO: {step}</div>
