@@ -27,7 +27,6 @@ export default async function Page({
 
     const sp = await searchParams
 
-
     const playerIds =
         typeof sp.players === "string"
             ? [sp.players]
@@ -55,7 +54,7 @@ export default async function Page({
     const currentStep = STEPS.indexOf(step)
 
     const backDisabled = currentStep === 0 // Disables the Back button on the first step.
-    const nextDisabled = currentStep === STEPS.length - 1 // Disables the Next button on the last step.
+    // const nextDisabled = currentStep === STEPS.length - 1 // Disables the Next button on the last step.
 
     const backTo = `/booking/${STEPS[Math.max(0, currentStep - 1)]}`
     const nextTo = `/booking/${STEPS[Math.min(STEPS.length - 1, currentStep + 1)]}`
@@ -75,7 +74,7 @@ export default async function Page({
 
             {/*  wizard */}
             <div className="mt-6">
-                <BookingWizardFrame segment={step} friends={friends} selectedPlayers={players} />
+                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} />
             </div>
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">
@@ -89,8 +88,8 @@ export default async function Page({
                         <BookingNavButton
                             variant="next"
                             to={nextTo}
-                            label="NEXT"
-                            disabled={nextDisabled}
+                            label={step === "confirm" ? "BOOK" : "NEXT"}
+                            // disabled={nextDisabled}
                             requiredSearchParams={requiredForNext[step]}
                         />
                     </div>

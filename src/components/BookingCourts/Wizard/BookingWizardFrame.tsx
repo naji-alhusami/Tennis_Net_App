@@ -27,15 +27,15 @@ export type PlayerLite = {
 }
 
 export default function BookingWizardFrame({
-    segment,
+    step,
     friends,
     selectedPlayers,
 }: {
-    segment: StepKey
+    step: StepKey
     friends: User[]
     selectedPlayers: PlayerLite[]
 }) {
-    const idx = useMemo(() => Math.max(0, ORDER.indexOf(segment)), [segment])
+    const idx = useMemo(() => Math.max(0, ORDER.indexOf(step)), [step])
 
     const prevKey = idx > 0 ? ORDER[idx - 1] : null
     const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
@@ -77,7 +77,7 @@ export default function BookingWizardFrame({
 
     return (
         <WizardShell
-            segment={segment}
+            step={step}
             prevKey={prevKey}
             nextKey={nextKey}
             direction={direction}

@@ -37,25 +37,43 @@ const xlPeek = {
 }
 
 export function WizardShell({
-  segment,
+  step,
   prevKey,
   nextKey,
   direction,
   renderStep,
 }: {
-  segment: string
+  step: string
   prevKey: string | null
   nextKey: string | null
   direction: number
   renderStep: (key: string) => React.ReactNode
 }) {
+
+  function stepTitle(key: string) {
+    switch (key) {
+      case "confirm":
+        return "REVIEW & CONFIRM"
+      case "players":
+        return "SELECT YOUR PLAYERS"
+      case "time":
+        return "SELECT YOUR TIME"
+      case "date":
+        return "SELECT YOUR DATE"
+      case "court":
+        return "SELECT YOUR COURT"
+      default:
+        return `SELECT YOUR ${key}`
+    }
+  }
+
   return (
     <div className="w-full">
       {/* Mobile */}
       <div className="lg:hidden relative overflow-hidden">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            key={segment}
+            key={step}
             custom={direction}
             variants={cardVariants}
             initial="enter"
@@ -63,7 +81,7 @@ export function WizardShell({
             exit="exit"
             transition={{ duration: 0.28, ease: "easeOut" }}
           >
-            <StepCard title={`SELECT YOUR ${segment}`}>{renderStep(segment)}</StepCard>
+            <StepCard title={stepTitle(step)}>{renderStep(step)}</StepCard>
           </motion.div>
         </AnimatePresence>
       </div>
@@ -87,7 +105,7 @@ export function WizardShell({
                   style={{ originY: 0 }}
                   className="will-change-transform"
                 >
-                  <StepCard title={`SELECT YOUR ${prevKey}`} disabled>
+                  <StepCard title={stepTitle(prevKey)} disabled>
                     {renderStep(prevKey)}
                   </StepCard>
                 </motion.div>
@@ -98,9 +116,9 @@ export function WizardShell({
 
             <div key="slot-mid" className="min-w-0">
               <motion.div
-                key={`card-${segment}`}
+                key={`card-${step}`}
                 layout
-                layoutId={`step-${segment}`}
+                layoutId={`step-${step}`}
                 custom={{ dir: direction, dim: false }}
                 variants={xlPeek}
                 initial="enter"
@@ -109,7 +127,7 @@ export function WizardShell({
                 transition={{ type: "spring", stiffness: 520, damping: 40 }}
                 className="will-change-transform"
               >
-                <StepCard title={`SELECT YOUR ${segment}`}>{renderStep(segment)}</StepCard>
+                <StepCard title={stepTitle(step)}>{renderStep(step)}</StepCard>
               </motion.div>
             </div>
 
@@ -128,7 +146,7 @@ export function WizardShell({
                   style={{ originY: 0 }}
                   className="will-change-transform"
                 >
-                  <StepCard title={`SELECT YOUR ${nextKey}`} disabled>
+                  <StepCard title={stepTitle(nextKey)} disabled>
                     {renderStep(nextKey)}
                   </StepCard>
                 </motion.div>
