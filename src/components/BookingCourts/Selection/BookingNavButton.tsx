@@ -11,6 +11,7 @@ export function BookingNavButton({
   variant = "next",
   className,
   disabled = false,
+  step
 }: {
   to: string
   requiredSearchParams?: string[]
@@ -18,16 +19,20 @@ export function BookingNavButton({
   variant?: "next" | "back"
   className?: string
   disabled?: boolean
+  step?: string
 }) {
+  console.log("step:", step)
+
   const router = useRouter()
   const spHook = useSearchParams()
-
   const canProceed = requiredSearchParams.every((key) => !!spHook.get(key))
   const isDisabled = disabled || (variant === "next" && !canProceed)
 
   const onGo = () => {
     if (isDisabled) return
+    if (step === "confirm") {
 
+    }
     const sp = new URLSearchParams(spHook.toString())
     sp.set("__dir", variant === "next" ? "1" : "-1")
 

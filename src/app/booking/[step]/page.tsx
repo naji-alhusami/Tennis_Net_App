@@ -20,7 +20,6 @@ export default async function Page({
 }) {
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
-
     const userId = session.user.id
     // get all frineds
     const friends = await getMyFriends(userId)
@@ -91,6 +90,7 @@ export default async function Page({
                             label={step === "confirm" ? "BOOK" : "NEXT"}
                             // disabled={nextDisabled}
                             requiredSearchParams={requiredForNext[step]}
+                            step={step}
                         />
                     </div>
                 </div>
