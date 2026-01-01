@@ -46,6 +46,7 @@ function toISODate(d: Date) {
     return `${y}-${m}-${day}`
 }
 
+// ===== COMPONENT =====
 export default function DateSelection() {
     const router = useRouter()
     const pathname = usePathname()
@@ -68,7 +69,7 @@ export default function DateSelection() {
 
         if (date) params.set("date", toISODate(date))
         else params.delete("date")
-    
+
         router.replace(`${pathname}?${params.toString()}`)
     }
 

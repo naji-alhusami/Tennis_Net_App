@@ -2,13 +2,17 @@
 
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 
 type Slot = {
     time: string
     status: "available" | "booked"
 }
+
+// =========
+//  HELPERS
+// =========
 
 function pad2(n: number) {
     return n.toString().padStart(2, "0")
@@ -43,23 +47,31 @@ function isSameDay(a: Date, b: Date) {
 
 function isPastSlotToday(selectedDate: Date, slotTime: string, now = new Date()) {
     if (!isSameDay(selectedDate, now)) return false
-    const slotMin = toMinutes(slotTime)
-    const nowMin = now.getHours() * 60 + now.getMinutes()
-    return slotMin < nowMin
+    return toMinutes(slotTime) < now.getHours() * 60 + now.getMinutes()
 }
 
+function formatYYYYMMDD(d: Date) {
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, "0")
+    const day = String(d.getDate()).padStart(2, "0")
+    return `${y}-${m}-${day}`
+}
+
+// ===== COMPONENT =====
 export default function TimeSelection({
     selectedDate,
     bookedTimes = [],
     stepMinutes = 30,
     onToggle,
     values = [],
+    maxPerDay = 2,
 }: {
     selectedDate: Date
     bookedTimes?: string[]
     stepMinutes?: number
     onToggle?: (time: string) => void
     values?: string[]
+    maxPerDay?: number
 }) {
     const times = useMemo(() => buildTimes(stepMinutes, "08:00", "22:00"), [stepMinutes])
 
@@ -73,20 +85,20 @@ export default function TimeSelection({
 
     const now = new Date()
 
-    function formatYYYYMMDD(d: Date) {
-        const y = d.getFullYear()
-        const m = String(d.getMonth() + 1).padStart(2, "0")
-        const day = String(d.getDate()).padStart(2, "0")
-        return `${y}-${m}-${day}`
-    }
+    const reachedMax = values.length >= maxPerDay
 
     return (
         <Card className="rounded-2xl">
             <CardHeader className="space-y-1">
-                {/* <CardTitle className="text-lg">Choose a time</CardTitle> */}
                 <div className="text-center text-sm text-muted-foreground">
                     {formatYYYYMMDD(selectedDate)}
                 </div>
+
+                {reachedMax && (
+                    <div className="text-center text-xs text-amber-600">
+                        You reached the max of the times of this day
+                    </div>
+                )}
             </CardHeader>
 
             <CardContent>
@@ -95,20 +107,22 @@ export default function TimeSelection({
                         {slots.map((slot) => {
                             const isBooked = slot.status === "booked"
                             const isPast = isPastSlotToday(selectedDate, slot.time, now)
-                            const disabled = isBooked || isPast
                             const selected = values.includes(slot.time)
 
-                            let bgClass = ""
+                            // ✅ new rule: if already selected 2 slots, disable all other slots
+                            const maxLocked = reachedMax && !selected
 
-                            if (isBooked) {
-                                bgClass = "bg-red-500 text-white hover:bg-red-500"
-                            } else if (isPast) {
-                                bgClass = "bg-gray-300 text-gray-600 cursor-not-allowed"
-                            } else {
-                                bgClass = selected
-                                    ? "bg-green-800 text-white hover:bg-green-800"
-                                    : "bg-green-100 text-green-800 hover:bg-green-200"
-                            }
+                            const disabled = isBooked || isPast || maxLocked
+
+                            const bgClass = isBooked
+                                ? "bg-red-500 text-white hover:bg-red-500"
+                                : isPast
+                                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                    : selected
+                                        ? "bg-green-800 text-white hover:bg-green-800"
+                                        : maxLocked
+                                            ? "bg-gray-200 text-gray-500"
+                                            : "bg-green-100 text-green-800 hover:bg-green-200"
 
                             return (
                                 <Button
@@ -116,10 +130,7 @@ export default function TimeSelection({
                                     type="button"
                                     disabled={disabled}
                                     onClick={() => onToggle?.(slot.time)}
-                                    className={cn(
-                                        "h-10 rounded-xl justify-center border",
-                                        bgClass
-                                    )}
+                                    className={cn("h-10 rounded-xl justify-center border", bgClass)}
                                 >
                                     {slot.time}
                                 </Button>
@@ -128,7 +139,7 @@ export default function TimeSelection({
                     </div>
                 </div>
 
-                <div className="mt-4 flex gap-3 text-xs">
+                <div className="mt-4 flex flex-wrap gap-3 text-xs">
                     <span className="flex items-center gap-2">
                         <span className="h-3 w-3 rounded bg-green-500" /> Available
                     </span>

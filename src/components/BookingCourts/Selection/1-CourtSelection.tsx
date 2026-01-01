@@ -11,10 +11,9 @@ export default function CourtSelection() {
     const pathname = usePathname()
     const searchParams = useSearchParams()
 
-    // ✅ current value comes from URL
     const courtType = useMemo(() => {
         const v = searchParams.get("courtType")
-        return v === "CLAY" || v === "HARD" ? (v as CourtType) : undefined
+        return v === "CLAY" || v === "HARD" ? v : ""
     }, [searchParams])
 
     const onChange = (v: string) => {

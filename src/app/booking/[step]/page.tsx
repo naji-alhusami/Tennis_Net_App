@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
+
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
@@ -11,7 +12,7 @@ type StepKey = "court" | "date" | "time" | "players" | "confirm"
 type SearchParams = Promise<{ players?: string | string[];[key: string]: string | string[] | undefined }>
 type Params = Promise<{ step: StepKey | string }>
 
-export default async function Page({
+export default async function BookingPage({
     params,
     searchParams,
 }: {
@@ -20,6 +21,7 @@ export default async function Page({
 }) {
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
+
     const userId = session.user.id
     // get all frineds
     const friends = await getMyFriends(userId)
@@ -52,9 +54,6 @@ export default async function Page({
     // Gets the step number
     const currentStep = STEPS.indexOf(step)
 
-    const backDisabled = currentStep === 0 // Disables the Back button on the first step.
-    // const nextDisabled = currentStep === STEPS.length - 1 // Disables the Next button on the last step.
-
     const backTo = `/booking/${STEPS[Math.max(0, currentStep - 1)]}`
     const nextTo = `/booking/${STEPS[Math.min(STEPS.length - 1, currentStep + 1)]}`
 
@@ -79,18 +78,21 @@ export default async function Page({
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">
                     <div className="grid grid-cols-2 gap-3">
                         <BookingNavButton
+                            searchParams={searchParams}
                             variant="back"
                             to={backTo}
                             label="BACK"
-                            disabled={backDisabled}
+                            step={step}
+                            currentStep={currentStep}
                         />
                         <BookingNavButton
-                            variant="next"
+                            searchParams={searchParams}
+                            variant={step === "confirm" ? "book" : "next"}
                             to={nextTo}
                             label={step === "confirm" ? "BOOK" : "NEXT"}
-                            // disabled={nextDisabled}
                             requiredSearchParams={requiredForNext[step]}
                             step={step}
+                            currentStep={currentStep}
                         />
                     </div>
                 </div>
