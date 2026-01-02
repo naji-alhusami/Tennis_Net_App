@@ -61,31 +61,22 @@ function formatYYYYMMDD(d: Date) {
 export default function TimeSelection({
     selectedDate,
     bookedTimes = [],
-    stepMinutes = 30,
-    onToggle,
-    values = [],
-    maxPerDay = 2,
+    stepMinutes = 60,
+    durationMinutes = 60,
+    onSelect,
+    value,
 }: {
     selectedDate: Date
     bookedTimes?: string[]
     stepMinutes?: number
-    onToggle?: (time: string) => void
-    values?: string[]
-    maxPerDay?: number
+    durationMinutes?: number
+    onSelect?: (time: string) => void
+    value?: string | null
 }) {
     const times = useMemo(() => buildTimes(stepMinutes, "08:00", "22:00"), [stepMinutes])
 
-    const slots: Slot[] = useMemo(() => {
-        const booked = new Set(bookedTimes)
-        return times.map((t) => ({
-            time: t,
-            status: booked.has(t) ? "booked" : "available",
-        }))
-    }, [times, bookedTimes])
-
+    const booked = useMemo(() => new Set(bookedTimes), [bookedTimes])
     const now = new Date()
-
-    const reachedMax = values.length >= maxPerDay
 
     return (
         <Card className="rounded-2xl">
@@ -93,26 +84,20 @@ export default function TimeSelection({
                 <div className="text-center text-sm text-muted-foreground">
                     {formatYYYYMMDD(selectedDate)}
                 </div>
-
-                {reachedMax && (
-                    <div className="text-center text-xs text-amber-600">
-                        You reached the max of the times of this day
-                    </div>
-                )}
+                <div className="text-center text-xs text-muted-foreground">
+                    Duration: {durationMinutes} minutes
+                </div>
             </CardHeader>
 
             <CardContent>
                 <div className="max-h-50 overflow-y-auto pr-1">
                     <div className="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-4">
-                        {slots.map((slot) => {
-                            const isBooked = slot.status === "booked"
-                            const isPast = isPastSlotToday(selectedDate, slot.time, now)
-                            const selected = values.includes(slot.time)
+                        {times.map((t) => {
+                            const isBooked = booked.has(t)
+                            const isPast = isPastSlotToday(selectedDate, t, now)
+                            const selected = value === t
 
-                            // ✅ new rule: if already selected 2 slots, disable all other slots
-                            const maxLocked = reachedMax && !selected
-
-                            const disabled = isBooked || isPast || maxLocked
+                            const disabled = isBooked || isPast
 
                             const bgClass = isBooked
                                 ? "bg-red-500 text-white hover:bg-red-500"
@@ -120,40 +105,45 @@ export default function TimeSelection({
                                     ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                                     : selected
                                         ? "bg-green-800 text-white hover:bg-green-800"
-                                        : maxLocked
-                                            ? "bg-gray-200 text-gray-500"
-                                            : "bg-green-100 text-green-800 hover:bg-green-200"
+                                        : "bg-green-100 text-green-800 hover:bg-green-200"
 
                             return (
                                 <Button
-                                    key={slot.time}
+                                    key={t}
                                     type="button"
                                     disabled={disabled}
-                                    onClick={() => onToggle?.(slot.time)}
+                                    onClick={() => onSelect?.(t)}
                                     className={cn("h-10 rounded-xl justify-center border", bgClass)}
                                 >
-                                    {slot.time}
+                                    {t}
                                 </Button>
                             )
                         })}
                     </div>
                 </div>
-
                 <div className="mt-4 flex flex-wrap gap-3 text-xs">
-                    <span className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded bg-green-500" /> Available
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded bg-red-500" /> Booked
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded bg-gray-400" /> Past
-                    </span>
-                    <span className="flex items-center gap-2">
-                        <span className="h-3 w-3 rounded bg-green-800" /> Selected
-                    </span>
+                    <span className="flex items-center gap-4">
+                        <span className="h-3 w-3 rounded bg-green-500" /> Available </span>
+                    <span className="flex items-center gap-2"> <span className="h-3 w-3 rounded bg-red-500" /> Booked </span>
+                    <span className="flex items-center gap-2"> <span className="h-3 w-3 rounded bg-gray-400" /> Past </span>
+                    <span className="flex items-center gap-2"> <span className="h-3 w-3 rounded bg-green-800" /> Selected </span>
                 </div>
             </CardContent>
         </Card>
     )
 }
+
+
+// import 'dotenv/config';
+// import { defineConfig, env } from "prisma/config";
+
+// export default defineConfig({
+//   schema: "prisma/schema.prisma",
+//   migrations: {
+//     path: "prisma/migrations",
+//   },
+//   engine: "classic",
+//   datasource: {
+//     url: env("DATABASE_URL"),
+//   },
+// });

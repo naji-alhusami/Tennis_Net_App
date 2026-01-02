@@ -1,9 +1,10 @@
 "use client"
-import { use } from 'react'
+import { use, useState } from 'react'
 import { useRouter, useSearchParams } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import axios from 'axios'
 
 type BookingNavButtonProps = {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -29,13 +30,14 @@ export function BookingNavButton({
   const router = useRouter()
   const filters = use(searchParams)
   const spHook = useSearchParams()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const hasRequiredParams = requiredSearchParams.every((key) => !!spHook.get(key))
 
   const isDisabled = (variant === "back" && currentStep === 0) ||
     ((variant === "next" || variant === "book") && !hasRequiredParams)
 
-  const onGo = () => {
+  const onGo = async () => {
     if (isDisabled) return
 
     const sp = new URLSearchParams(spHook.toString())
@@ -50,7 +52,33 @@ export function BookingNavButton({
     router.push(`${to}?${sp.toString()}`)
 
     if (variant === "book") {
-      console.log("Here we should push data")
+      try {
+        setIsLoading(true)
+
+        const courtType = spHook.get("courtType")
+        const date = spHook.get("date")
+        const times = spHook.getAll("time")
+        const players = spHook.getAll("players")
+
+        const response = await axios.post("/api/reservations", {
+          courtType,
+          date,
+          times,
+          players,
+          stepMinutes: 30,
+        })
+      } catch (error) {
+        let message = "Something went wrong. Please try again.";
+
+        if (axios.isAxiosError(error)) {
+          const data = error.response?.data as { error?: string };
+          if (data?.error) {
+            message = data.error;
+          }
+        }
+      } finally {
+        setIsLoading(false);
+      }
     }
   }
 

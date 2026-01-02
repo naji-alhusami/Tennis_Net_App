@@ -57,10 +57,11 @@ export default function BookingWizardFrame({
                 return (
                     <TimeSelection
                         selectedDate={state.selectedDate}
-                        values={state.selectedTimes}
-                        onToggle={state.toggleTime}
+                        value={state.selectedTime}
+                        onSelect={state.setTime}
                         bookedTimes={[]}
-                        stepMinutes={30}
+                        stepMinutes={60}
+                        durationMinutes={60}
                     />
                 )
 

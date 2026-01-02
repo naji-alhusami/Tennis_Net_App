@@ -135,7 +135,7 @@ model Court {
   name      String
   courtNo   Int?
   type      CourtType
-  indoor    Boolean?
+  indoor    Boolean   @default(false) //
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
@@ -143,17 +143,18 @@ model Court {
 
   @@index([type])
   @@index([courtNo])
+  @@index([type, indoor]) // helpful for queries
 }
 
 model Reservation {
-  id        String            @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String            @db.ObjectId
-  courtId   String            @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  courtId   String   @db.ObjectId
   start     DateTime
   end       DateTime
   note      String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   user  User  @relation(fields: [userId], references: [id])
   court Court @relation(fields: [courtId], references: [id])
@@ -186,7 +187,7 @@ model Friendship {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userOneId String   @db.ObjectId // first user in the pair
   userTwoId String   @db.ObjectId // second user in the pair
-  pairKey   String   @unique
+  // pairKey   String   @unique
   createdAt DateTime @default(now())
 
   // Relations back to User for each side of the friendship
@@ -197,7 +198,7 @@ model Friendship {
   // @@unique([userOneId, userTwoId])
   // Optional indexes for faster lookups "who are this user's friends?"
 
+  @@unique([userOneId, userTwoId])
   @@index([userOneId])
   @@index([userTwoId])
-  @@index([pairKey])
 }

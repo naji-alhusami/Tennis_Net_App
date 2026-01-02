@@ -15,22 +15,15 @@ export function useBookingWizardState() {
   const sp = useSearchParams()
 
   const selectedDate = useMemo(() => parseLocalDate(sp.get("date")) ?? new Date(), [sp])
-  const selectedTimes = sp.getAll("time")
 
-  const toggleTime = (time: string) => {
+  const selectedTime = sp.get("time") // string | null
+
+  const setTime = (time: string) => {
     const params = new URLSearchParams(sp.toString())
-    const current = new Set(params.getAll("time"))
-
-    if (current.has(time)) {
-      const next = [...current].filter((t) => t !== time)
-      params.delete("time")
-      next.forEach((t) => params.append("time", t))
-    } else {
-      params.append("time", time)
-    }
+    params.set("time", time)
 
     router.replace(`?${params.toString()}`)
   }
 
-  return { sp, selectedDate, selectedTimes, toggleTime }
+  return { sp, selectedDate, selectedTime, setTime }
 }
