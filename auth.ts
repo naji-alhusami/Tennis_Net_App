@@ -43,7 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: normalizedEmail },
         });
-        
+
         if (!user || !user.hashedPassword) {
           return null;
         }
@@ -100,12 +100,38 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return true;
     },
 
+    // async jwt({ token, user }) {
+    //   if (user) {
+    //     console.log("user:", user);
+    //     token.id = user.id;
+    //     token.role = user.role;
+    //     token.name = user.name;
+    //   }
+    //   return token;
+    // },
     async jwt({ token, user }) {
+      // 1) On sign-in, store basics
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.name = user.name;
       }
+
+      // 2) After sign-in, user is undefined.
+      // If role is missing/null, sync it from MognoDB
+      if (!token.role) {
+        const userId = (token.sub ?? token.id) as string | undefined;
+        if (userId) {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { role: true, name: true },
+          });
+          if (dbUser?.role) token.role = dbUser.role;
+          if (dbUser?.name) token.name = dbUser.name;
+          token.id = userId;
+        }
+      }
+
       return token;
     },
 

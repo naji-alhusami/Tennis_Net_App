@@ -47,10 +47,10 @@ import { type NavItems } from "@/lib/types/NavItems";
 
 export default function Navbar() {
     const { data: session, status } = useSession();
-    // console.log("data:", session)
+    console.log("data:", session)
 
     const role = session?.user?.role as "PLAYER" | "COACH" | undefined;
-
+    console.log("role:", role)
     const publicNavItems: NavItems = [
         { href: "/", label: "Home", icon: Home },
         { href: "/courts", label: "Courts", icon: MapPin },
@@ -78,6 +78,7 @@ export default function Navbar() {
     if (!session || !role) {
         content = <GuestNavbar navItems={publicNavItems} />;
     } else if (session && role === "PLAYER") {
+
         content = <UserNavbar navItems={playerNavItems} />;
     } else if (session && role === "COACH") {
         content = <UserNavbar navItems={coachNavItems} />;

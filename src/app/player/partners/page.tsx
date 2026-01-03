@@ -16,6 +16,7 @@ export default async function PartnersPage() {
 
     const pendingRequests = await getAllPendingRequests(players, currentUserId)
     const requestedIds = new Set(pendingRequests.map((r) => r.toUserId))
+    
 
     return (
         <div className="w-full p-5 md:px-12 xl:px-32">
