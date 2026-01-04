@@ -8,7 +8,6 @@ import DateSelection from "@/components/BookingCourts/Selection/2-DateSelection"
 import TimeSelection from "@/components/BookingCourts/Selection/3-TimeSelection"
 import PlayersSelection from "@/components/BookingCourts/Selection/4-PlayersSelection"
 import { WizardShell } from "@/components/BookingCourts/Wizard/WizardShell"
-import { useBookingWizardState } from "@/components/BookingCourts/Wizard/useBookingWizardState"
 import ConfirmSelection from "../Selection/5-ConfirmSelection"
 
 const ORDER = ["court", "date", "time", "players", "confirm"] as const
@@ -43,8 +42,6 @@ export default function BookingWizardFrame({
     const sp = useSearchParams()
     const direction = useMemo(() => (Number(sp.get("__dir") ?? "1") === -1 ? -1 : 1), [sp])
 
-    const state = useBookingWizardState()
-
     const renderStep = (step: string) => {
         switch (step as StepKey) {
             case "court":
@@ -55,14 +52,7 @@ export default function BookingWizardFrame({
 
             case "time":
                 return (
-                    <TimeSelection
-                        selectedDate={state.selectedDate}
-                        value={state.selectedTime}
-                        onSelect={state.setTime}
-                        bookedTimes={[]}
-                        stepMinutes={60}
-                        durationMinutes={60}
-                    />
+                    <TimeSelection bookedTimes={[]} />
                 )
 
             case "players":
