@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import {
     Select,
     SelectContent,
@@ -16,6 +17,7 @@ type CourtType = (typeof COURT_TYPES)[number]
 const COURT_LOCATIONS = ["INDOOR", "OUTDOOR"] as const
 type CourtLocation = (typeof COURT_LOCATIONS)[number]
 
+// ===== COMPONENT =====
 export default function CourtSelection() {
     const router = useRouter()
     const pathname = usePathname()
@@ -118,6 +120,9 @@ export default function CourtSelection() {
 
     return (
         <div className="relative z-10 grid place-items-center w-full">
+            <div className="px-8 text-sm text-amber-600 font-bold">
+                <p>* The Clay Courts Only have Outside Locations</p>
+            </div>
             <div className="w-full max-w-lg bg-white p-8 sm:p-10">
                 {/* Court Type */}
                 <Select value={courtTypeValue} onValueChange={onCourtTypeChange}>

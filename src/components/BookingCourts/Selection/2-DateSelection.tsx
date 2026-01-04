@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 import { Calendar } from "@/components/ui/calendar"
@@ -73,8 +73,38 @@ export default function DateSelection() {
         router.replace(`${pathname}?${params.toString()}`)
     }
 
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams.toString())
+        const dateParam = params.get("date")
+
+        // If no date in URL, nothing to fix
+        if (!dateParam) return
+
+        // Parse URL date
+        const parsed = parseLocalDate(dateParam)
+
+        if (parsed) {
+            parsed.setHours(0, 0, 0, 0)
+
+            // Max range is today..today+7 (you already computed maxDate)
+            // maxDate is end-of-day, so comparing by date is safe
+            const tooEarly = parsed < today
+            const tooLate = parsed > maxDate
+
+            // If outside range -> set to today
+            if (tooEarly || tooLate) {
+                params.set("date", toISODate(today))
+                const qs = params.toString()
+                router.replace(qs ? `${pathname}?${qs}` : pathname)
+            }
+        }
+    }, [searchParams, pathname, router, today, maxDate])
+
     return (
-        <div className="flex justify-center">
+        <div className="flex flex-col items-center justify-center gap-y-8">
+            <div className="px-11 text-sm text-amber-600 font-bold">
+                <p>* The Day Should be Selected Within One Week</p>
+            </div>
             <Calendar
                 mode="single"
                 selected={selectedDate}
