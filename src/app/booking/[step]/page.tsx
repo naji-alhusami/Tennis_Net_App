@@ -12,6 +12,25 @@ type StepKey = "court" | "date" | "time" | "players" | "confirm"
 type SearchParams = Promise<{ players?: string | string[];[key: string]: string | string[] | undefined }>
 type Params = Promise<{ step: StepKey | string }>
 
+function isMongoObjectId(v: string) {
+    return /^[0-9a-fA-F]{24}$/.test(v)
+}
+
+function sanitizeIds(raw: string[], max = 3) {
+    const out: string[] = []
+    const seen = new Set<string>()
+
+    for (const id of raw) {
+        if (!isMongoObjectId(id)) continue
+        if (seen.has(id)) continue
+        seen.add(id)
+        out.push(id)
+        if (out.length >= max) break
+    }
+
+    return out
+}
+
 export default async function BookingPage({
     params,
     searchParams,
@@ -28,10 +47,15 @@ export default async function BookingPage({
 
     const sp = await searchParams
 
-    const playerIds =
+    const rawPlayerIds =
         typeof sp.players === "string"
             ? [sp.players]
-            : sp.players ?? []
+            : Array.isArray(sp.players)
+                ? sp.players
+                : []
+
+    //  sanitize BEFORE prisma
+    const playerIds = sanitizeIds(rawPlayerIds, 3)
 
     const players = await getPlayersNamesByIds(playerIds)
 

@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation"
 import CourtSelection from "@/components/BookingCourts/Selection/1-CourtSelection"
 import DateSelection from "@/components/BookingCourts/Selection/2-DateSelection"
 import TimeSelection from "@/components/BookingCourts/Selection/3-TimeSelection"
-import PlayersSelection from "@/components/BookingCourts/Selection/4-PlayersSelection"
+import PlayersSelection from "@/components/BookingCourts/Selection/4-PartnersSelection"
 import { WizardShell } from "@/components/BookingCourts/Wizard/WizardShell"
 import ConfirmSelection from "../Selection/5-ConfirmSelection"
 
@@ -56,7 +56,7 @@ export default function BookingWizardFrame({
                 )
 
             case "players":
-                return <PlayersSelection friends={friends} max={2} />
+                return <PlayersSelection friends={friends} max={3} />
 
             case "confirm":
                 return <ConfirmSelection selectedPlayers={selectedPlayers} />

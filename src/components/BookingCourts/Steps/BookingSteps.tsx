@@ -6,7 +6,7 @@ const STEPS = [
   { key: "court", label: "Court" },
   { key: "date", label: "Date" },
   { key: "time", label: "Time" },
-  { key: "players", label: "Players" },
+  { key: "partners", label: "Partners" },
   { key: "confirm", label: "Confirm" },
 ] as const
 

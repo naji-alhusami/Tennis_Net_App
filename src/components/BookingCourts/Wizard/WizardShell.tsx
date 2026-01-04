@@ -55,7 +55,7 @@ export function WizardShell({
       case "confirm":
         return "REVIEW & CONFIRM"
       case "players":
-        return "SELECT YOUR PLAYERS"
+        return "SELECT YOUR PARTNERS"
       case "time":
         return "SELECT YOUR TIME"
       case "date":
