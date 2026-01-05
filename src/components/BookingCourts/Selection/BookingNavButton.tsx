@@ -52,21 +52,25 @@ export function BookingNavButton({
     router.push(`${to}?${sp.toString()}`)
 
     if (variant === "book") {
+      console.log("Click Book")
       try {
         setIsLoading(true)
 
         const courtType = spHook.get("courtType")
+        const courtLocation = spHook.get("courtLocation")
         const date = spHook.get("date")
-        const times = spHook.getAll("time")
+        const time = spHook.get("time")
         const players = spHook.getAll("players")
 
         const response = await axios.post("/api/reservations", {
           courtType,
+          courtLocation,
           date,
-          times,
+          time,
           players,
           stepMinutes: 30,
         })
+
       } catch (error) {
         let message = "Something went wrong. Please try again.";
 

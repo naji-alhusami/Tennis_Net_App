@@ -13,15 +13,20 @@ enum UserRole {
   COACH
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 enum CourtType {
   CLAY
   HARD
 }
 
-enum FriendRequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
+enum CourtLocation {
+  INDOOR
+  OUTDOOR
 }
 
 model User {
@@ -131,19 +136,18 @@ model Message {
 }
 
 model Court {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   courtNo   Int?
   type      CourtType
-  indoor    Boolean   @default(false) //
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  location  CourtLocation
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   reservations Reservation[]
 
-  @@index([type])
+  @@index([type, location])
   @@index([courtNo])
-  @@index([type, indoor]) // helpful for queries
 }
 
 model Reservation {

@@ -16,13 +16,14 @@ import { type PlayerLite } from "../Wizard/BookingWizardFrame"
 export default function ConfirmSelection({ selectedPlayers }: { selectedPlayers: PlayerLite[] }) {
     const sp = useSearchParams()
 
-    const courtName = sp.get("courtType")
+    const courtType = sp.get("courtType")
+    const courtLocation = sp.get("courtLocation")
     const date = sp.get("date")
     const times = sp.getAll("time")
     const players = sp.getAll("players")
 
     const missing =
-        !courtName || !date || !times || players.length === 0
+        !courtType || !courtLocation || !date || !times || players.length === 0
 
     return (
         <Card className="rounded-2xl">
@@ -52,7 +53,7 @@ export default function ConfirmSelection({ selectedPlayers }: { selectedPlayers:
                                 Court
                             </TableCell>
                             <TableCell className="font-medium">
-                                {courtName ?? "—"}
+                                {courtType ? `${courtType} (${courtLocation})` : "—"}
                             </TableCell>
                         </TableRow>
 
