@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     time,
     players,
     durationMinutes,
-    note,
+    // note,
   } = parsed.data;
 
   // 3) compute start/end
@@ -96,15 +96,16 @@ export async function POST(request: Request) {
       { status: 409 }
     );
   }
-
-  // 7) create reservation with the chosen courtId 
+  
+  // 7) create reservation with the chosen courtId
   const reservation = await prisma.reservation.create({
     data: {
       userId,
       courtId: freeCourt.id,
       start,
       end,
-      note: JSON.stringify({ note: note ?? null, players }),
+      playerIds: players,
+      // note: JSON.stringify({ note: note ?? null, players }),
     },
     select: { id: true, start: true, end: true, courtId: true },
   });
