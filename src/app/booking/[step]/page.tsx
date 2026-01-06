@@ -6,6 +6,9 @@ import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNa
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
+import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCourtId"
+import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
+import { CourtLocation, CourtType } from "@/generated/prisma"
 
 type StepKey = "court" | "date" | "time" | "players" | "confirm"
 
@@ -46,6 +49,16 @@ export default async function BookingPage({
     const friends = await getMyFriends(userId)
 
     const sp = await searchParams
+    const courtTypeParams = sp.courtType
+    const courtLocationParams = sp.courtLocation
+    const dateParams = sp.date
+
+    const courtGroupsIds = await getCourtGroupsIds(courtTypeParams as CourtType, courtLocationParams as CourtLocation)
+
+    let fullyBookedTimes: string[] = []
+    if (typeof dateParams === "string") {
+        fullyBookedTimes = await getFullyBookedTimesByCourtGroup(courtGroupsIds, dateParams)
+    }
 
     const rawPlayerIds =
         typeof sp.players === "string"
@@ -96,7 +109,7 @@ export default async function BookingPage({
 
             {/*  wizard */}
             <div className="mt-6">
-                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} />
+                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} fullyBookedTimes={fullyBookedTimes} />
             </div>
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">

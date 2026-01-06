@@ -68,7 +68,7 @@ export function BookingNavButton({
           date,
           time,
           players,
-          stepMinutes: 30,
+          durationMinutes: 60,
         })
 
       } catch (error) {

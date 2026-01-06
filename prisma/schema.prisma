@@ -199,8 +199,6 @@ model Friendship {
   userTwo User @relation("FriendshipUserTwo", fields: [userTwoId], references: [id])
 
   // Ensure only one friendship per pair of users (A-B is unique).
-  // @@unique([userOneId, userTwoId])
-  // Optional indexes for faster lookups "who are this user's friends?"
 
   @@unique([userOneId, userTwoId])
   @@index([userOneId])

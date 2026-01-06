@@ -1,9 +1,10 @@
 import { auth } from "@/auth";
-import prisma from "@/lib/prisma/prisma";
-import { hasReservationConflict } from "@/lib/reservations/checkAvailability";
-import { CreateReservationValidator } from "@/lib/validators/ReservationValidators";
-import { NextResponse } from "next/server";
 import z from "zod";
+import { NextResponse } from "next/server";
+
+import prisma from "@/lib/prisma/prisma";
+import { CreateReservationValidator } from "@/lib/validators/ReservationValidators";
+import { CourtLocation, CourtType } from "@/generated/prisma";
 
 function toDateTimeLocal(dateISO: string, timeHHmm: string) {
   const [y, m, d] = dateISO.split("-").map(Number);
@@ -11,8 +12,12 @@ function toDateTimeLocal(dateISO: string, timeHHmm: string) {
   return new Date(y, m - 1, d, hh, mm, 0, 0);
 }
 
+function overlaps(startA: Date, endA: Date, startB: Date, endB: Date) {
+  return startA < endB && endA > startB;
+}
+
 export async function POST(request: Request) {
-  // 1) checking auth
+  // 1) auth
   const session = await auth();
   const userId = session?.user.id;
 
@@ -20,8 +25,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // 2) validate body
   const body = await request.json();
-
   const parsed = CreateReservationValidator.safeParse(body);
 
   if (!parsed.success) {
@@ -32,29 +37,71 @@ export async function POST(request: Request) {
     );
   }
 
-  const { courtType, date, time, players, durationMinutes, note } = parsed.data;
+  const {
+    courtType,
+    courtLocation,
+    date,
+    time,
+    players,
+    durationMinutes,
+    note,
+  } = parsed.data;
 
-  // 3) compute start/end from date + times
+  // 3) compute start/end
   const start = toDateTimeLocal(date, time);
   const end = new Date(start.getTime() + durationMinutes * 60_000);
 
-  // const conflictReservation = await hasReservationConflict({
-  //   // courtId: court.id,
-  //   start,
-  //   end,
-  // });
+  // 4) get all courts for this group (type + location)
+  const courts = await prisma.court.findMany({
+    where: {
+      type: courtType as CourtType,
+      location: courtLocation as CourtLocation,
+    },
+    select: { id: true },
+  });
 
-  // if (conflictReservation) {
-  //   return NextResponse.json(
-  //     { error: "Time slot is already booked" },
-  //     { status: 409 }
-  //   );
-  // }
+  if (courts.length === 0) {
+    return NextResponse.json(
+      { error: "No courts found for this group" },
+      { status: 404 }
+    );
+  }
 
+  const courtIds = courts.map((c) => c.id);
+
+  // 5) find reservations that overlap the requested time for these courts
+  const existing = await prisma.reservation.findMany({
+    where: {
+      courtId: { in: courtIds },
+      start: { lt: end },
+      end: { gt: start },
+    },
+    select: { courtId: true, start: true, end: true },
+  });
+
+  // 6) pick a free courtId
+  const busy = new Set<string>();
+
+  for (const r of existing) {
+    if (overlaps(r.start, r.end, start, end)) {
+      busy.add(r.courtId);
+    }
+  }
+
+  const freeCourt = courts.find((c) => !busy.has(c.id));
+
+  if (!freeCourt) {
+    return NextResponse.json(
+      { error: "Time slot is fully booked for this court group" },
+      { status: 409 }
+    );
+  }
+
+  // 7) create reservation with the chosen courtId 
   const reservation = await prisma.reservation.create({
     data: {
       userId,
-      courtId: userId,
+      courtId: freeCourt.id,
       start,
       end,
       note: JSON.stringify({ note: note ?? null, players }),
