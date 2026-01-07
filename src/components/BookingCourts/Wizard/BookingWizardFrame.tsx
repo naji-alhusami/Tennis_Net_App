@@ -30,13 +30,15 @@ export default function BookingWizardFrame({
     friends,
     selectedPlayers,
     fullyBookedTimes,
-    busyDates
+    busyDates,
+    busyPlayerIds
 }: {
     step: StepKey
     friends: User[]
     selectedPlayers: PlayerLite[]
     fullyBookedTimes: string[]
     busyDates: string[]
+    busyPlayerIds: string[]
 }) {
     const idx = useMemo(() => Math.max(0, ORDER.indexOf(step)), [step])
 
@@ -60,7 +62,7 @@ export default function BookingWizardFrame({
                 )
 
             case "players":
-                return <PlayersSelection friends={friends} max={3} />
+                return <PlayersSelection friends={friends} max={3} busyPlayerIds={busyPlayerIds} />
 
             case "confirm":
                 return <ConfirmSelection selectedPlayers={selectedPlayers} />

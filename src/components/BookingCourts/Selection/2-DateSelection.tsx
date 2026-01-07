@@ -47,7 +47,6 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
     const maxDate = useMemo(() => endOfDay(addDays(today, 7)), [today])
 
     const busySet = useMemo(() => new Set(busyDates), [busyDates])
-
     const isDisabled = useCallback(
         (date: Date) => {
             if (date < today) return true
@@ -59,7 +58,7 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
 
     const onSelect = (date?: Date) => {
         const params = new URLSearchParams(searchParams.toString())
-
+        
         if (date && !isDisabled(date)) params.set("date", toISODate(date))
         else params.delete("date")
 

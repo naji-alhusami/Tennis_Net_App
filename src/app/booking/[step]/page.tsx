@@ -10,6 +10,7 @@ import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCo
 import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
 import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
+import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
 
 
 type StepKey = "court" | "date" | "time" | "players" | "confirm"
@@ -64,10 +65,6 @@ export default async function BookingPage({
     if (!session?.user?.id) redirect("/login")
 
     const userId = session.user.id
-    // get all frineds
-    const friends = await getMyFriends(userId)
-
-
 
     const sp = await searchParams
     const courtTypeParams = sp.courtType
@@ -97,6 +94,23 @@ export default async function BookingPage({
     const to = endOfDay(addDays(from, 7))
 
     const busyDates = await getBusyDatesForUsers([userId, ...playerIds], from, to)
+
+
+    const dateISO = typeof sp.date === "string" ? sp.date : undefined
+    const timeHHmm = typeof sp.time === "string" ? sp.time : undefined
+
+    // friends you show in the picker
+    const friends = await getMyFriends(userId)
+    const friendIds = friends.map((f) => f.id)
+
+    // get busy ids for that slot (only among friends)
+    const busyPlayerIds = await getBusyPlayerIdsAtSlot({
+        dateISO,
+        timeHHmm,
+        durationMinutes: 60,
+        candidates: friendIds,
+    })
+
 
     // Defines all booking steps in order
     // as const makes each value fixed (not just a generic string)
@@ -135,7 +149,14 @@ export default async function BookingPage({
 
             {/*  wizard */}
             <div className="mt-6">
-                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} fullyBookedTimes={fullyBookedTimes}  busyDates={busyDates} />
+                <BookingWizardFrame
+                    step={step}
+                    friends={friends}
+                    selectedPlayers={players}
+                    fullyBookedTimes={fullyBookedTimes}
+                    busyDates={busyDates}
+                    busyPlayerIds={busyPlayerIds}
+                />
             </div>
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">

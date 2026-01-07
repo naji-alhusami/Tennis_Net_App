@@ -224,14 +224,17 @@ function initials(nameOrEmail?: string | null) {
 export default function PlayersSelection({
     friends,
     max = 3, // partners max = 3 (me + 3 partners = 4 total)
+    busyPlayerIds
 }: {
     friends: Friend[]
     max?: number
+    busyPlayerIds: string[]
 }) {
     const [q, setQ] = useState<string>("") // search query: what the user typed in the search box
     const router = useRouter()
     const pathname = usePathname()
     const sp = useSearchParams()
+    const busySet = useMemo(() => new Set(busyPlayerIds), [busyPlayerIds])
 
     // All players from URL (may contain duplicates / invalid ids if user plays with URL)
     const players = sp.getAll("players")
@@ -381,7 +384,10 @@ export default function PlayersSelection({
                     <div className="space-y-2">
                         {filtered.map((f) => {
                             const isSelected = selected.has(f.id)
-                            const disabled = !isSelected && selected.size >= max
+
+                            const isBusy = busySet.has(f.id)
+                            const disabledMax = !isSelected && selected.size >= max
+                            const disabled = disabledMax || (!isSelected && isBusy)
 
                             return (
                                 <button
@@ -406,7 +412,11 @@ export default function PlayersSelection({
                                             <div className="truncate text-xs text-muted-foreground">{f.email ?? ""}</div>
                                         </div>
 
-                                        <div className="shrink-0">
+                                        <div className="shrink-0 flex items-center gap-2">
+                                            {!isSelected && isBusy && (
+                                                <span className="text-xs text-muted-foreground">Busy</span>
+                                            )}
+
                                             {isSelected ? (
                                                 <div className="flex h-6 w-6 items-center justify-center rounded-full border border-primary bg-green-200">
                                                     <Check className="h-4 w-4" />
