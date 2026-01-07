@@ -9,6 +9,8 @@ import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
 import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCourtId"
 import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
 import { CourtLocation, CourtType } from "@/generated/prisma"
+import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
+
 
 type StepKey = "court" | "date" | "time" | "players" | "confirm"
 
@@ -34,6 +36,23 @@ function sanitizeIds(raw: string[], max = 3) {
     return out
 }
 
+// helpers (server-safe)
+function startOfToday() {
+    const d = new Date()
+    d.setHours(0, 0, 0, 0)
+    return d
+}
+function addDays(date: Date, days: number) {
+    const d = new Date(date)
+    d.setDate(d.getDate() + days)
+    return d
+}
+function endOfDay(date: Date) {
+    const d = new Date(date)
+    d.setHours(23, 59, 59, 999)
+    return d
+}
+
 export default async function BookingPage({
     params,
     searchParams,
@@ -47,6 +66,8 @@ export default async function BookingPage({
     const userId = session.user.id
     // get all frineds
     const friends = await getMyFriends(userId)
+
+
 
     const sp = await searchParams
     const courtTypeParams = sp.courtType
@@ -71,6 +92,11 @@ export default async function BookingPage({
     const playerIds = sanitizeIds(rawPlayerIds, 3)
 
     const players = await getPlayersNamesByIds(playerIds)
+
+    const from = startOfToday()
+    const to = endOfDay(addDays(from, 7))
+
+    const busyDates = await getBusyDatesForUsers([userId, ...playerIds], from, to)
 
     // Defines all booking steps in order
     // as const makes each value fixed (not just a generic string)
@@ -109,7 +135,7 @@ export default async function BookingPage({
 
             {/*  wizard */}
             <div className="mt-6">
-                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} fullyBookedTimes={fullyBookedTimes} />
+                <BookingWizardFrame step={step} friends={friends} selectedPlayers={players} fullyBookedTimes={fullyBookedTimes}  busyDates={busyDates} />
             </div>
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">
