@@ -38,56 +38,6 @@ export function BookingNavButton({
   const isDisabled = isLoading || (variant === "back" && currentStep === 0) ||
     ((variant === "next" || variant === "book") && !hasRequiredParams)
 
-  // const onGo = async () => {
-  //   if (isDisabled) return
-
-  //   const sp = new URLSearchParams(spHook.toString())
-  //   sp.set("__dir", variant === "next" || variant === "book" ? "1" : "-1")
-
-  //   if (variant === "back") {
-  //     if (step === "date" && filters.date) sp.delete("date")
-  //     if (step === "time" && filters.time) sp.delete("time")
-  //     if (step === "players" && filters.players) sp.delete("players")
-  //   }
-
-  //   router.push(`${to}?${sp.toString()}`)
-
-  //   if (variant === "book") {
-  //     console.log("Click Book")
-  //     try {
-  //       setIsLoading(true)
-
-  //       const courtType = spHook.get("courtType")
-  //       const courtLocation = spHook.get("courtLocation")
-  //       const date = spHook.get("date")
-  //       const time = spHook.get("time")
-  //       const players = spHook.getAll("players")
-
-  //       const response = await axios.post("/api/reservations", {
-  //         courtType,
-  //         courtLocation,
-  //         date,
-  //         time,
-  //         players,
-  //         durationMinutes: 60,
-  //       })
-
-  //       router.push("/booking/success")
-
-  //     } catch (error) {
-  //       let message = "Something went wrong. Please try again.";
-
-  //       if (axios.isAxiosError(error)) {
-  //         const data = error.response?.data as { error?: string };
-  //         if (data?.error) {
-  //           message = data.error;
-  //         }
-  //       }
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   }
-  // }
 
   const onGo = async () => {
     if (isDisabled) return
@@ -109,7 +59,6 @@ export function BookingNavButton({
       return
     }
 
-    // ✅ BOOK: call API first, then navigate to success
     if (variant === "book") {
       try {
         setIsLoading(true)
@@ -162,47 +111,5 @@ export function BookingNavButton({
         label
       )}
     </Button>
-    // <Button
-    //   type="button"
-    //   onClick={onGo}
-    //   disabled={isDisabled}
-    //   className={cn(
-    //     "w-full font-bold rounded-xl",
-    //     (variant === "next" || variant === "book") &&
-    //     "bg-green-600 hover:bg-green-700 text-white cursor-pointer",
-    //     variant === "back" &&
-    //     "bg-gray-600 hover:bg-gray-900 text-white cursor-pointer",
-    //     isDisabled && "opacity-70 cursor-not-allowed",
-    //     className
-    //   )}
-    // >
-
-    //   {isLoading ? (
-    //     <span className="flex items-center justify-center gap-2">
-    //       <Spinner />
-    //       <span>Please wait...</span>
-    //     </span>
-    //   ) : (
-    //     { label }
-    //   )}
-    // </Button>
   )
 }
-
-{/* <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className={cn(
-                            "cursor-pointer w-full bg-green-600 hover:bg-green-700 font-bold",
-                            isLoading && "opacity-70 cursor-not-allowed"
-                        )}
-                    >
-                        {isLoading ? (
-                            <span className="flex items-center justify-center gap-2">
-                                <Spinner />
-                                <span>Please wait...</span>
-                            </span>
-                        ) : (
-                            "Signup"
-                        )}
-                    </Button> */}
