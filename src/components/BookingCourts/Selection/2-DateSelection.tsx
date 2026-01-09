@@ -3,6 +3,7 @@
 import { useMemo, useEffect, useCallback } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 
 // ===== helpers =====
 function startOfToday() {
@@ -72,7 +73,6 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
         ; (document.activeElement as HTMLElement | null)?.blur()
 
         const params = new URLSearchParams(searchParams.toString())
-
         if (date && !isDisabled(date)) params.set("date", toISODate(date))
         else params.delete("date")
 
@@ -95,47 +95,53 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
     }, [searchParams, isDisabled, safeReplace])
 
     return (
-        <div className="flex flex-col items-center justify-center gap-y-8">
-            <div className="px-11 text-sm text-amber-600 font-bold">
-                <p>* Choose a day within one week</p>
-                {/* <p>* Days with existing reservations (you or your partners) are disabled</p> */}
-            </div>
+        <Card className="rounded-2xl">
+            <CardHeader className="space-y-1">
+                <div className="text-amber-600 text-center text-sm font-bold">
+                    * Choose a day within one week
+                </div>
+                {/* <div className="text-amber-600 text-center text-xs font-bold">
+                    * Days with existing reservations are disabled
+                </div> */}
+            </CardHeader>
 
-            <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={onSelect}
-                disabled={isDisabled}
-                className="rounded-xl bg-white p-3"
-                buttonVariant="outline"
-                modifiers={{
-                    booked: (date) => busySet.has(toISODate(date)),
-                }}
-            />
+            <CardContent className="flex flex-col items-center">
+                <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={onSelect}
+                    disabled={isDisabled}
+                    className="rounded-xl bg-white p-3"
+                    buttonVariant="outline"
+                    modifiers={{
+                        booked: (date) => busySet.has(toISODate(date)),
+                    }}
+                />
 
-            <div className="pt-8 flex flex-wrap gap-3 text-xs">
-                <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded border border-gray-400 bg-white" />
-                    Available
-                </span>
+                <div className="pt-8 flex flex-wrap justify-center gap-3 text-xs">
+                    <span className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded border border-gray-400 bg-white" />
+                        Available
+                    </span>
 
-                <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded bg-red-300" /> Booked
-                </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded bg-red-300" /> Booked
+                    </span>
 
-                <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded bg-gray-400" /> Today
-                </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded bg-gray-400" /> Today
+                    </span>
 
-                <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded bg-green-800" /> Selected
-                </span>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded bg-green-800" /> Selected
+                    </span>
 
-                <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 rounded bg-gray-200 border border-gray-300" />
-                    Not open (past / out of range)
-                </span>
-            </div>
-        </div>
+                    <span className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded bg-gray-200 border border-gray-300" />
+                        Not open
+                    </span>
+                </div>
+            </CardContent>
+        </Card>
     )
 }

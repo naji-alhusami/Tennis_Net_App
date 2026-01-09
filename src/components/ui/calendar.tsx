@@ -209,21 +209,22 @@ function CalendarDayButton({
       data-booked={modifiers.booked}
       data-today={modifiers.today}
       className={cn(
-        // base
         "flex aspect-square size-auto w-full min-w-(--cell-size) rounded-md",
-        "leading-none font-normal",
-        "hover:bg-accent hover:text-accent-foreground",
-
+        "leading-none font-normal hover:bg-accent hover:text-accent-foreground",
         "m-[2px]",
 
-        "data-[today=true]:bg-gray-300 data-[today=true]:text-gray-900 data-[today=true]:hover:bg-gray-300",
+        // today only when not selected + not booked
+        "[&[data-today=true]:not([data-selected-single=true]):not([data-booked=true])]:bg-gray-300 " +
+        "[&[data-today=true]:not([data-selected-single=true]):not([data-booked=true])]:text-gray-900 " +
+        "[&[data-today=true]:not([data-selected-single=true]):not([data-booked=true])]:hover:bg-gray-300",
 
-        "data-[booked=true]:bg-red-500 data-[booked=true]:text-white data-[booked=true]:hover:bg-red-500 data-[booked=true]:opacity-100",
-
+        // selected always green
         "data-[selected-single=true]:bg-green-700 data-[selected-single=true]:text-white data-[selected-single=true]:hover:bg-green-700",
 
-        "group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10",
+        // booked always red (and stays red even if today)
+        "data-[booked=true]:bg-red-500 data-[booked=true]:text-white data-[booked=true]:hover:bg-red-500 data-[booked=true]:opacity-100",
 
+        "group-data-[focused=true]/day:ring-[3px] group-data-[focused=true]/day:ring-ring/50 group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10",
         defaultClassNames.day,
         className
       )}
