@@ -1,14 +1,16 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
 
+import { isValidMongoObjectId } from "@/lib/utils/isValidMongoObjectId"
+
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
+import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
 import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCourtId"
 import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
-import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
 
@@ -18,16 +20,12 @@ type StepKey = "court" | "date" | "time" | "players" | "confirm"
 type SearchParams = Promise<{ players?: string | string[];[key: string]: string | string[] | undefined }>
 type Params = Promise<{ step: StepKey | string }>
 
-function isMongoObjectId(v: string) {
-    return /^[0-9a-fA-F]{24}$/.test(v)
-}
-
 function sanitizeIds(raw: string[], max = 3) {
     const out: string[] = []
     const seen = new Set<string>()
 
     for (const id of raw) {
-        if (!isMongoObjectId(id)) continue
+        if (!isValidMongoObjectId(id)) continue
         if (seen.has(id)) continue
         seen.add(id)
         out.push(id)
