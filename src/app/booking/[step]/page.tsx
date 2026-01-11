@@ -13,6 +13,7 @@ import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCo
 import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
 import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
+import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
 
 
 type StepKey = "court" | "date" | "time" | "players" | "confirm"
@@ -33,23 +34,6 @@ function sanitizeIds(raw: string[], max = 3) {
     }
 
     return out
-}
-
-// helpers (server-safe)
-function startOfToday() {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-}
-function addDays(date: Date, days: number) {
-    const d = new Date(date)
-    d.setDate(d.getDate() + days)
-    return d
-}
-function endOfDay(date: Date) {
-    const d = new Date(date)
-    d.setHours(23, 59, 59, 999)
-    return d
 }
 
 export default async function BookingPage({
@@ -88,9 +72,9 @@ export default async function BookingPage({
 
     const players = await getPlayersNamesByIds(playerIds)
 
-    const from = startOfToday()
-    const to = endOfDay(addDays(from, 7))
-
+    const from = getStartOfToday()
+    const to = getEndOfDay(addDaysToDate(from, 7))
+    
     const busyDates = await getBusyDatesForUsers([userId, ...playerIds], from, to)
 
 

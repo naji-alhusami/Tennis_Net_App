@@ -4,23 +4,8 @@ import { useMemo, useEffect, useCallback } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
 
-// ===== helpers =====
-function startOfToday() {
-    const d = new Date()
-    d.setHours(0, 0, 0, 0)
-    return d
-}
-function addDays(date: Date, days: number) {
-    const d = new Date(date)
-    d.setDate(d.getDate() + days)
-    return d
-}
-function endOfDay(date: Date) {
-    const d = new Date(date)
-    d.setHours(23, 59, 59, 999)
-    return d
-}
 function parseLocalDate(iso: string | null) {
     if (!iso) return undefined
     const [y, m, d] = iso.split("-").map(Number)
@@ -44,8 +29,8 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
         [searchParams]
     )
 
-    const today = useMemo(() => startOfToday(), [])
-    const maxDate = useMemo(() => endOfDay(addDays(today, 7)), [today])
+    const today = useMemo(() => getStartOfToday(), [])
+    const maxDate = useMemo(() => getEndOfDay(addDaysToDate(today, 7)), [today])
 
     const busySet = useMemo(() => new Set(busyDates), [busyDates])
 
