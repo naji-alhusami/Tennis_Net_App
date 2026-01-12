@@ -1,5 +1,16 @@
 import { CourtLocation, CourtType } from "@/generated/prisma";
 import prisma from "../prisma/prisma";
+import { twoDigitNumber } from "../utils/date";
+
+// Get Full Day Range (01-01-2026 00:00 -> 02-01-2026 00:00)
+const dayRangeLocal = (dateParam: string) => {
+  const [y, m, d] = dateParam.split("-").map(Number);
+
+  const startDay = new Date(y, m - 1, d, 0, 0, 0, 0);
+  const endDay = new Date(y, m - 1, d + 1, 0, 0, 0, 0);
+
+  return { startDay, endDay };
+};
 
 export async function getAllBookedTimesByCourtsGroup({
   courtTypeParam,
@@ -19,9 +30,22 @@ export async function getAllBookedTimesByCourtsGroup({
     where: {
       courtId: { in: courts.map((court) => court.id) },
     },
+    select: { start: true, courtId: true },
   });
 
-  console.log("reservations:", reservations);
+  const { startDay, endDay } = dayRangeLocal(dateParam);
 
-  return [];
+  const filteredReservations = reservations.filter(
+    (reservation) => reservation.start >= startDay && reservation.start < endDay
+  );
+
+  const timeSlots: string[] = [];
+  for (const reservation of filteredReservations) {
+    const hours = twoDigitNumber(reservation.start.getHours());
+    const minutes = twoDigitNumber(reservation.start.getMinutes());
+
+    timeSlots.push(`${hours}:${minutes}`);
+  }
+
+  return timeSlots;
 }

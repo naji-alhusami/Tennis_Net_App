@@ -6,15 +6,11 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { twoDigitNumber } from "@/lib/utils/date"
 
 // =========
 //  HELPERS
 // =========
-
-// 8 -> "08"
-function pad2(n: number) {
-    return n.toString().padStart(2, "0")
-}
 
 // "HH:MM" -> minutes since midnight (To check if a time is in the past)
 function toMinutes(hhmm: string) {
@@ -31,7 +27,7 @@ function buildTimes(stepMinutes = 60, start = "08:00", end = "22:00") {
     while (cur < endMin) {
         const h = Math.floor(cur / 60)
         const m = cur % 60
-        out.push(`${pad2(h)}:${pad2(m)}`)
+        out.push(`${twoDigitNumber(h)}:${twoDigitNumber(m)}`)
         cur += stepMinutes
     }
     return out

@@ -21,3 +21,8 @@ export function getEndOfDay(date: Date): Date {
 
   return endOfDayDate;
 }
+
+// Add 0 to the time : 9:0 -> 09:00
+export function twoDigitNumber(n: number): string {
+  return String(n).padStart(2, "0");
+}

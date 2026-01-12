@@ -10,7 +10,6 @@ import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
 import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
-import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
 import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
 import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
@@ -68,15 +67,6 @@ export default async function BookingPage({
     const courtLocationParam = searchParam.courtLocation
     const dateParam = searchParam.date
 
-    // Get
-    // const courtGroupsIds = await getCourtGroupsIds(courtTypeParam as CourtType, courtLocationParam as CourtLocation)
-
-    // let fullyBookedTimes: string[] = []
-    // if (typeof dateParam === "string") {
-    //     fullyBookedTimes = await getFullyBookedTimesByCourtGroup(courtGroupsIds, dateParam)
-    //     console.log("fullyBookedTimes:", fullyBookedTimes)
-    // }
-
     // Get All the Booked Times By Grouping the Courts
     function isCourtType(value: unknown): value is CourtType {
         return Object.values(CourtType).includes(value as CourtType)
@@ -100,7 +90,7 @@ export default async function BookingPage({
         })
     }
 
-
+    // ------------
 
     const rawPlayerIds =
         typeof searchParam.players === "string"
@@ -143,7 +133,7 @@ export default async function BookingPage({
 
     // Defines which query parameters are required before going next.
     const requiredForNext: Record<StepKey, string[]> = {
-        court: ["courtType","courtLocation"],
+        court: ["courtType", "courtLocation"],
         date: ["courtType", "date"],
         time: ["courtType", "date", "time"],
         players: ["courtType", "date", "time", "players"],
