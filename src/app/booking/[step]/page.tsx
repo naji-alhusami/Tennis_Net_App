@@ -9,17 +9,26 @@ import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardF
 import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
-import { getFullyBookedTimesByCourtGroup } from "@/lib/data/getReservedTimesByCourtId"
+import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
 import { getCourtGroupsIds } from "@/lib/data/getCourtGroupsIds"
 import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
 import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
 
+// Defines all the Steps and as const for making the values fixed
+const Steps = ["court", "date", "time", "players", "confirm"] as const
+type StepKey = (typeof Steps)[number]
 
-type StepKey = "court" | "date" | "time" | "players" | "confirm"
+type BookingSearchParams = Promise<{
+    _dir?: string
+    courtType?: CourtType | string
+    courtLocation?: CourtLocation | string
+    date?: string
+    time?: string
+    players?: string | string[]
+}>
 
-type SearchParams = Promise<{ players?: string | string[];[key: string]: string | string[] | undefined }>
-type Params = Promise<{ step: StepKey | string }>
+type BookingParams = Promise<{ step: StepKey }>
 
 function sanitizeIds(raw: string[], max = 3) {
     const out: string[] = []
@@ -40,31 +49,64 @@ export default async function BookingPage({
     params,
     searchParams,
 }: {
-    params: Params
-    searchParams: SearchParams
+    params: BookingParams
+    searchParams: BookingSearchParams
 }) {
+    // if user not logged in -> redirect to /login page
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
-
     const userId = session.user.id
 
-    const sp = await searchParams
-    const courtTypeParams = sp.courtType
-    const courtLocationParams = sp.courtLocation
-    const dateParams = sp.date
+    // get the param (step)
+    const { step } = await params
+    // get 404 if the param not of the array Steps
+    if (!Steps.includes(step)) notFound()
 
-    const courtGroupsIds = await getCourtGroupsIds(courtTypeParams as CourtType, courtLocationParams as CourtLocation)
+    // get the searchParams values
+    const searchParam = await searchParams
+    const courtTypeParam = searchParam.courtType
+    const courtLocationParam = searchParam.courtLocation
+    const dateParam = searchParam.date
 
-    let fullyBookedTimes: string[] = []
-    if (typeof dateParams === "string") {
-        fullyBookedTimes = await getFullyBookedTimesByCourtGroup(courtGroupsIds, dateParams)
+    // Get
+    // const courtGroupsIds = await getCourtGroupsIds(courtTypeParam as CourtType, courtLocationParam as CourtLocation)
+
+    // let fullyBookedTimes: string[] = []
+    // if (typeof dateParam === "string") {
+    //     fullyBookedTimes = await getFullyBookedTimesByCourtGroup(courtGroupsIds, dateParam)
+    //     console.log("fullyBookedTimes:", fullyBookedTimes)
+    // }
+
+    // Get All the Booked Times By Grouping the Courts
+    function isCourtType(value: unknown): value is CourtType {
+        return Object.values(CourtType).includes(value as CourtType)
     }
 
+    function isCourtLocation(value: unknown): value is CourtLocation {
+        return Object.values(CourtLocation).includes(value as CourtLocation)
+    }
+
+    let bookedTimes: string[] = []
+
+    if (
+        isCourtType(courtTypeParam) &&
+        isCourtLocation(courtLocationParam) &&
+        typeof dateParam === "string"
+    ) {
+        bookedTimes = await getAllBookedTimesByCourtsGroup({
+            courtTypeParam,
+            courtLocationParam,
+            dateParam,
+        })
+    }
+
+
+
     const rawPlayerIds =
-        typeof sp.players === "string"
-            ? [sp.players]
-            : Array.isArray(sp.players)
-                ? sp.players
+        typeof searchParam.players === "string"
+            ? [searchParam.players]
+            : Array.isArray(searchParam.players)
+                ? searchParam.players
                 : []
 
     //  sanitize BEFORE prisma
@@ -74,12 +116,12 @@ export default async function BookingPage({
 
     const from = getStartOfToday()
     const to = getEndOfDay(addDaysToDate(from, 7))
-    
+
     const busyDates = await getBusyDatesForUsers([userId, ...playerIds], from, to)
 
 
-    const dateISO = typeof sp.date === "string" ? sp.date : undefined
-    const timeHHmm = typeof sp.time === "string" ? sp.time : undefined
+    const dateISO = typeof searchParam.date === "string" ? searchParam.date : undefined
+    const timeHHmm = typeof searchParam.time === "string" ? searchParam.time : undefined
 
     // friends you show in the picker
     const friends = await getMyFriends(userId)
@@ -93,32 +135,15 @@ export default async function BookingPage({
         candidates: friendIds,
     })
 
-
-    // Defines all booking steps in order
-    // as const makes each value fixed (not just a generic string)
-    const STEPS = ["court", "date", "time", "players", "confirm"] as const
-
-    // Creates a type that can be only one of these values: "court" | "date" | "time" | "players" | "confirm"
-    type StepKey = (typeof STEPS)[number]
-
-    const { step } = await params
-
-    // Checks if a string is a valid step: Returns true if the value exists inside STEPS
-    function isStepKey(v: string): v is StepKey {
-        return (STEPS as readonly string[]).includes(v)
-    }
-
-    if (!isStepKey(step)) notFound()
-
     // Gets the step number
-    const currentStep = STEPS.indexOf(step)
+    const currentStep = Steps.indexOf(step as StepKey)
 
-    const backTo = `/booking/${STEPS[Math.max(0, currentStep - 1)]}`
-    const nextTo = `/booking/${STEPS[Math.min(STEPS.length - 1, currentStep + 1)]}`
+    const backTo = `/booking/${Steps[Math.max(0, currentStep - 1)]}`
+    const nextTo = `/booking/${Steps[Math.min(Steps.length - 1, currentStep + 1)]}`
 
     // Defines which query parameters are required before going next.
     const requiredForNext: Record<StepKey, string[]> = {
-        court: ["courtType"],
+        court: ["courtType","courtLocation"],
         date: ["courtType", "date"],
         time: ["courtType", "date", "time"],
         players: ["courtType", "date", "time", "players"],
@@ -135,7 +160,7 @@ export default async function BookingPage({
                     step={step}
                     friends={friends}
                     selectedPlayers={players}
-                    fullyBookedTimes={fullyBookedTimes}
+                    bookedTimes={bookedTimes}
                     busyDates={busyDates}
                     busyPlayerIds={busyPlayerIds}
                 />

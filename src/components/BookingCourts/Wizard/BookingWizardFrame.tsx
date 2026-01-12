@@ -29,14 +29,14 @@ export default function BookingWizardFrame({
     step,
     friends,
     selectedPlayers,
-    fullyBookedTimes,
+    bookedTimes,
     busyDates,
     busyPlayerIds
 }: {
     step: StepKey
     friends: User[]
     selectedPlayers: PlayerLite[]
-    fullyBookedTimes: string[]
+    bookedTimes: string[]
     busyDates: string[]
     busyPlayerIds: string[]
 }) {
@@ -58,7 +58,7 @@ export default function BookingWizardFrame({
 
             case "time":
                 return (
-                    <TimeSelection bookedTimes={fullyBookedTimes} />
+                    <TimeSelection bookedTimes={bookedTimes} />
                 )
 
             case "players":

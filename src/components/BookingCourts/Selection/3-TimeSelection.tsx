@@ -97,7 +97,7 @@ function isInvalidTime({
 
 // ===== COMPONENT =====
 export default function TimeSelection({
-    bookedTimes = [],
+    bookedTimes,
 }: {
     bookedTimes?: string[]
 }) {
