@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
 
-import { isValidMongoObjectId } from "@/lib/utils/isValidMongoObjectId"
+// import { isValidMongoObjectId } from "@/lib/utils/isValidMongoObjectId"
 
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
@@ -29,21 +29,6 @@ type BookingSearchParams = Promise<{
 
 type BookingParams = Promise<{ step: StepKey }>
 
-function sanitizeIds(raw: string[], max = 3) {
-    const out: string[] = []
-    const seen = new Set<string>()
-
-    for (const id of raw) {
-        if (!isValidMongoObjectId(id)) continue
-        if (seen.has(id)) continue
-        seen.add(id)
-        out.push(id)
-        if (out.length >= max) break
-    }
-
-    return out
-}
-
 export default async function BookingPage({
     params,
     searchParams,
@@ -66,6 +51,27 @@ export default async function BookingPage({
     const courtTypeParam = searchParam.courtType
     const courtLocationParam = searchParam.courtLocation
     const dateParam = searchParam.date
+    const playersParam = searchParam.players
+
+    // ----------------------
+
+    const rawPlayerIds =
+        typeof playersParam === "string"
+            ? [playersParam]
+            : Array.isArray(playersParam)
+                ? playersParam
+                : []
+
+    const selectedPlayers = await getPlayersNamesByIds(rawPlayerIds)
+
+    // ----------------------
+
+    const from = getStartOfToday()
+    const to = getEndOfDay(addDaysToDate(from, 7))
+
+    const busyDates = await getBusyDatesForUsers([userId, ...rawPlayerIds], from, to)
+
+    // ----------------------
 
     // Get All the Booked Times By Grouping the Courts
     function isCourtType(value: unknown): value is CourtType {
@@ -90,26 +96,8 @@ export default async function BookingPage({
         })
     }
 
-    // ------------
-
-    const rawPlayerIds =
-        typeof searchParam.players === "string"
-            ? [searchParam.players]
-            : Array.isArray(searchParam.players)
-                ? searchParam.players
-                : []
-
-    //  sanitize BEFORE prisma
-    const playerIds = sanitizeIds(rawPlayerIds, 3)
-
-    const players = await getPlayersNamesByIds(playerIds)
-
-    const from = getStartOfToday()
-    const to = getEndOfDay(addDaysToDate(from, 7))
-
-    const busyDates = await getBusyDatesForUsers([userId, ...playerIds], from, to)
-
-
+    // ----------------------
+    
     const dateISO = typeof searchParam.date === "string" ? searchParam.date : undefined
     const timeHHmm = typeof searchParam.time === "string" ? searchParam.time : undefined
 
@@ -149,7 +137,7 @@ export default async function BookingPage({
                 <BookingWizardFrame
                     step={step}
                     friends={friends}
-                    selectedPlayers={players}
+                    selectedPlayers={selectedPlayers}
                     bookedTimes={bookedTimes}
                     busyDates={busyDates}
                     busyPlayerIds={busyPlayerIds}
