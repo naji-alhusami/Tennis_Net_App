@@ -4,7 +4,7 @@ import { useMemo, useEffect, useCallback } from "react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
+import { addDaysToDate, formatDateToISO, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
 
 function parseLocalDate(iso: string | null) {
     if (!iso) return undefined
@@ -12,14 +12,8 @@ function parseLocalDate(iso: string | null) {
     if (!y || !m || !d) return undefined
     return new Date(y, m - 1, d)
 }
-function toISODate(d: Date) {
-    const y = d.getFullYear()
-    const m = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
-}
 
-export default function DateSelection({ busyDates }: { busyDates: string[] }) {
+export default function DateSelection({ reservedDates }: { reservedDates: string[] }) {
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
@@ -32,7 +26,7 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
     const today = useMemo(() => getStartOfToday(), [])
     const maxDate = useMemo(() => getEndOfDay(addDaysToDate(today, 7)), [today])
 
-    const busySet = useMemo(() => new Set(busyDates), [busyDates])
+    const busySet = useMemo(() => new Set(reservedDates), [reservedDates])
 
     const isDisabled = useCallback(
         (date: Date) => {
@@ -41,7 +35,7 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
 
             if (day < today) return true
             if (day > maxDate) return true
-            return busySet.has(toISODate(day))
+            return busySet.has(formatDateToISO(day))
         },
         [today, maxDate, busySet]
     )
@@ -58,7 +52,7 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
         ; (document.activeElement as HTMLElement | null)?.blur()
 
         const params = new URLSearchParams(searchParams.toString())
-        if (date && !isDisabled(date)) params.set("date", toISODate(date))
+        if (date && !isDisabled(date)) params.set("date", formatDateToISO(date))
         else params.delete("date")
 
         safeReplace(params)
@@ -99,7 +93,7 @@ export default function DateSelection({ busyDates }: { busyDates: string[] }) {
                     className="rounded-xl bg-white p-3"
                     buttonVariant="outline"
                     modifiers={{
-                        booked: (date) => busySet.has(toISODate(date)),
+                        booked: (date) => busySet.has(formatDateToISO(date)),
                     }}
                 />
 

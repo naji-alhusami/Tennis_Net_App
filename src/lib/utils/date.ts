@@ -23,6 +23,15 @@ export function getEndOfDay(date: Date): Date {
 }
 
 // Add 0 to the time : 9:0 -> 09:00
-export function twoDigitNumber(n: number): string {
-  return String(n).padStart(2, "0");
+export function twoDigitNumber(number: number): string {
+  return String(number).padStart(2, "0");
+}
+
+// Formats a Date to a local ISO date string (YYYY-MM-DD).
+export function formatDateToISO(date: Date): string {
+  const year = date.getFullYear();
+  const month = twoDigitNumber(date.getMonth() + 1);
+  const day = twoDigitNumber(date.getDate());
+
+  return `${year}-${month}-${day}`;
 }

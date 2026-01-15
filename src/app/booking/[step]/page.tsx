@@ -10,9 +10,8 @@ import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
 import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
-import { getBusyDatesForUsers } from "@/lib/data/getBusyDatesForUsers"
+import { getReservedDatesByUserId } from "@/lib/data/getReservedDatesByUserId"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
-import { addDaysToDate, getEndOfDay, getStartOfToday } from "@/lib/utils/date"
 
 // Defines all the Steps and as const for making the values fixed
 const Steps = ["court", "date", "time", "players", "confirm"] as const
@@ -39,7 +38,6 @@ export default async function BookingPage({
     // if user not logged in -> redirect to /login page
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
-    const userId = session.user.id
 
     // get the param (step)
     const { step } = await params
@@ -65,15 +63,17 @@ export default async function BookingPage({
     const selectedPlayers = await getPlayersNamesByIds(rawPlayerIds)
 
     // ----------------------
-
-    const from = getStartOfToday()
-    const to = getEndOfDay(addDaysToDate(from, 7))
-
-    const busyDates = await getBusyDatesForUsers([userId, ...rawPlayerIds], from, to)
-
+    // Calendar Days availability: disable calendar days where the current user or selected players already have ANY reservation
     // ----------------------
 
-    // Get All the Booked Times By Grouping the Courts
+    const userId = session.user.id
+    const reservedDates = await getReservedDatesByUserId(userId)
+
+    // ----------------------
+    // Court capacity availability: for the selected court group (type + location) on this date, 
+    // return time slots that are FULLY booked (e.g., both Clay Outdoor courts taken)
+    // ----------------------
+
     function isCourtType(value: unknown): value is CourtType {
         return Object.values(CourtType).includes(value as CourtType)
     }
@@ -97,7 +97,7 @@ export default async function BookingPage({
     }
 
     // ----------------------
-    
+
     const dateISO = typeof searchParam.date === "string" ? searchParam.date : undefined
     const timeHHmm = typeof searchParam.time === "string" ? searchParam.time : undefined
 
@@ -139,7 +139,7 @@ export default async function BookingPage({
                     friends={friends}
                     selectedPlayers={selectedPlayers}
                     bookedTimes={bookedTimes}
-                    busyDates={busyDates}
+                    reservedDates={reservedDates}
                     busyPlayerIds={busyPlayerIds}
                 />
             </div>
