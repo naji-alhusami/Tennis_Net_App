@@ -95,6 +95,8 @@ export default async function BookingPage({
     }
 
     // ----------------------
+    // Players availability
+    // ----------------------
 
     // To get all the friends in the list
     const allFriends = await getMyFriends(userId)
@@ -102,9 +104,7 @@ export default async function BookingPage({
     // To get all the selected friends for booking using searchParams in the list
     const selectedPlayers = await getSelectedPlayersNamesByIds(playersParamIds)
 
-    // const friendIds = allFriends.map((friend) => friend.id)
-
-    // get busy ids for that slot (only among friends)
+    // get busy ids for that slot
     const busyPlayerIds = await getBusyPlayerIdsAtSlot({
         dateParam,
         timeParam,
@@ -113,6 +113,8 @@ export default async function BookingPage({
 
 
     // ----------------------
+    // Next and Back buttons
+    // ----------------------
 
     // Gets the step number
     const currentStep = Steps.indexOf(step as StepKey)
@@ -120,13 +122,13 @@ export default async function BookingPage({
     const backTo = `/booking/${Steps[Math.max(0, currentStep - 1)]}`
     const nextTo = `/booking/${Steps[Math.min(Steps.length - 1, currentStep + 1)]}`
 
-    // Defines which query parameters are required before going next.
+    // Defines which query parameters are required before going next
     const requiredForNext: Record<StepKey, string[]> = {
         court: ["courtType", "courtLocation"],
-        date: ["courtType", "date"],
-        time: ["courtType", "date", "time"],
-        players: ["courtType", "date", "time", "players"],
-        confirm: ["courtType", "date", "time", "players"],
+        date: ["courtType", "courtLocation", "date"],
+        time: ["courtType", "courtLocation", "date", "time"],
+        players: ["courtType", "courtLocation", "date", "time", "players"],
+        confirm: ["courtType", "courtLocation", "date", "time", "players"],
     }
 
     return (
