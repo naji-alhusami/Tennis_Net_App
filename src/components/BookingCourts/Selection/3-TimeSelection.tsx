@@ -100,7 +100,7 @@ export default function TimeSelection({
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
-
+    console.log("bookedTimes:", bookedTimes)
     // Times Slot 60min from 08:00..22:00
     const times = useMemo(() => buildTimes(60, "08:00", "22:00"), [])
     const timesSet = useMemo(() => new Set(times), [times])

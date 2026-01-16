@@ -30,18 +30,17 @@ export default function BookingWizardFrame({
     friends,
     selectedPlayers,
     bookedTimes,
-    busyDates,
+    reservedDates,
     busyPlayerIds
 }: {
     step: StepKey
     friends: User[]
     selectedPlayers: PlayerLite[]
     bookedTimes: string[]
-    busyDates: string[]
+    reservedDates: string[]
     busyPlayerIds: string[]
 }) {
     const idx = useMemo(() => Math.max(0, ORDER.indexOf(step)), [step])
-
     const prevKey = idx > 0 ? ORDER[idx - 1] : null
     const nextKey = idx < ORDER.length - 1 ? ORDER[idx + 1] : null
 
@@ -54,7 +53,7 @@ export default function BookingWizardFrame({
                 return <CourtSelection />
 
             case "date":
-                return <DateSelection busyDates={busyDates} />
+                return <DateSelection reservedDates={reservedDates} />
 
             case "time":
                 return (

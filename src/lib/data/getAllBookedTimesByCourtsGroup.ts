@@ -2,7 +2,6 @@ import { CourtLocation, CourtType } from "@/generated/prisma";
 import prisma from "../prisma/prisma";
 import { twoDigitNumber } from "../utils/date";
 
-// Get Full Day Range (01-01-2026 00:00 -> 02-01-2026 00:00)
 const dayRangeLocal = (dateParam: string) => {
   const [y, m, d] = dateParam.split("-").map(Number);
 
@@ -26,26 +25,41 @@ export async function getAllBookedTimesByCourtsGroup({
     select: { id: true },
   });
 
+  const capacity = courts.length;
+
+  if (capacity === 0) return [];
+
+  const { startDay, endDay } = dayRangeLocal(dateParam);
+
+  // gte = Greater Than or Equal
+  // lt = Less Than
   const reservations = await prisma.reservation.findMany({
     where: {
-      courtId: { in: courts.map((court) => court.id) },
+      courtId: { in: courts.map((c) => c.id) },
+      start: { gte: startDay, lt: endDay },
     },
     select: { start: true, courtId: true },
   });
 
-  const { startDay, endDay } = dayRangeLocal(dateParam);
+  // "09:00" → { "court1", "court2" } === string, Set<string>
+  const counts = new Map<string, Set<string>>();
 
-  const filteredReservations = reservations.filter(
-    (reservation) => reservation.start >= startDay && reservation.start < endDay
-  );
-
-  const timeSlots: string[] = [];
-  for (const reservation of filteredReservations) {
+  for (const reservation of reservations) {
     const hours = twoDigitNumber(reservation.start.getHours());
     const minutes = twoDigitNumber(reservation.start.getMinutes());
+    const slot = `${hours}:${minutes}`;
 
-    timeSlots.push(`${hours}:${minutes}`);
+    if (!counts.has(slot)) counts.set(slot, new Set()); // {"09:00" => Set(0)}
+
+    counts.get(slot)!.add(reservation.courtId); // {"09:00" => "bdh34934578fdb"} the id is courtId
   }
 
-  return timeSlots;
+  // {"09:00" => "bdh34934578fdb"} || const [slot, courtIds] slot is "09:00" and courtIds is "bdh34934578fdb"
+  const fullyBooked: string[] = [];
+  // courtIds.size is the number of the courts reserved
+  for (const [slot, courtIds] of counts) {
+    if (courtIds.size >= capacity) fullyBooked.push(slot);
+  }
+
+  return fullyBooked;
 }

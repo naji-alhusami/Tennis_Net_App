@@ -39,6 +39,9 @@ export default async function BookingPage({
     const session = await auth()
     if (!session?.user?.id) redirect("/login")
 
+    const userId = session.user.id
+    console.log("userId:", userId);
+
     // get the param (step)
     const { step } = await params
     // get 404 if the param not of the array Steps
@@ -66,7 +69,6 @@ export default async function BookingPage({
     // Calendar Days availability: disable calendar days where the current user or selected players already have ANY reservation
     // ----------------------
 
-    const userId = session.user.id
     const reservedDates = await getReservedDatesByUserId(userId)
 
     // ----------------------
@@ -101,8 +103,9 @@ export default async function BookingPage({
     const dateISO = typeof searchParam.date === "string" ? searchParam.date : undefined
     const timeHHmm = typeof searchParam.time === "string" ? searchParam.time : undefined
 
-    // friends you show in the picker
     const friends = await getMyFriends(userId)
+    console.log("friends:", friends);
+
     const friendIds = friends.map((f) => f.id)
 
     // get busy ids for that slot (only among friends)
@@ -112,6 +115,8 @@ export default async function BookingPage({
         durationMinutes: 60,
         candidates: friendIds,
     })
+
+    // ----------------------
 
     // Gets the step number
     const currentStep = Steps.indexOf(step as StepKey)
@@ -137,9 +142,9 @@ export default async function BookingPage({
                 <BookingWizardFrame
                     step={step}
                     friends={friends}
-                    selectedPlayers={selectedPlayers}
-                    bookedTimes={bookedTimes}
                     reservedDates={reservedDates}
+                    bookedTimes={bookedTimes}
+                    selectedPlayers={selectedPlayers}
                     busyPlayerIds={busyPlayerIds}
                 />
             </div>

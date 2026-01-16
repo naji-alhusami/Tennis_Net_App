@@ -2,7 +2,7 @@ import prisma from "../prisma/prisma";
 import { isValidMongoObjectId } from "../utils/isValidMongoObjectId";
 
 export async function getMyFriends(userId: string) {
-  // never send invalid ids to Prisma
+  // To prevent sending invalid ids to Prisma
   if (!isValidMongoObjectId(userId)) return [];
 
   const friendships = await prisma.friendship.findMany({
@@ -17,9 +17,11 @@ export async function getMyFriends(userId: string) {
     },
   });
 
-  const friends = friendships.map((f) =>
-    f.userOneId === userId ? f.userTwo : f.userOne
+  const friends = friendships.map((friend) =>
+    friend.userOneId === userId ? friend.userTwo : friend.userOne
   );
+  console.log("friends:", friends);
 
-  return Array.from(new Map(friends.map((u) => [u.id, u])).values());
+  // return new Map(friends.map((friend) => [friend.id, friend])).values();
+  return friends;
 }
