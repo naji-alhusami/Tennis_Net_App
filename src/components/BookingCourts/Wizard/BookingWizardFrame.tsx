@@ -27,14 +27,14 @@ export type PlayerLite = {
 
 export default function BookingWizardFrame({
     step,
-    friends,
+    allFriends,
     selectedPlayers,
     bookedTimes,
     reservedDates,
     busyPlayerIds
 }: {
     step: StepKey
-    friends: User[]
+    allFriends: User[]
     selectedPlayers: PlayerLite[]
     bookedTimes: string[]
     reservedDates: string[]
@@ -61,7 +61,7 @@ export default function BookingWizardFrame({
                 )
 
             case "players":
-                return <PlayersSelection friends={friends} max={3} busyPlayerIds={busyPlayerIds} />
+                return <PlayersSelection allFriends={allFriends} max={3} busyPlayerIds={busyPlayerIds} />
 
             case "confirm":
                 return <ConfirmSelection selectedPlayers={selectedPlayers} />

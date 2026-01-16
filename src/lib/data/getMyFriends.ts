@@ -20,7 +20,6 @@ export async function getMyFriends(userId: string) {
   const friends = friendships.map((friend) =>
     friend.userOneId === userId ? friend.userTwo : friend.userOne
   );
-  console.log("friends:", friends);
 
   // return new Map(friends.map((friend) => [friend.id, friend])).values();
   return friends;

@@ -35,3 +35,15 @@ export function formatDateToISO(date: Date): string {
 
   return `${year}-${month}-${day}`;
 }
+
+// dateISO = "2026-01-22" and timeHHmm = "09:00" => Date representing 2026-01-22 09:00 (local)
+export function toDateTimeLocal(dateISO: string, timeHHmm: string) {
+  const [y, m, d] = dateISO.split("-").map(Number);
+  const [hh, mm] = timeHHmm.split(":").map(Number);
+  return new Date(y, m - 1, d, hh, mm, 0, 0);
+}
+
+// Adds minutes to a Date and returns a new Date
+export function addMinutesToDate(date: Date, minutes: number) {
+  return new Date(date.getTime() + minutes * 60_000);
+}

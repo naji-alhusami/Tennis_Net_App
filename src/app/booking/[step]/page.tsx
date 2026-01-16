@@ -8,7 +8,7 @@ import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNa
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 import { CourtLocation, CourtType } from "@/generated/prisma"
 import { getMyFriends } from "@/lib/data/getMyFriends"
-import { getPlayersNamesByIds } from "@/lib/data/getPlayerNameById"
+import { getSelectedPlayersNamesByIds } from "@/lib/data/getSelectedPlayersNamesByIds"
 import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
 import { getReservedDatesByUserId } from "@/lib/data/getReservedDatesByUserId"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
@@ -51,19 +51,15 @@ export default async function BookingPage({
     const searchParam = await searchParams
     const courtTypeParam = searchParam.courtType
     const courtLocationParam = searchParam.courtLocation
-    const dateParam = searchParam.date
-    const playersParam = searchParam.players
-
-    // ----------------------
-
-    const rawPlayerIds =
-        typeof playersParam === "string"
-            ? [playersParam]
-            : Array.isArray(playersParam)
-                ? playersParam
+    const playersParamIds =
+        typeof searchParam.players === "string"
+            ? [searchParam.players]
+            : Array.isArray(searchParam.players)
+                ? searchParam.players
                 : []
+    const dateParam = typeof searchParam.date === "string" ? searchParam.date : undefined
+    const timeParam = typeof searchParam.time === "string" ? searchParam.time : undefined
 
-    const selectedPlayers = await getPlayersNamesByIds(rawPlayerIds)
 
     // ----------------------
     // Calendar Days availability: disable calendar days where the current user or selected players already have ANY reservation
@@ -100,21 +96,21 @@ export default async function BookingPage({
 
     // ----------------------
 
-    const dateISO = typeof searchParam.date === "string" ? searchParam.date : undefined
-    const timeHHmm = typeof searchParam.time === "string" ? searchParam.time : undefined
+    // To get all the friends in the list
+    const allFriends = await getMyFriends(userId)
 
-    const friends = await getMyFriends(userId)
-    console.log("friends:", friends);
+    // To get all the selected friends for booking using searchParams in the list
+    const selectedPlayers = await getSelectedPlayersNamesByIds(playersParamIds)
 
-    const friendIds = friends.map((f) => f.id)
+    // const friendIds = allFriends.map((friend) => friend.id)
 
     // get busy ids for that slot (only among friends)
     const busyPlayerIds = await getBusyPlayerIdsAtSlot({
-        dateISO,
-        timeHHmm,
+        dateParam,
+        timeParam,
         durationMinutes: 60,
-        candidates: friendIds,
     })
+
 
     // ----------------------
 
@@ -141,7 +137,7 @@ export default async function BookingPage({
             <div className="mt-6">
                 <BookingWizardFrame
                     step={step}
-                    friends={friends}
+                    allFriends={allFriends}
                     reservedDates={reservedDates}
                     bookedTimes={bookedTimes}
                     selectedPlayers={selectedPlayers}

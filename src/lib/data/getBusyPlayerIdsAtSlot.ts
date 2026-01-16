@@ -1,55 +1,34 @@
-// src/lib/data/getBusyPlayerIdsAtSlot.ts
-import prisma from "../prisma/prisma"
-
-function parseSlotStart(dateISO: string, timeHHmm: string) {
-  const [y, m, d] = dateISO.split("-").map(Number)
-  const [hh, mm] = timeHHmm.split(":").map(Number)
-  return new Date(y, m - 1, d, hh, mm, 0, 0)
-}
-
-function addMinutes(date: Date, minutes: number) {
-  return new Date(date.getTime() + minutes * 60_000)
-}
+import prisma from "../prisma/prisma";
+import { addMinutesToDate, toDateTimeLocal } from "../utils/date";
 
 export async function getBusyPlayerIdsAtSlot(args: {
-  dateISO?: string
-  timeHHmm?: string
-  durationMinutes?: number
-  // Optional: to check only friends shown in the list
-  candidates?: string[]
+  dateParam?: string;
+  timeParam?: string;
+  durationMinutes?: number;
 }) {
-  const { dateISO, timeHHmm, durationMinutes = 60, candidates = [] } = args
+  const { dateParam, timeParam, durationMinutes = 60 } = args;
 
-  if (!dateISO || !timeHHmm) return []
+  if (!dateParam || !timeParam) return [];
 
-  const slotStart = parseSlotStart(dateISO, timeHHmm)
-  const slotEnd = addMinutes(slotStart, durationMinutes)
+  const slotStart = toDateTimeLocal(dateParam, timeParam);
+  const slotEnd = addMinutesToDate(slotStart, durationMinutes);
 
   const reservations = await prisma.reservation.findMany({
     where: {
-      // overlap: start < slotEnd AND end > slotStart
+      // start < slotEnd AND end > slotStart
       start: { lt: slotEnd },
       end: { gt: slotStart },
-
-      // Optional: reduce DB work if we only care about these users
-      ...(candidates.length
-        ? {
-            OR: [
-              { userId: { in: candidates } },
-              { playerIds: { hasSome: candidates } }, // scalar list filter
-            ],
-          }
-        : {}),
     },
     select: { userId: true, playerIds: true },
-  })
+  });
 
   // Build a unique list of busy user IDs (owner + all players)
-  const busy = new Set<string>()
-  for (const r of reservations) {
-    busy.add(r.userId)
-    for (const pid of r.playerIds) busy.add(pid)
+  const busyPlayers = new Set<string>();
+
+  for (const reservation of reservations) {
+    busyPlayers.add(reservation.userId);
+    for (const pid of reservation.playerIds) busyPlayers.add(pid);
   }
 
-  return [...busy]
+  return [...busyPlayers];
 }

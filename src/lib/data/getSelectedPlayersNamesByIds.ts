@@ -1,7 +1,7 @@
 import prisma from "../prisma/prisma";
 import { isValidMongoObjectId } from "../utils/isValidMongoObjectId";
 
-export async function getPlayersNamesByIds(ids: string[]) {
+export async function getSelectedPlayersNamesByIds(ids: string[]) {
   const checkIds = ids.filter(isValidMongoObjectId);
   if (checkIds.length === 0) return [];
 

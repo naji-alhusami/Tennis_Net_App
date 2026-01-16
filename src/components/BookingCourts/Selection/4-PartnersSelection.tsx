@@ -23,11 +23,11 @@ function initials(nameOrEmail?: string | null) {
 }
 
 export default function PlayersSelection({
-    friends,
+    allFriends,
     max = 3, // partners max = 3 (me + 3 partners = 4 total)
     busyPlayerIds
 }: {
-    friends: Friend[]
+    allFriends: Friend[]
     max?: number
     busyPlayerIds: string[]
 }) {
@@ -40,7 +40,7 @@ export default function PlayersSelection({
     // All players from URL (may contain duplicates / invalid ids if user plays with URL)
     const players = sp.getAll("players")
 
-    const uniqueFriends = friends
+    const uniqueFriends = allFriends
 
     // Build a quick lookup of allowed friend ids
     const allowedIds = useMemo(() => new Set(uniqueFriends.map((f) => f.id)), [uniqueFriends])

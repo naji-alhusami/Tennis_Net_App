@@ -5,12 +5,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { CreateReservationValidator } from "@/lib/validators/ReservationValidators";
 import { CourtLocation, CourtType } from "@/generated/prisma";
-
-function toDateTimeLocal(dateISO: string, timeHHmm: string) {
-  const [y, m, d] = dateISO.split("-").map(Number);
-  const [hh, mm] = timeHHmm.split(":").map(Number);
-  return new Date(y, m - 1, d, hh, mm, 0, 0);
-}
+import { addMinutesToDate, toDateTimeLocal } from "@/lib/utils/date";
 
 function overlaps(startA: Date, endA: Date, startB: Date, endB: Date) {
   return startA < endB && endA > startB;
@@ -49,7 +44,7 @@ export async function POST(request: Request) {
 
   // 3) compute start/end
   const start = toDateTimeLocal(date, time);
-  const end = new Date(start.getTime() + durationMinutes * 60_000);
+  const end = addMinutesToDate(start, durationMinutes);
 
   // 4) get all courts for this group (type + location)
   const courts = await prisma.court.findMany({
@@ -96,7 +91,7 @@ export async function POST(request: Request) {
       { status: 409 }
     );
   }
-  
+
   // 7) create reservation with the chosen courtId
   const reservation = await prisma.reservation.create({
     data: {
