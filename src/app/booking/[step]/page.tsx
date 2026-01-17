@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
 
-import { BOOKING_STEPS, StepKey } from "@/lib/data/steps"
+import { BOOKING_STEPS, type StepKey } from "@/lib/data/steps"
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
 import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
@@ -135,9 +135,9 @@ export default async function BookingPage({
             <div className="mt-6">
                 <BookingWizardFrame
                     step={step}
-                    allFriends={allFriends}
                     reservedDates={reservedDates}
                     bookedTimes={bookedTimes}
+                    allFriends={allFriends}
                     selectedPlayers={selectedPlayers}
                     busyPlayerIds={busyPlayerIds}
                 />

@@ -1,40 +1,7 @@
-// Cards + framer-motion
 "use client"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 
-function StepCard({
-  title,
-  children,
-  disabled = false,
-}: {
-  title: string
-  children: React.ReactNode
-  disabled?: boolean
-}) {
-  return (
-    <div
-      className={[
-        "rounded-2xl bg-white border shadow-sm overflow-hidden",
-        disabled ? "opacity-50 pointer-events-none select-none" : "",
-      ].join(" ")}
-    >
-      <h1 className="font-bold text-center uppercase py-5 text-lg px-4 border-b">{title}</h1>
-      <div className="px-4 py-4">{children}</div>
-    </div>
-  )
-}
-
-const cardVariants = {
-  enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
-  center: { x: 0, opacity: 1 },
-  exit: (direction: number) => ({ x: direction > 0 ? -60 : 60, opacity: 0 }),
-}
-
-const xlPeek = {
-  enter: ({ dir }: { dir: number; dim: boolean }) => ({ x: dir > 0 ? 40 : -40, opacity: 0, scale: 0.98 }),
-  center: ({ dim }: { dir: number; dim: boolean }) => ({ x: 0, opacity: dim ? 0.55 : 1, scale: dim ? 0.98 : 1 }),
-  exit: ({ dir }: { dir: number; dim: boolean }) => ({ x: dir > 0 ? -40 : 40, opacity: 0, scale: 0.98 }),
-}
+import { StepCard, stepTitle } from "./StepCardWizard"
 
 export function WizardShell({
   step,
@@ -50,21 +17,18 @@ export function WizardShell({
   renderStep: (key: string) => React.ReactNode
 }) {
 
-  function stepTitle(key: string) {
-    switch (key) {
-      case "confirm":
-        return "REVIEW & CONFIRM"
-      case "players":
-        return "SELECT YOUR PARTNERS"
-      case "time":
-        return "SELECT YOUR TIME"
-      case "date":
-        return "SELECT YOUR DATE"
-      case "court":
-        return "SELECT YOUR COURT"
-      default:
-        return `SELECT YOUR ${key}`
-    }
+  // The motion of Mobile
+  const cardMobileVariants = {
+    enter: (direction: number) => ({ x: direction > 0 ? 60 : -60, opacity: 0 }),
+    center: { x: 0, opacity: 1 },
+    exit: (direction: number) => ({ x: direction > 0 ? -60 : 60, opacity: 0 }),
+  }
+
+  // The motion of Desktop
+  const cardDesktopVariants = {
+    enter: ({ dir }: { dir: number; dim: boolean }) => ({ x: dir > 0 ? 40 : -40, opacity: 0, scale: 0.98 }),
+    center: ({ dim }: { dir: number; dim: boolean }) => ({ x: 0, opacity: dim ? 0.55 : 1, scale: dim ? 0.98 : 1 }),
+    exit: ({ dir }: { dir: number; dim: boolean }) => ({ x: dir > 0 ? -40 : 40, opacity: 0, scale: 0.98 }),
   }
 
   return (
@@ -75,7 +39,7 @@ export function WizardShell({
           <motion.div
             key={step}
             custom={direction}
-            variants={cardVariants}
+            variants={cardMobileVariants}
             initial="enter"
             animate="center"
             exit="exit"
@@ -97,7 +61,7 @@ export function WizardShell({
                   layout
                   layoutId={`step-${prevKey}`}
                   custom={{ dir: direction, dim: true }}
-                  variants={xlPeek}
+                  variants={cardDesktopVariants}
                   initial="enter"
                   animate="center"
                   exit="exit"
@@ -120,7 +84,7 @@ export function WizardShell({
                 layout
                 layoutId={`step-${step}`}
                 custom={{ dir: direction, dim: false }}
-                variants={xlPeek}
+                variants={cardDesktopVariants}
                 initial="enter"
                 animate="center"
                 exit="exit"
@@ -138,7 +102,7 @@ export function WizardShell({
                   layout
                   layoutId={`step-${nextKey}`}
                   custom={{ dir: direction, dim: true }}
-                  variants={xlPeek}
+                  variants={cardDesktopVariants}
                   initial="enter"
                   animate="center"
                   exit="exit"
