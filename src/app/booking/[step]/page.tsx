@@ -1,21 +1,16 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@/auth"
 
-// import { isValidMongoObjectId } from "@/lib/utils/isValidMongoObjectId"
-
+import { BOOKING_STEPS, StepKey } from "@/lib/data/steps"
 import BookingSteps from "@/components/BookingCourts/Steps/BookingSteps"
-import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
 import BookingWizardFrame from "@/components/BookingCourts/Wizard/BookingWizardFrame"
-import { CourtLocation, CourtType } from "@/generated/prisma"
+import { BookingNavButton } from "@/components/BookingCourts/Selection/BookingNavButton"
+import { getReservedDatesByUserId } from "@/lib/data/getReservedDatesByUserId"
+import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getSelectedPlayersNamesByIds } from "@/lib/data/getSelectedPlayersNamesByIds"
-import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCourtsGroup"
-import { getReservedDatesByUserId } from "@/lib/data/getReservedDatesByUserId"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
-
-// Defines all the Steps and as const for making the values fixed
-const Steps = ["court", "date", "time", "players", "confirm"] as const
-type StepKey = (typeof Steps)[number]
+import { CourtLocation, CourtType } from "@/generated/prisma"
 
 type BookingSearchParams = Promise<{
     _dir?: string
@@ -42,10 +37,11 @@ export default async function BookingPage({
     const userId = session.user.id
     console.log("userId:", userId);
 
+    const stepKeys = BOOKING_STEPS.map((s) => s.key)
     // get the param (step)
     const { step } = await params
     // get 404 if the param not of the array Steps
-    if (!Steps.includes(step)) notFound()
+    if (!stepKeys.includes(step)) notFound()
 
     // get the searchParams values
     const searchParam = await searchParams
@@ -117,10 +113,10 @@ export default async function BookingPage({
     // ----------------------
 
     // Gets the step number
-    const currentStep = Steps.indexOf(step as StepKey)
+    const currentStep = stepKeys.indexOf(step as StepKey)
 
-    const backTo = `/booking/${Steps[Math.max(0, currentStep - 1)]}`
-    const nextTo = `/booking/${Steps[Math.min(Steps.length - 1, currentStep + 1)]}`
+    const backTo = `/booking/${stepKeys[Math.max(0, currentStep - 1)]}`
+    const nextTo = `/booking/${stepKeys[Math.min(stepKeys.length - 1, currentStep + 1)]}`
 
     // Defines which query parameters are required before going next
     const requiredForNext: Record<StepKey, string[]> = {
@@ -146,6 +142,8 @@ export default async function BookingPage({
                     busyPlayerIds={busyPlayerIds}
                 />
             </div>
+
+            {/* Next and Back Buttons */}
             <div className="absolute bottom-5 md:bottom-25 left-1/2 -translate-x-1/2 w-[min(28rem,calc(100vw-2rem))] max-w-lg">
                 <div className="p-4 rounded-2xl bg-white border shadow-sm">
                     <div className="grid grid-cols-2 gap-3">
@@ -169,6 +167,7 @@ export default async function BookingPage({
                     </div>
                 </div>
             </div>
+
         </div>
     )
 }

@@ -1,10 +1,10 @@
 "use client"
 import { use, useState } from 'react'
 import { useRouter, useSearchParams } from "next/navigation"
+import axios from 'axios'
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import axios from 'axios'
 import { Spinner } from '@/components/ui/spinner'
 
 type BookingNavButtonProps = {
@@ -33,6 +33,7 @@ export function BookingNavButton({
   const spHook = useSearchParams()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  // In each step we check :Does this parameter exist and have a value? using this, !! convert the const to boolean
   const hasRequiredParams = requiredSearchParams.every((key) => !!spHook.get(key))
 
   const isDisabled = isLoading || (variant === "back" && currentStep === 0) ||

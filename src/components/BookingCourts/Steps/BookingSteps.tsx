@@ -1,30 +1,24 @@
 "use client"
-import { motion, useReducedMotion } from "framer-motion"
 import { useSearchParams } from "next/navigation"
+import { motion, useReducedMotion } from "framer-motion"
 
-const STEPS = [
-  { key: "court", label: "Court" },
-  { key: "date", label: "Date" },
-  { key: "time", label: "Time" },
-  { key: "partners", label: "Partners" },
-  { key: "confirm", label: "Confirm" },
-] as const
+import { BOOKING_STEPS } from "@/lib/data/steps"
 
-type Props = { currentStep: number }
+type BookingStepsProps = { currentStep: number }
 
-export default function BookingSteps({ currentStep }: Props) {
+export default function BookingSteps({ currentStep }: BookingStepsProps) {
   const reduceMotion = useReducedMotion()
   const sp = useSearchParams()
 
-  const progress = currentStep / (STEPS.length - 1)
+  const progress = currentStep / (BOOKING_STEPS.length - 1)
 
   // direction from URL: "1" (next) or "-1" (back)
   const dir = sp.get("__dir")
   const goingBack = dir === "-1"
 
   const prevIndex = goingBack ? currentStep + 1 : currentStep - 1
-  const clampedPrevIndex = Math.min(STEPS.length - 1, Math.max(0, prevIndex))
-  const initialScaleX = clampedPrevIndex / (STEPS.length - 1)
+  const clampedPrevIndex = Math.min(BOOKING_STEPS.length - 1, Math.max(0, prevIndex))
+  const initialScaleX = clampedPrevIndex / (BOOKING_STEPS.length - 1)
 
   return (
     <div className="w-full">
@@ -51,7 +45,7 @@ export default function BookingSteps({ currentStep }: Props) {
 
           {/* Steps */}
           <div className="relative flex items-start justify-between">
-            {STEPS.map((step, index) => {
+            {BOOKING_STEPS.map((step, index) => {
               const isActive = index === currentStep
               const isDone = index < currentStep
 
