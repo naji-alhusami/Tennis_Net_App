@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { twoDigitNumber } from "@/lib/utils/date"
+import { parseLocalDate, twoDigitNumber } from "@/lib/utils/date"
 
 // =========
 //  HELPERS
@@ -46,15 +46,6 @@ function isSameDay(a: Date, b: Date) {
 function isPastSlotToday(selectedDate: Date, slotTime: string, now = new Date()) {
     if (!isSameDay(selectedDate, now)) return false
     return toMinutes(slotTime) < now.getHours() * 60 + now.getMinutes()
-}
-
-
-// URL "YYYY-MM-DD" -> Date in local time
-function parseLocalDate(iso: string | null) {
-    if (!iso) return null
-    const [y, m, d] = iso.split("-").map(Number)
-    if (!y || !m || !d) return null
-    return new Date(y, m - 1, d)
 }
 
 // For display header: Date -> "YYYY-MM-DD"

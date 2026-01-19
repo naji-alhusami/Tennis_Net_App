@@ -28,7 +28,7 @@ export function twoDigitNumber(number: number): string {
 }
 
 // Formats a Date to a local ISO date string (YYYY-MM-DD).
-export function formatDateToISO(date: Date): string {
+export function formatDateToYYYMMDD(date: Date): string {
   const year = date.getFullYear();
   const month = twoDigitNumber(date.getMonth() + 1);
   const day = twoDigitNumber(date.getDate());
@@ -46,4 +46,11 @@ export function toDateTimeLocal(dateISO: string, timeHHmm: string) {
 // Adds minutes to a Date and returns a new Date
 export function addMinutesToDate(date: Date, minutes: number) {
   return new Date(date.getTime() + minutes * 60_000);
+}
+// "2026-01-19" → Date(2026-01-19 00:00:00 local)
+export function parseLocalDate(iso: string | null) {
+    if (!iso) return undefined
+    const [y, m, d] = iso.split("-").map(Number)
+    if (!y || !m || !d) return undefined
+    return new Date(y, m - 1, d)
 }

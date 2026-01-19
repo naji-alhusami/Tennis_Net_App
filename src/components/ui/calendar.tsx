@@ -210,6 +210,7 @@ function CalendarDayButton({
       data-today={modifiers.today}
       className={cn(
         "flex aspect-square size-auto w-full min-w-(--cell-size) rounded-md",
+        "cursor-pointer",
         "leading-none font-normal hover:bg-accent hover:text-accent-foreground",
         "m-[2px]",
 

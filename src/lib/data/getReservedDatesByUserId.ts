@@ -1,5 +1,5 @@
 import prisma from "../prisma/prisma";
-import { formatDateToISO } from "../utils/date";
+import { formatDateToYYYMMDD } from "../utils/date";
 
 export async function getReservedDatesByUserId(userId: string) {
   // it returns for me all the reservation by searching using userId OR inside playerIds
@@ -10,5 +10,5 @@ export async function getReservedDatesByUserId(userId: string) {
     select: { start: true },
   });
 
-  return reservations.map((reservation) => formatDateToISO(reservation.start));
+  return reservations.map((reservation) => formatDateToYYYMMDD(reservation.start));
 }
