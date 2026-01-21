@@ -10,8 +10,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { type UserLite } from "@/lib/types/Booking"
 
-type Friend = { id: string; name: string | null; image: string | null; email: string | null }
+// =========
+//  HELPERS
+// =========
 
 // Helper that creates short initials text (1–2 letters) from a person’s name or email.
 function initials(nameOrEmail?: string | null) {
@@ -24,10 +27,10 @@ function initials(nameOrEmail?: string | null) {
 
 export default function PlayersSelection({
     allFriends,
-    max = 3, // partners max = 3 (me + 3 partners = 4 total)
+    max = 3, // partners max = 3 (User Loggedin + 3 partners = 4 total)
     busyPlayerIds
 }: {
-    allFriends: Friend[]
+    allFriends: UserLite[]
     max?: number
     busyPlayerIds: string[]
 }) {
@@ -43,7 +46,7 @@ export default function PlayersSelection({
     const uniqueFriends = allFriends
 
     // Build a quick lookup of allowed friend ids
-    const allowedIds = useMemo(() => new Set(uniqueFriends.map((f) => f.id)), [uniqueFriends])
+    const allowedIds = useMemo(() => new Set(uniqueFriends.map((friend) => friend.id)), [uniqueFriends])
 
     // players is a list of selected IDs: ["id1", "id3"]
     // selected turns that list into a Set: Set { "id1", "id3" }
@@ -79,7 +82,7 @@ export default function PlayersSelection({
         capped.forEach((id) => params.append("players", id))
 
         const qs = params.toString()
-        router.replace(qs ? `${pathname}?${qs}` : pathname)
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     }, [sp, router, pathname, allowedIds, max])
 
     // Friends that match the search
@@ -110,10 +113,13 @@ export default function PlayersSelection({
 
         // rewrite players list cleanly
         params.delete("players")
-            ;[...current].forEach((pid) => params.append("players", pid))
+
+        for (const pid of current) {
+            params.append("players", pid)
+        }
 
         const qs = params.toString()
-        router.replace(qs ? `${pathname}?${qs}` : pathname)
+        router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
     }
 
     // Full objects of selected players
@@ -156,7 +162,7 @@ export default function PlayersSelection({
                     />
                 </div>
 
-                <div className="h-8">
+                <div className="h-14">
                     {/* Selected friends */}
                     {selectedFriends.length > 0 && (
                         <div className="flex flex-wrap gap-2">
@@ -181,7 +187,7 @@ export default function PlayersSelection({
             </CardHeader>
 
             <CardContent>
-                <ScrollArea className="h-[320px]">
+                <ScrollArea className="h-[220px]">
                     <div className="space-y-2">
                         {filtered.map((f) => {
                             const isSelected = selected.has(f.id)
@@ -240,7 +246,7 @@ export default function PlayersSelection({
                 </ScrollArea>
 
                 {players.length >= max && (
-                    <div className="mt-3 text-xs text-muted-foreground">
+                    <div className="mt-3 text-xs text-muted-foreground text-red-500 text-center">
                         You reached the maximum ({max}) partners for this booking.
                     </div>
                 )}

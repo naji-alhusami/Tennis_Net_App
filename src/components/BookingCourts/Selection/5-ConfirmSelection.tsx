@@ -11,7 +11,7 @@ import {
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table"
 import { Separator } from "@/components/ui/separator"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { type PlayerLite } from "../Wizard/BookingWizardFrame"
+import { type PlayerLite } from "@/lib/types/Booking"
 
 export default function ConfirmSelection({ selectedPlayers }: { selectedPlayers: PlayerLite[] }) {
     const sp = useSearchParams()

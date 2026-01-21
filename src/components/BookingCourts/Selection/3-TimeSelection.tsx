@@ -206,7 +206,7 @@ export default function TimeSelection({
                     </div>
                 </div>
 
-                <div className="pt-8 flex flex-wrap gap-3 text-xs">
+                <div className="pt-8 flex flex-wrap gap-3 text-xs items-center justify-center">
                     <span className="flex items-center gap-4">
                         <span className="h-3 w-3 rounded bg-green-500" /> Available
                     </span>
