@@ -6,34 +6,28 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { parseLocalDate, twoDigitNumber } from "@/lib/utils/date"
+import { formatDateToYYYMMDD, parseLocalDate, toMinutes, twoDigitNumber } from "@/lib/utils/date"
 
 // =========
 //  HELPERS
 // =========
 
-// "HH:MM" -> minutes since midnight (To check if a time is in the past)
-function toMinutes(hhmm: string) {
-    const [h, m] = hhmm.split(":").map(Number)
-    return h * 60 + m
-}
-
 // Build time slots (From 08:00 to 22:00)
 function buildTimes(stepMinutes = 60, start = "08:00", end = "22:00") {
-    const out: string[] = []
-    let cur = toMinutes(start)
+    const times: string[] = []
+    let currentMin = toMinutes(start)
     const endMin = toMinutes(end)
 
-    while (cur < endMin) {
-        const h = Math.floor(cur / 60)
-        const m = cur % 60
-        out.push(`${twoDigitNumber(h)}:${twoDigitNumber(m)}`)
-        cur += stepMinutes
+    while (currentMin < endMin) {
+        const h = Math.floor(currentMin / 60)
+        const m = currentMin % 60
+        times.push(`${twoDigitNumber(h)}:${twoDigitNumber(m)}`)
+        currentMin += stepMinutes
     }
-    return out
+    return times
 }
 
-// It checks whether two dates are on the same calendar day
+// It checks whether two dates are on the same calendar day (The selected date and today)
 function isSameDay(a: Date, b: Date) {
     return (
         a.getFullYear() === b.getFullYear() &&
@@ -43,41 +37,36 @@ function isSameDay(a: Date, b: Date) {
 }
 
 // If selected date is today, block times earlier than "now"
-function isPastSlotToday(selectedDate: Date, slotTime: string, now = new Date()) {
+function isPastSlotToday(selectedDate: Date, selectedTime: string, now = new Date()) {
     if (!isSameDay(selectedDate, now)) return false
-    return toMinutes(slotTime) < now.getHours() * 60 + now.getMinutes()
-}
 
-// For display header: Date -> "YYYY-MM-DD"
-function formatYYYYMMDD(d: Date) {
-    const y = d.getFullYear()
-    const m = String(d.getMonth() + 1).padStart(2, "0")
-    const day = String(d.getDate()).padStart(2, "0")
-    return `${y}-${m}-${day}`
+    const nowTime = `${twoDigitNumber(now.getHours())}:${twoDigitNumber(now.getMinutes())}`
+
+    return toMinutes(selectedTime) < toMinutes(nowTime)
 }
 
 // Decide whether a time is allowed right now
 function isInvalidTime({
-    time,
+    selectedTime,
     timesSet,
     bookedSet,
     selectedDate,
     now,
 }: {
-    time: string
+    selectedTime: string
     timesSet: Set<string>
     bookedSet: Set<string>
     selectedDate: Date
     now: Date
 }) {
     // Not even part of the generated slots
-    if (!timesSet.has(time)) return true
+    if (!timesSet.has(selectedTime)) return true
 
     // Already reserved/booked
-    if (bookedSet.has(time)) return true
+    if (bookedSet.has(selectedTime)) return true
 
     // In the past (only matters if selected day is today)
-    if (isPastSlotToday(selectedDate, time, now)) return true
+    if (isPastSlotToday(selectedDate, selectedTime, now)) return true
 
     return false
 }
@@ -91,6 +80,8 @@ export default function TimeSelection({
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const now = new Date()
+
     // Times Slot 60min from 08:00..22:00
     const times = useMemo(() => buildTimes(60, "08:00", "22:00"), [])
     const timesSet = useMemo(() => new Set(times), [times])
@@ -99,9 +90,12 @@ export default function TimeSelection({
     const bookedSet = useMemo(() => new Set(bookedTimes), [bookedTimes])
 
     // Date comes from URL
+    const dateParam = searchParams.get("date")
+
     const selectedDate = useMemo(() => {
-        return parseLocalDate(searchParams.get("date")) ?? new Date()
-    }, [searchParams])
+        const parsed = dateParam ? parseLocalDate(dateParam) : null
+        return parsed ?? new Date()
+    }, [dateParam])
 
     // Current time param (raw from URL)
     const selectedTimeParam = searchParams.get("time") ?? ""
@@ -109,17 +103,17 @@ export default function TimeSelection({
     // A safe, controlled value for UI, keep it only if it's valid, otherwise make it "" so nothing appears selected
     const selectedTimeValue = useMemo(() => {
         if (!selectedTimeParam) return ""
-        const now = new Date()
 
-        return isInvalidTime({
-            time: selectedTimeParam,
+        const invalid = isInvalidTime({
+            selectedTime: selectedTimeParam,
             timesSet,
             bookedSet,
             selectedDate,
-            now,
+            now: new Date(),
         })
-            ? ""
-            : selectedTimeParam
+
+        if (invalid) return ""
+        return selectedTimeParam
     }, [selectedTimeParam, timesSet, bookedSet, selectedDate])
 
     // URL hardening
@@ -128,34 +122,35 @@ export default function TimeSelection({
         const timeParam = params.get("time")
         const dateParam = params.get("date") // if someone removes date
 
+        // Replace URL without scroll
+        const replaceQuery = () => {
+            const qs = params.toString()
+            router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false })
+        }
+
         // If date is missing, time should not exist
         if (!dateParam && timeParam) {
             params.delete("time")
-            const qs = params.toString()
-            router.replace(qs ? `${pathname}?${qs}` : pathname)
+            replaceQuery()
             return
         }
 
         // If there is no time in URL, nothing to fix
         if (!timeParam) return
 
-        const now = new Date()
-
         // If time is invalid (not a slot / booked / past), remove it from URL
         const invalid = isInvalidTime({
-            time: timeParam,
+            selectedTime: timeParam,
             timesSet,
             bookedSet,
             selectedDate,
-            now,
+            now: new Date(),
         })
 
         if (!invalid) return
 
         params.delete("time")
-        const qs = params.toString()
-
-        router.replace(qs ? `${pathname}?${qs}` : pathname)
+        replaceQuery()
     }, [searchParams, router, pathname, timesSet, bookedSet, selectedDate])
 
     // Click handler
@@ -171,7 +166,7 @@ export default function TimeSelection({
         <Card className="rounded-2xl">
             <CardHeader className="space-y-1">
                 <div className="text-amber-600 text-center text-sm font-bold">
-                    {formatYYYYMMDD(selectedDate)}
+                    {formatDateToYYYMMDD(selectedDate)}
                 </div>
                 <div className="text-amber-600 text-center text-xs font-bold">
                     60 minutes
@@ -182,8 +177,6 @@ export default function TimeSelection({
                 <div className="max-h-50 overflow-y-auto pr-1">
                     <div className="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-4">
                         {times.map((time) => {
-                            const now = new Date()
-
                             const isBooked = bookedSet.has(time)
                             const isPast = isPastSlotToday(selectedDate, time, now)
                             const selected = selectedTimeValue === time

@@ -47,10 +47,17 @@ export function toDateTimeLocal(dateISO: string, timeHHmm: string) {
 export function addMinutesToDate(date: Date, minutes: number) {
   return new Date(date.getTime() + minutes * 60_000);
 }
+
 // "2026-01-19" → Date(2026-01-19 00:00:00 local)
 export function parseLocalDate(iso: string | null) {
-    if (!iso) return undefined
-    const [y, m, d] = iso.split("-").map(Number)
-    if (!y || !m || !d) return undefined
-    return new Date(y, m - 1, d)
+  if (!iso) return undefined;
+  const [y, m, d] = iso.split("-").map(Number);
+  if (!y || !m || !d) return undefined;
+  return new Date(y, m - 1, d);
+}
+
+// "HH:MM" -> minutes since midnight (To check if a time is in the past)
+export function toMinutes(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number);
+  return h * 60 + m;
 }
