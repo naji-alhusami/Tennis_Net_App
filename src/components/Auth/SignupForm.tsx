@@ -56,32 +56,6 @@ export default function SignupForm() {
             setIsLoading(false);
         }
     };
-    // const onSubmit = async (values: SignupFormData) => {
-    //     try {
-    //         setIsLoading(true);
-    //         setSignupError(null);
-
-    //         const { data } = await axios.post("/api/signup", values);
-
-    //         if (data.error) {
-    //             setSignupError(data.error);
-    //             return;
-    //         }
-
-    //         router.push(`/auth/role?userId=${data.user.id}`);
-    //     } catch (error) {
-    //         let message = "Something went wrong. Please try again.";
-
-    //         if (axios.isAxiosError(error)) {
-    //             const errData = error.response?.data as { error?: string };
-    //             if (errData?.error) message = errData.error;
-    //         }
-
-    //         setSignupError(message);
-    //     } finally {
-    //         setIsLoading(false);
-    //     }
-    // };
 
     return (
         <div className="w-full max-w-lg rounded-2xl bg-white/85 backdrop-blur-sm shadow-xl border border-gray-200 p-8 sm:p-10">

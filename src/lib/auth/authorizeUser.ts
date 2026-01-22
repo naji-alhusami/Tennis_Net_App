@@ -14,7 +14,7 @@ export async function authorizeUser(expectedRole?: "PLAYER" | "COACH") {
 
   // 2) Logged in but no role in DB: go to choose role
   if (!dbUser?.role) {
-    redirect("/auth/role");
+    redirect("/auth/profile");
   }
 
   // 3) Role mismatch: redirect to correct dashboard

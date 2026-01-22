@@ -13,5 +13,5 @@ export default async function UserRouterPage() {
     }
 
     // Fallback if somehow role is something else
-    redirect("/auth/role");
+    redirect("/auth/profile");
 }

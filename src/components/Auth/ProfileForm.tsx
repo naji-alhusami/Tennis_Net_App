@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import {
-    RoleAuthValidator,
-    type RoleFormData,
+    ProfileValidator,
+    type ProfileData,
 } from "@/lib/validators/AccountValidators";
 import { cn } from "@/lib/utils";
 import {
@@ -20,6 +20,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Button } from "@/components/ui/button";
 import { pacifico } from "@/app/fonts";
 import {
@@ -31,24 +32,29 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { Input } from "../ui/input";
 
-export default function RoleForm() {
+export default function ProfileForm() {
+    const { data: session } = useSession();
+    console.log("session:", session?.user.name)
+
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [roleError, setRoleError] = useState<string | null>(null);
 
-    const form = useForm<RoleFormData>({
-        resolver: zodResolver(RoleAuthValidator),
+    const form = useForm<ProfileData>({
+        resolver: zodResolver(ProfileValidator),
         defaultValues: { role: undefined },
     });
 
-    const onSubmit = async (values: RoleFormData) => {
+    const onSubmit = async (values: ProfileData) => {
         try {
             setIsLoading(true);
             setRoleError(null);
 
-            const { data } = await axios.post("/api/role", {
+            const { data } = await axios.post("/api/profile", {
                 role: values.role,
             });
 
@@ -58,8 +64,8 @@ export default function RoleForm() {
             }
 
             // if (data.isOAuth) {
-                toast.success("Role Saved Successfully.");
-                router.push("/user");
+            toast.success("Profile Information Saved Successfully");
+            router.push("/user");
             // } else {
             //     toast.success("Signup successful! Please check your email to verify your account.");
             //     router.push("/auth/login");
@@ -105,11 +111,27 @@ export default function RoleForm() {
                             pacifico.className
                         )}
                     >
-                        Role
+                        Profile
                     </h1>
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Full Name</FormLabel>
+                                        <FormControl>
+                                            <Input type="text" placeholder="Your Name" autoComplete="name" {...field} />
+                                        </FormControl>
+                                        <div className="h-5">
+                                            <FormMessage />
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+
                             <FormField
                                 control={form.control}
                                 name="role"
@@ -140,6 +162,12 @@ export default function RoleForm() {
                                     <p className="text-md text-red-600 font-bold">{roleError}</p>
                                 )}
                             </div>
+
+                            <Field>
+                                <FieldLabel htmlFor="picture">Picture</FieldLabel>
+                                <Input id="picture" type="file" />
+                                {/* <FieldDescription>Select a picture to upload.</FieldDescription> */}
+                            </Field>
 
                             <Button
                                 type="submit"
