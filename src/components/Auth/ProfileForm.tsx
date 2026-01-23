@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
+// import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Button } from "@/components/ui/button";
 import { pacifico } from "@/app/fonts";
 import {
@@ -36,30 +36,42 @@ import { useSession } from "next-auth/react";
 import { Input } from "../ui/input";
 
 export default function ProfileForm() {
-    const { data: session } = useSession();
+    const fileId = useId()
+    console.log(fileId)
+    const [file, setFile] = useState<File | null>(null)
+    const { status, data: session } = useSession();
     console.log("session:", session?.user.name)
+    console.log("status:", status)
 
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [roleError, setRoleError] = useState<string | null>(null);
+    // const [roleError, setRoleError] = useState<string | null>(null);
 
     const form = useForm<ProfileData>({
         resolver: zodResolver(ProfileValidator),
-        defaultValues: { role: undefined },
+        defaultValues: { name: "", role: undefined, image: undefined }
     });
+
+    useEffect(() => {
+        const name = session?.user?.name
+
+        if (!name) return
+        form.setValue("name", name, { shouldValidate: true, shouldDirty: false })
+
+    }, [session?.user?.name, form])
 
     const onSubmit = async (values: ProfileData) => {
         try {
             setIsLoading(true);
-            setRoleError(null);
+            // setRoleError(null);
 
             const { data } = await axios.post("/api/profile", {
                 role: values.role,
             });
 
             if (data.error) {
-                setRoleError(data.error);
+                // setRoleError(data.error);
                 return;
             }
 
@@ -75,16 +87,18 @@ export default function ProfileForm() {
             if (axios.isAxiosError(error)) {
                 const message = error.response?.data?.error;
                 if (message) {
-                    setRoleError(message);
+                    // setRoleError(message);
                     return;
                 }
             }
 
-            setRoleError("Something went wrong. Please try again.");
+            // setRoleError("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
+
+    if (status === "loading") return null
 
     return (
         <div className="relative py-20">
@@ -151,23 +165,52 @@ export default function ProfileForm() {
                                                 <SelectItem value="COACH">Coach</SelectItem>
                                             </SelectContent>
                                         </Select>
-
-                                        <FormMessage />
+                                        <div className="h-5">
+                                            <FormMessage />
+                                        </div>
                                     </FormItem>
                                 )}
                             />
 
-                            <div className="h-2 text-center">
+                            {/* <div className="h-2 text-center">
                                 {roleError && (
                                     <p className="text-md text-red-600 font-bold">{roleError}</p>
                                 )}
-                            </div>
+                            </div> */}
 
-                            <Field>
-                                <FieldLabel htmlFor="picture">Picture</FieldLabel>
-                                <Input id="picture" type="file" />
-                                {/* <FieldDescription>Select a picture to upload.</FieldDescription> */}
-                            </Field>
+                            <FormField
+                                control={form.control}
+                                name="image"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel htmlFor={fileId}>Picture</FormLabel>
+                                        <input
+                                            id={fileId}
+                                            type="file"
+                                            accept="image/*"
+                                            className="sr-only"
+                                            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                                        />
+
+                                        <div className="flex h-10 w-full items-center gap-3 rounded-md border bg-background px-3 text-sm">
+                                            <Button asChild type="button" variant="outline" size="sm">
+                                                <label htmlFor={fileId} className="cursor-pointer">
+                                                    Choose file
+                                                </label>
+                                            </Button>
+
+                                            <span className="text-muted-foreground truncate">
+                                                {file ? file.name : "No file chosen"}
+                                            </span>
+                                        </div>
+                                        <div className="h-5">
+                                            <FormMessage />
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+
+
 
                             <Button
                                 type="submit"
@@ -183,7 +226,7 @@ export default function ProfileForm() {
                                         <span>Please wait...</span>
                                     </span>
                                 ) : (
-                                    "Set Role"
+                                    "Update Profile"
                                 )}
                             </Button>
                         </form>
