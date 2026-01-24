@@ -1,39 +1,36 @@
 import { NextResponse } from "next/server";
-import prisma from "../../../lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { auth } from "@/auth";
 import { UserRole } from "@/generated/prisma";
+import { put } from "@vercel/blob";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/jpg"];
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/jpg"]);
 
 export async function POST(request: Request) {
   try {
     const session = await auth();
-
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const userId = session.user.id;
 
     const formData = await request.formData();
 
     const name = String(formData.get("name") ?? "").trim();
     const roleRaw = String(formData.get("role") ?? "").trim();
-    const image = formData.get("image"); // File | null
+    const image = formData.get("image");
 
     if (!name) {
-      return NextResponse.json({ error: "Missing Ful Name" }, { status: 400 });
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Prisma enum validation
     if (!Object.values(UserRole).includes(roleRaw as UserRole)) {
-      return NextResponse.json({ error: "Invalid Role" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid role" }, { status: 400 });
     }
     const role = roleRaw as UserRole;
 
     if (!(image instanceof File)) {
-      return NextResponse.json({ error: "Missing Image" }, { status: 400 });
+      return NextResponse.json({ error: "Image is required" }, { status: 400 });
     }
 
     if (image.size > MAX_SIZE) {
@@ -43,30 +40,33 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!ALLOWED_TYPES.includes(image.type)) {
+    if (!ALLOWED_TYPES.has(image.type)) {
       return NextResponse.json(
         { error: "Only JPG and PNG images are allowed" },
         { status: 400 },
       );
     }
 
-    // const existingUser = await getUserById(userId);
-    // console.log("existingUser:", existingUser);
+    // Upload to Vercel Blob (server-side)
+    const ext = image.type === "image/png" ? "png" : "jpg";
+    const fileName = `profile/${session.user.id}/${Date.now()}.${ext}`;
 
-    // if (!existingUser) {
-    //   return NextResponse.json({ error: "User not found" }, { status: 404 });
-    // }
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        name,
-        role: userRole,
-        image,
-      },
+    const blob = await put(fileName, image, {
+      access: "public",
+      contentType: image.type,
     });
 
-    return NextResponse.json({ success: true, user });
+    const updatedUser = await prisma.user.update({
+      where: { id: session.user.id },
+      data: {
+        name,
+        role,
+        image: blob.url,
+      },
+      select: { id: true, name: true, role: true, image: true },
+    });
+
+    return NextResponse.json({ success: true, user: updatedUser });
   } catch (error) {
     console.error("Profile Update ERROR:", error);
     return NextResponse.json(

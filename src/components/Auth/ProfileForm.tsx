@@ -71,11 +71,6 @@ export default function ProfileForm() {
             }
 
             const { data } = await axios.post("/api/profile", formData);
-            // const { data } = await axios.post("/api/profile", {
-            //     name: values.name,
-            //     role: values.role,
-            //     image: values.image
-            // });
 
             if (data.error) {
                 setProfileError(data.error);
