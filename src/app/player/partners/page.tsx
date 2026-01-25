@@ -13,10 +13,9 @@ export default async function PartnersPage() {
 
     const users = await getAllUsers(currentUserId)
     const players = users.filter((user) => user.role === "PLAYER")
-
     const pendingRequests = await getAllPendingRequests(players, currentUserId)
     const requestedIds = new Set(pendingRequests.map((r) => r.toUserId))
-    
+
 
     return (
         <div className="w-full p-5 md:px-12 xl:px-32">
@@ -31,13 +30,13 @@ export default async function PartnersPage() {
                 </p>
             ) : (
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {players.map((user) => (
+                    {players.map((player) => (
                         <FindPartner
-                            key={user.id}
-                            id={user.id}
-                            name={user.name}
-                            image={user.image}
-                            initialRequested={requestedIds.has(user.id)}
+                            key={player.id}
+                            id={player.id}
+                            name={player.name}
+                            image={player.image}
+                            initialRequested={requestedIds.has(player.id)}
                         />
                     ))}
                 </div>

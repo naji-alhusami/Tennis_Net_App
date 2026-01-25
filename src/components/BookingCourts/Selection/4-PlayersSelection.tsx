@@ -10,20 +10,8 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { getNameInitials } from "@/lib/utils/getNameInitials"
 import { type UserLite } from "@/lib/types/Booking"
-
-// =========
-//  HELPERS
-// =========
-
-// Helper that creates short initials text (1–2 letters) from a person’s name or email.
-function initials(nameOrEmail?: string | null) {
-    const s = (nameOrEmail ?? "").trim() // If nameOrEmail is null or undefined → use ""
-    if (!s) return "?" // Handle empty input
-    const parts = s.split(/\s+/) // Split into words, "John Doe" → ["John", "Doe"]
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase() // Take the first two characters and Convert to uppercase
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase() // first letter of the first word and first letter of the last word, Combine + uppercase
-}
 
 export default function PlayersSelection({
     allFriends,
@@ -211,7 +199,7 @@ export default function PlayersSelection({
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
                                             <AvatarImage src={f.image ?? undefined} alt={f.name ?? "Friend"} />
-                                            <AvatarFallback>{initials(f.name ?? f.email)}</AvatarFallback>
+                                            <AvatarFallback>{getNameInitials(f.name ?? f.email)}</AvatarFallback>
                                         </Avatar>
 
                                         <div className="min-w-0 flex-1">

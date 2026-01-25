@@ -26,7 +26,7 @@ export const ProfileValidator = z.object({
       message: "Please select a role",
     }),
   image: z
-    .instanceof(File, { message: "Image is required" })
+    .instanceof(File)
     .refine(
       (file) => file.size <= 5 * 1024 * 1024,
       "Image must be smaller than 5MB",
@@ -34,6 +34,7 @@ export const ProfileValidator = z.object({
     .refine(
       (file) => ["image/jpeg", "image/png", "image/jpg"].includes(file.type),
       "Only JPG and PNG images are allowed",
-    ),
+    )
+    .optional(),
 });
 export type ProfileData = z.infer<typeof ProfileValidator>;

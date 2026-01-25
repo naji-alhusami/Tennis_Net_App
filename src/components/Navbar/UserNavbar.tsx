@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import MessagesSidebar from "./MessagesSidebar";
 import { type NavItems } from "@/lib/types/NavItems";
+import AvatarMenu from "./AvatarMenu";
 
 type GuestNavbarProps = {
     navItems: NavItems;
@@ -47,7 +48,11 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
             <div className="px-2">
                 <MessagesSidebar />
             </div>
-            <Button
+
+            <div className="cursor-pointer">
+                <AvatarMenu />
+            </div>
+            {/* <Button
                 type="button"
                 variant="ghost"
                 size="sm"
@@ -57,9 +62,9 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
             >
                 <LogOut className="h-4 w-4" />
                 <span className="sr-only md:not-sr-only md:whitespace-nowrap">Logout</span>
-            </Button>
+            </Button> */}
             <span
-                className="flex h-6 w-px bg-gray-300 md:hidden"
+                className="flex h-6 ml-2 w-px bg-gray-300 md:hidden"
                 aria-hidden="true"
             />
             <MobileSidebar navItems={navItems} />

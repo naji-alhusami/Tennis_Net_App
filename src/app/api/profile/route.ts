@@ -29,39 +29,42 @@ export async function POST(request: Request) {
     }
     const role = roleRaw as UserRole;
 
-    if (!(image instanceof File)) {
-      return NextResponse.json({ error: "Image is required" }, { status: 400 });
-    }
+    let blob: { url: string } | null = null;
+    if (image instanceof File && image.size > 0) {
+      if (image.size > MAX_SIZE) {
+        return NextResponse.json(
+          { error: "Image must be smaller than 5MB" },
+          { status: 400 },
+        );
+      }
 
-    if (image.size > MAX_SIZE) {
+      if (!ALLOWED_TYPES.has(image.type)) {
+        return NextResponse.json(
+          { error: "Only JPG and PNG images are allowed" },
+          { status: 400 },
+        );
+      }
+
+      const ext = image.type === "image/png" ? "png" : "jpg";
+      const fileName = `profile/${session.user.id}/${Date.now()}.${ext}`;
+
+      blob = await put(fileName, image, {
+        access: "public",
+        contentType: image.type,
+      });
+    } else if (image != null && !(image instanceof File)) {
       return NextResponse.json(
-        { error: "Image must be smaller than 5MB" },
+        { error: "Invalid image value" },
         { status: 400 },
       );
     }
-
-    if (!ALLOWED_TYPES.has(image.type)) {
-      return NextResponse.json(
-        { error: "Only JPG and PNG images are allowed" },
-        { status: 400 },
-      );
-    }
-
-    // Upload to Vercel Blob (server-side)
-    const ext = image.type === "image/png" ? "png" : "jpg";
-    const fileName = `profile/${session.user.id}/${Date.now()}.${ext}`;
-
-    const blob = await put(fileName, image, {
-      access: "public",
-      contentType: image.type,
-    });
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         name,
         role,
-        image: blob.url,
+        image: blob?.url,
       },
       select: { id: true, name: true, role: true, image: true },
     });

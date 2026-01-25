@@ -37,7 +37,8 @@ export default function ProfileForm() {
     const fileId = useId()
     const [file, setFile] = useState<File | null>(null)
     const { status, data: session } = useSession();
-
+    console.log("status:", session)
+    
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -49,12 +50,14 @@ export default function ProfileForm() {
     });
 
     useEffect(() => {
-        const name = session?.user?.name
+        if (!session?.user) return
 
-        if (!name) return
-        form.setValue("name", name, { shouldValidate: true, shouldDirty: false })
-
-    }, [session?.user?.name, form])
+        form.reset({
+            name: session.user.name ?? "",
+            role: session.user.role ?? undefined,
+            image: undefined,
+        })
+    }, [session?.user, form.reset,form])
 
     const onSubmit = async (values: ProfileData) => {
         try {
@@ -151,7 +154,7 @@ export default function ProfileForm() {
                                     <FormItem>
                                         <FormLabel>What Is Your Role?</FormLabel>
 
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                                             <FormControl>
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select Your Role" />
