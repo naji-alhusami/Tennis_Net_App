@@ -32,8 +32,17 @@ export const proxy = auth((req) => {
   }
 
   // Logged-in users cannot visit login/signup
+  // if (isLoggedIn && isAuthOnlyRoute) {
+  //   return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
+  // }
   if (isLoggedIn && isAuthOnlyRoute) {
-    return NextResponse.redirect(new URL("/user", nextUrl.origin));
+    const role = (req.auth?.user)?.role; // depends on your session shape
+    // If onboarding not completed, go to profile
+    if (!role) {
+      return NextResponse.redirect(new URL("/auth/profile", nextUrl.origin));
+    }
+    // Otherwise go to dashboard
+    return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
   }
 
   // If no rule triggered: continue as normal

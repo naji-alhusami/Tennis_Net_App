@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Home, Calendar, MapPin, Info, DollarSign, MessageSquare, Users, CalendarCheck } from "lucide-react";
+import { Home, Calendar, MapPin, Info, DollarSign, MessageSquare, Users, CalendarCheck, CircleGauge } from "lucide-react";
 
 import Logo from "../ui/logo";
 import Wrapper from "../ui/wrapper";
@@ -10,10 +10,10 @@ import UserNavbar from "./UserNavbar";
 import { type NavItems } from "@/lib/types/NavItems";
 
 export default function Navbar() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
 
     const role = session?.user?.role as "PLAYER" | "COACH" | undefined;
-    
+
     const publicNavItems: NavItems = [
         { href: "/", label: "Home", icon: Home },
         { href: "/courts", label: "Courts", icon: MapPin },
@@ -22,15 +22,17 @@ export default function Navbar() {
     ];
 
     const playerNavItems: NavItems = [
-        { href: "/player", label: "Dashboard", icon: Home },
-        { href: "/booking/court", label: "Book Court", icon: Calendar },
+        { href: "/", label: "Home", icon: Home },
+        { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
+        { href: "/player/booking/court", label: "Book Court", icon: Calendar },
         { href: "/player/coaches", label: "Find Couch", icon: MapPin },
         { href: "/player/partners", label: "Find Partner", icon: Users },
-        // { href: "/player/messages", label: "Messages", icon: MessageSquare },
+        { href: "/player/messages", label: "Messages", icon: MessageSquare },
     ];
 
     const coachNavItems: NavItems = [
-        { href: "/coach", label: "Dashboard", icon: Home },
+        { href: "/", label: "Dashboard", icon: Home },
+        { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
         { href: "/coach/schedule", label: "Schedule", icon: Calendar },
         { href: "/coach/bookings", label: "Bookings", icon: CalendarCheck },
         { href: "/coach/players", label: "Players", icon: Users },

@@ -37,7 +37,6 @@ export default function ProfileForm() {
     const fileId = useId()
     const [file, setFile] = useState<File | null>(null)
     const { status, data: session } = useSession();
-    console.log("status:", session)
     
     const router = useRouter();
 
@@ -81,7 +80,7 @@ export default function ProfileForm() {
             }
 
             toast.success("Profile Information Saved Successfully");
-            router.push("/user");
+            router.push("/dashboard");
 
         } catch (error) {
             if (axios.isAxiosError(error)) {

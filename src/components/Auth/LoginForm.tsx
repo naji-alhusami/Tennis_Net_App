@@ -57,7 +57,7 @@ export default function LoginForm() {
                 return;
             }
             toast.success("Logged in successfully")
-            router.push('/user')
+            router.push('/dashboard')
 
         } catch (error) {
             if (error instanceof AuthError) {
@@ -74,7 +74,7 @@ export default function LoginForm() {
     const googleLoginHandler = async () => {
         try {
             setLoadingAction("google");
-            await signIn("google", { callbackUrl: "/user" });
+            await signIn("google", { callbackUrl: "/dashboard" });
         } finally {
             setLoadingAction(null);
         }
