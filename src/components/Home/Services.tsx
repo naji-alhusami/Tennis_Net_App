@@ -52,7 +52,7 @@ export default function Services() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-20% 0px -20% 0px" }}
-            className="pt-180 md:py-40 md:px-15"
+            className="pt-60 md:pt-50 md:py-40 md:px-15"
         >
             <motion.div variants={fadeUp}>
                 <Header
