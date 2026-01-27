@@ -29,7 +29,7 @@ export default function AvatarDropdown() {
     const userLabel = session?.user?.name ?? session?.user?.email ?? null
     const userInitials = getNameInitials(userLabel)
     const image = session?.user?.image ?? undefined
-    console.log("image:", session?.user?.image)
+    // console.log("image:", session?.user?.image)
     // console.log("email:", session?.user?.email)
     // console.log("userLabel:", userLabel)
     // console.log("initials:", userInitials)

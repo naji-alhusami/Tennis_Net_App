@@ -50,7 +50,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const isCorrectPassword = await bcrypt.compare(
           password,
-          user.hashedPassword
+          user.hashedPassword,
         );
 
         if (!isCorrectPassword) {
@@ -109,25 +109,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     //   }
     //   return token;
     // },
-    async jwt({ token, user }) {
-      // 1) On sign-in, store basics
+    async jwt({ trigger,token, user }) {
+      // 1) On sign-in, we store basics
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.name = user.name;
       }
 
-      // 2) After sign-in, user is undefined.
-      // If role is missing/null, sync it from MognoDB
-      if (!token.role) {
+      // Resync from DB when client calls update()
+      if (trigger === "update") {
         const userId = (token.sub ?? token.id) as string | undefined;
         if (userId) {
           const dbUser = await prisma.user.findUnique({
             where: { id: userId },
             select: { role: true, name: true },
           });
-          if (dbUser?.role) token.role = dbUser.role;
-          if (dbUser?.name) token.name = dbUser.name;
+          token.role = dbUser?.role ?? token.role;
+          token.name = dbUser?.name ?? token.name;
           token.id = userId;
         }
       }

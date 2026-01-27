@@ -1,5 +1,4 @@
 "use client";
-
 import { useSession } from "next-auth/react";
 import { Home, Calendar, MapPin, Info, DollarSign, MessageSquare, Users, CalendarCheck, CircleGauge } from "lucide-react";
 
@@ -10,7 +9,7 @@ import UserNavbar from "./UserNavbar";
 import { type NavItems } from "@/lib/types/NavItems";
 
 export default function Navbar() {
-    const { data: session } = useSession();
+    const { status, data: session } = useSession();
 
     const role = session?.user?.role as "PLAYER" | "COACH" | undefined;
 
@@ -19,6 +18,12 @@ export default function Navbar() {
         { href: "/courts", label: "Courts", icon: MapPin },
         { href: "/pricing", label: "Pricing", icon: DollarSign },
         { href: "/about", label: "About", icon: Info },
+    ];
+
+    const noRoleNavItems: NavItems = [
+        { href: "/", label: "Home", icon: Home },
+        { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
+        { href: "/profile", label: "Complete Profile", icon: Info },
     ];
 
     const playerNavItems: NavItems = [
@@ -39,13 +44,26 @@ export default function Navbar() {
         { href: "/coach/messages", label: "Messages", icon: MessageSquare },
     ];
 
-    let content;
-    if (!session || !role) {
-        content = <GuestNavbar navItems={publicNavItems} />;
-    } else if (session && role === "PLAYER") {
+    if (status === "loading") {
+        return (
+            <nav className="w-full bg-white sticky z-50">
+                <Wrapper className="flex flex-row justify-between items-center h-18 border-b border-gray-300">
+                    <Logo />
+                    <div className="h-9 w-40" />
+                </Wrapper>
+            </nav>
+        );
+    }
 
+    let content;
+
+    if (!session) {
+        content = <GuestNavbar navItems={publicNavItems} />;
+    } else if (!role) {
+        content = <UserNavbar navItems={noRoleNavItems} />;
+    } else if (role === "PLAYER") {
         content = <UserNavbar navItems={playerNavItems} />;
-    } else if (session && role === "COACH") {
+    } else if (role === "COACH") {
         content = <UserNavbar navItems={coachNavItems} />;
     }
 

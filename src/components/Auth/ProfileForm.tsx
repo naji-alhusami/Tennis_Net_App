@@ -36,8 +36,8 @@ import { pacifico } from "@/app/fonts";
 export default function ProfileForm() {
     const fileId = useId()
     const [file, setFile] = useState<File | null>(null)
-    const { status, data: session } = useSession();
-    
+    const { status, data: session, update } = useSession();
+
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -56,7 +56,7 @@ export default function ProfileForm() {
             role: session.user.role ?? undefined,
             image: undefined,
         })
-    }, [session?.user, form.reset,form])
+    }, [session?.user, form.reset, form])
 
     const onSubmit = async (values: ProfileData) => {
         try {
@@ -79,7 +79,17 @@ export default function ProfileForm() {
                 return;
             }
 
+            // This IMPORTANT for next-auth session cookie (runs jwt with trigger="update")
+            await update({
+                user: {
+                    name: values.name,
+                    role: values.role,
+                },
+            });
+
             toast.success("Profile Information Saved Successfully");
+
+            // router.refresh();
             router.push("/dashboard");
 
         } catch (error) {
@@ -177,7 +187,7 @@ export default function ProfileForm() {
                                 name="image"
                                 render={({ field, fieldState }) => (
                                     <FormItem>
-                                        <FormLabel htmlFor={fileId}>Image</FormLabel>
+                                        <FormLabel htmlFor={fileId}>Image (Optional)</FormLabel>
                                         <input
                                             id={fileId}
                                             type="file"
