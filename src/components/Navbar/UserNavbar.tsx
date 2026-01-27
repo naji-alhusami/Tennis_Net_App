@@ -19,7 +19,7 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
     const pathname = usePathname()
 
     return <div>
-        <div className="flex flex-row items-center gap-1">
+        <div className="flex flex-row items-center justify-center gap-1">
             <div className="hidden lg:flex lg:gap-x-4">
                 {navItems.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
@@ -49,7 +49,7 @@ const UserNavbar = ({ navItems }: GuestNavbarProps) => {
                 <MessagesSidebar />
             </div>
 
-            <div className="cursor-pointer">
+            <div className="flex items-center cursor-pointer">
                 <AvatarMenu />
             </div>
             {/* <Button

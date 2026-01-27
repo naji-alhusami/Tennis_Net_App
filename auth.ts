@@ -109,7 +109,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     //   }
     //   return token;
     // },
-    async jwt({ trigger,token, user }) {
+    async jwt({ trigger, token, user }) {
       // 1) On sign-in, we store basics
       if (user) {
         token.id = user.id;
@@ -123,11 +123,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (userId) {
           const dbUser = await prisma.user.findUnique({
             where: { id: userId },
-            select: { role: true, name: true },
+            select: { name: true, role: true, image: true },
           });
-          token.role = dbUser?.role ?? token.role;
-          token.name = dbUser?.name ?? token.name;
           token.id = userId;
+          token.name = dbUser?.name ?? token.name;
+          token.role = dbUser?.role ?? token.role;
+          token.image = dbUser?.image ?? token.image;
         }
       }
 
@@ -139,6 +140,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id;
         session.user.role = token.role;
         session.user.name = token.name;
+        session.user.image = token.image as string | undefined;
       }
       return session;
     },

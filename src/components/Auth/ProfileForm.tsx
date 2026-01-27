@@ -78,12 +78,13 @@ export default function ProfileForm() {
                 setProfileError(data.error);
                 return;
             }
-
+            console.log("image in profile:", data)
             // This IMPORTANT for next-auth session cookie (runs jwt with trigger="update")
             await update({
                 user: {
-                    name: values.name,
-                    role: values.role,
+                    name: data.user.name,
+                    role: data.user.role,
+                    image: data.user.image,
                 },
             });
 
@@ -250,8 +251,5 @@ export default function ProfileForm() {
                 </div>
             </div>
         </div>
-
-
-
     );
 }
