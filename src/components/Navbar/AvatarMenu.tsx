@@ -14,25 +14,11 @@ import { LogOut, User } from "lucide-react";
 import NextLink from "next/link"
 
 export default function AvatarDropdown() {
-    // const { status, data: session } = useSession();
-    // console.log(session?.user.image)
-    // const hasProfileImage = !!session?.user.image
-    // console.log(hasProfileImage)
-    // const userLabel = session?.user?.name ?? session?.user?.email ?? null
-    // const userInitials = getNameInitials(userLabel)
-
-    const { data: session, status } = useSession()
-
-    // optional: hide until session is loaded (prevents flicker)
-    if (status === "loading") return null
+    const { data: session } = useSession()
 
     const userLabel = session?.user?.name ?? session?.user?.email ?? null
     const userInitials = getNameInitials(userLabel)
     const image = session?.user?.image ?? undefined
-    console.log("image:", session?.user)
-    // console.log("email:", session?.user?.email)
-    // console.log("userLabel:", userLabel)
-    // console.log("initials:", userInitials)
 
     return (
         <DropdownMenu>

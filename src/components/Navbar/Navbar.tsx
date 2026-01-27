@@ -21,9 +21,7 @@ export default function Navbar() {
     ];
 
     const noRoleNavItems: NavItems = [
-        { href: "/", label: "Home", icon: Home },
-        { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
-        { href: "/profile", label: "Complete Profile", icon: Info },
+        { href: "/auth/profile", label: "Complete Profile", icon: Info },
     ];
 
     const playerNavItems: NavItems = [
@@ -36,7 +34,7 @@ export default function Navbar() {
     ];
 
     const coachNavItems: NavItems = [
-        { href: "/", label: "Dashboard", icon: Home },
+        { href: "/", label: "Home", icon: Home },
         { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
         { href: "/coach/schedule", label: "Schedule", icon: Calendar },
         { href: "/coach/bookings", label: "Bookings", icon: CalendarCheck },

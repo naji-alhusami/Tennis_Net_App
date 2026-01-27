@@ -66,6 +66,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           role: user.role,
           name: user.name,
+          image: user.image,
         };
       },
     }),
@@ -115,6 +116,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         token.role = user.role;
         token.name = user.name;
+        token.image = user.image
       }
 
       // Resync from DB when client calls update()

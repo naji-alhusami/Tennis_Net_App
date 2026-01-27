@@ -55,3 +55,57 @@ export const proxy = auth((req) => {
   // - Add custom debug/security headers.
   // - Add lightweight rate limiting for API routes.
 });
+
+// import { NextResponse } from "next/server"
+// import { auth } from "@/auth"
+
+// const publicRoutes = ["/", "/auth/login", "/auth/signup", "/auth/verifyEmail"]
+// const authOnlyRoutes = ["/auth/login", "/auth/signup"]
+
+// export const config = {
+//   matcher: [
+//     "/((?!api|_next|favicon.ico|.*\\.(?:png|jpg|jpeg|svg|gif|webp|mp4|webm|ogg)).*)",
+//   ],
+// }
+
+// export default auth((req) => {
+//   const { nextUrl } = req
+//   const path = nextUrl.pathname
+//   const isLoggedIn = !!req.auth
+//   const role = req.auth?.user?.role
+
+//   const isPublicRoute = publicRoutes.some(
+//     (route) => path === route || path.startsWith(route + "/")
+//   )
+
+//   const isAuthOnlyRoute = authOnlyRoutes.some(
+//     (route) => path === route || path.startsWith(route + "/")
+//   )
+
+//   // 1) Unauthenticated → login
+//   if (!isLoggedIn && !isPublicRoute) {
+//     const loginUrl = new URL("/auth/login", nextUrl.origin)
+//     loginUrl.searchParams.set("callbackUrl", path + nextUrl.search)
+//     return NextResponse.redirect(loginUrl)
+//   }
+
+//   // 2) Logged-in user on login/signup
+//   if (isLoggedIn && isAuthOnlyRoute) {
+//     const target = role ? "/dashboard" : "/auth/profile"
+//     if (path !== target) {
+//       return NextResponse.redirect(new URL(target, nextUrl.origin))
+//     }
+//   }
+
+//   // 3) Dashboard requires role
+//   if (isLoggedIn && path.startsWith("/dashboard") && !role) {
+//     return NextResponse.redirect(new URL("/auth/profile", nextUrl.origin))
+//   }
+
+//   // 4) Prevent going back to profile after onboarding
+//   // if (isLoggedIn && path.startsWith("/auth/profile") && role) {
+//   //   return NextResponse.redirect(new URL("/dashboard", nextUrl.origin))
+//   // }
+
+//   return NextResponse.next()
+// })

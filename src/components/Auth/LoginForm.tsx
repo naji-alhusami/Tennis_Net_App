@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,9 +18,10 @@ import { pacifico } from "@/app/fonts";
 import { Separator } from "../ui/separator";
 import { Spinner } from "../ui/spinner";
 
-export default function LoginForm() {
-    type LoadingAction = "credentials" | "google" | null;
+type LoadingAction = "credentials" | "google" | null;
 
+export default function LoginForm() {
+    const { update } = useSession();
     const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
     const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -57,7 +58,15 @@ export default function LoginForm() {
                 return;
             }
             toast.success("Logged in successfully")
-            router.push('/dashboard')
+
+            const nextSession = await update();
+
+            if (!nextSession?.user?.role) {
+                router.replace("/auth/profile");
+                return;
+            }
+
+            router.replace("/dashboard");
 
         } catch (error) {
             if (error instanceof AuthError) {
@@ -74,7 +83,7 @@ export default function LoginForm() {
     const googleLoginHandler = async () => {
         try {
             setLoadingAction("google");
-            await signIn("google", { callbackUrl: "/dashboard" });
+            await signIn("google", { callbackUrl: "/direct-user" });
         } finally {
             setLoadingAction(null);
         }

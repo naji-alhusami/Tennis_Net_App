@@ -1,5 +1,5 @@
 "use client";
-import { useId, useState, useEffect } from "react";
+import { useId, useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -37,8 +37,8 @@ export default function ProfileForm() {
     const fileId = useId()
     const [file, setFile] = useState<File | null>(null)
     const { status, data: session, update } = useSession();
-
     const router = useRouter();
+    const didInit = useRef(false)
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [profileError, setProfileError] = useState<string | null>(null);
@@ -50,13 +50,15 @@ export default function ProfileForm() {
 
     useEffect(() => {
         if (!session?.user) return
+        if (didInit.current) return
 
+        didInit.current = true
         form.reset({
             name: session.user.name ?? "",
             role: session.user.role ?? undefined,
             image: undefined,
         })
-    }, [session?.user, form.reset, form])
+    }, [session?.user, form])
 
     const onSubmit = async (values: ProfileData) => {
         try {
@@ -78,7 +80,7 @@ export default function ProfileForm() {
                 setProfileError(data.error);
                 return;
             }
-            console.log("image in profile:", data)
+
             // This IMPORTANT for next-auth session cookie (runs jwt with trigger="update")
             await update({
                 user: {
@@ -89,9 +91,9 @@ export default function ProfileForm() {
             });
 
             toast.success("Profile Information Saved Successfully");
+            router.refresh()
+            router.replace("/dashboard")
 
-            // router.refresh();
-            router.push("/dashboard");
 
         } catch (error) {
             if (axios.isAxiosError(error)) {
@@ -109,6 +111,7 @@ export default function ProfileForm() {
     };
 
     if (status === "loading") return null
+    if (!session?.user) return null
 
     return (
         <div className="relative py-20">
