@@ -20,7 +20,7 @@ export default function BookingSuccessPage() {
                         asChild
                         className="w-full bg-green-600 hover:bg-green-700 font-bold"
                     >
-                        <Link href="/player">
+                        <Link href="/dashboard">
                             Go to Dashboard
                         </Link>
                     </Button>
