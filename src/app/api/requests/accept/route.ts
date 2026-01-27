@@ -42,6 +42,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/lib/prisma/prisma";
+import { type Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
   const [userOneId, userTwoId] = [request.fromUserId, request.toUserId].sort();
 
   try {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create friendship if it doesn't exist
       await tx.friendship.create({
         data: { userOneId, userTwoId },
