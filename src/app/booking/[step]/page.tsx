@@ -10,7 +10,7 @@ import { getAllBookedTimesByCourtsGroup } from "@/lib/data/getAllBookedTimesByCo
 import { getMyFriends } from "@/lib/data/getMyFriends"
 import { getSelectedPlayersNamesByIds } from "@/lib/data/getSelectedPlayersNamesByIds"
 import { getBusyPlayerIdsAtSlot } from "@/lib/data/getBusyPlayerIdsAtSlot"
-import { CourtLocation, CourtType } from "@/generated/prisma"
+import { CourtLocation, CourtType } from "@prisma/client";
 
 type BookingSearchParams = Promise<{
     _dir?: string

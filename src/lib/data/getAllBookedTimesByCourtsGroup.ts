@@ -1,4 +1,4 @@
-import { CourtLocation, CourtType } from "@/generated/prisma";
+import { CourtLocation, CourtType } from "@prisma/client";
 import prisma from "../prisma/prisma";
 import { twoDigitNumber } from "../utils/date";
 

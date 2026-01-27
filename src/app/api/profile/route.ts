@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { auth } from "@/auth";
-import { UserRole } from "@/generated/prisma";
+import { UserRole } from "@prisma/client";
+
 import { put } from "@vercel/blob";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB

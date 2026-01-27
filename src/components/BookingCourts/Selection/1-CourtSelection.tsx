@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { CourtType, CourtLocation } from "@/generated/prisma"
+import { CourtLocation, CourtType } from "@prisma/client";
 
 // ===== COMPONENT =====
 export default function CourtSelection() {
