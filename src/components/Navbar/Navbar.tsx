@@ -27,9 +27,9 @@ export default function Navbar() {
     const playerNavItems: NavItems = [
         { href: "/", label: "Home", icon: Home },
         { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
-        { href: "/player/booking/court", label: "Book Court", icon: Calendar },
-        { href: "/player/coaches", label: "Find Couch", icon: MapPin },
-        { href: "/player/partners", label: "Find Partner", icon: Users },
+        { href: "/booking/court", label: "Book Court", icon: Calendar },
+        // { href: "/player/coaches", label: "Find Couch", icon: MapPin },
+        { href: "/find-partner", label: "Find Player/Coach", icon: Users },
         { href: "/player/messages", label: "Messages", icon: MessageSquare },
     ];
 
