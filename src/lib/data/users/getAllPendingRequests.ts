@@ -6,7 +6,7 @@ export async function getAllPendingRequests(
   players: PlayersIds[],
   currentUserId: string
 ) {
-  const targetIds = players.map((u) => u.id)
+  const targetIds = players.map((player) => player.id)
 
   if (targetIds.length === 0) return []
 

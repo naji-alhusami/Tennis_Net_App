@@ -1,5 +1,4 @@
 "use client"
-
 import { useActionState } from "react"
 import Image from "next/image"
 import { UserPlus, XCircle, CheckCircle2, BadgeCheck } from "lucide-react"
@@ -10,11 +9,12 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { getNameInitials } from "@/lib/utils/getNameInitials"
+import { type UserRole } from "@prisma/client"
 
 type FindPartnerProps = {
     id: string
     name: string | null
-    role: "PLAYER" | "COACH" | null
+    role: UserRole | null
     image?: string | null
     initialRequested: boolean
 }
@@ -50,15 +50,9 @@ export default function FindPartner({
                 "gap-2 group relative h-full overflow-hidden rounded-2xl border border-border/40 bg-background shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:ring-1 hover:ring-primary/20"
             )}
         >
-            {/* Soft color tint (very subtle) */}
-            <div
-                className={cn(
-                    "pointer-events-none absolute inset-0 opacity-[0.12]",
-                    isCoach
-                        ? "bg-gradient-to-br from-violet-500 via-transparent to-transparent"
-                        : "bg-gradient-to-br from-emerald-500 via-transparent to-transparent"
-                )}
-            />
+            <div className={cn("pointer-events-none absolute inset-0 opacity-[0.12]", isCoach
+                ? "bg-gradient-to-br from-violet-500 via-transparent to-transparent"
+                : "bg-gradient-to-br from-emerald-500 via-transparent to-transparent")} />
 
             {/* Top accent bar */}
             <div className={cn("relative h-1 w-full", isCoach ? "bg-violet-500/70" : "bg-emerald-500/70")} />
@@ -74,7 +68,7 @@ export default function FindPartner({
                             )}
                         />
                         <div className="absolute inset-[3px] overflow-hidden rounded-full bg-muted flex items-center justify-center">
-                            {/* {image ? (
+                            {image ? (
                                 <Image
                                     src={image}
                                     alt={name ?? "User"}
@@ -82,15 +76,15 @@ export default function FindPartner({
                                     width={96}
                                     height={96}
                                 />
-                            ) : ( */}
-                            <span className="text-2xl font-semibold">{userInitials}</span>
-                            {/* )} */}
+                            ) : (
+                                <span className="text-2xl font-semibold">{userInitials}</span>
+                            )}
                         </div>
                     </div>
                 </div>
 
                 <CardTitle className="mt-4 text-center text-lg font-semibold leading-tight">
-                    {name ?? "Unknown"}
+                    {name}
                 </CardTitle>
 
                 <p className="mt-1 text-center text-xs text-muted-foreground">
