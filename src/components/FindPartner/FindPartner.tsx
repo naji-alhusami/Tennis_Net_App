@@ -25,6 +25,14 @@ type FriendRequestState = {
     error: string
 }
 
+type FriendRequest = {
+    id: string
+    name: string
+    image?: string | null
+    role: "PLAYER" | "COACH"
+    RequestDate: string
+}
+
 export default function FindPartner({
     id,
     name,
@@ -37,7 +45,6 @@ export default function FindPartner({
         message: "",
         error: "",
     }
-
     const userInitials = getNameInitials(name)
     const [state, formAction, pending] = useActionState(friendRequestAction, initialState)
     const requestSent = state.status === "requested"
@@ -114,10 +121,20 @@ export default function FindPartner({
                             <CheckCircle2 className="h-4 w-4" />
                             <span className="font-medium">{state.message}</span>
                         </div>
+                    ) : requestSent ? (
+                        <div
+                            className={cn(
+                                "inline-flex items-center gap-1 rounded-md px-2 py-1",
+                                isCoach
+                                    ? "bg-violet-500/10 text-violet-700"
+                                    : "bg-emerald-500/10 text-emerald-700"
+                            )}
+                        >
+                            <CheckCircle2 className="h-4 w-4" />
+                            <span className="font-medium">Request sent!</span>
+                        </div>
                     ) : (
-                        <span className="text-muted-foreground">
-                            {requestSent && "Request sent. You can cancel anytime"}
-                        </span>
+                        <span className="text-muted-foreground">&nbsp;</span>
                     )}
                 </div>
             </CardContent>

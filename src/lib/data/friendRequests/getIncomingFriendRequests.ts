@@ -12,7 +12,7 @@ export async function getIncomingFriendRequests(currentUserId: string) {
       id: true,
       createdAt: true,
       fromUserId: true,
-      // assumes relation name is `fromUser` in your Prisma schema
+      toUserId: true,
       fromUser: {
         select: {
           id: true,

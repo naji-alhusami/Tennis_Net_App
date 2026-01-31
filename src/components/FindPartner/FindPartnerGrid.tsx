@@ -16,13 +16,26 @@ import {
 } from "@/components/ui/select"
 import { type User } from "@prisma/client"
 
+type FriendRequest = {
+  id: string
+  fromUserId: string
+  toUserId: string
+  name: string
+  image?: string | null
+  role: "PLAYER" | "COACH"
+  RequestDate: string
+}
+
 export default function FindPartnerGrid({
   users,
   requestedIds,
+  requests,
 }: {
   users: User[]
-  requestedIds: string[]
+  requestedIds: string[],
+  requests: FriendRequest[]
 }) {
+
   const router = useRouter()
   const pathname = usePathname()
   const searchParam = useSearchParams()
@@ -32,6 +45,10 @@ export default function FindPartnerGrid({
   const nameOrEmailParam = searchParam.get("q") ?? ""
   const roleParam = searchParam.get("role") ?? "ALL"
   const reqestedPartnerParam = searchParam.get("req") ?? "ALL"
+
+  const incomingSendersSet = useMemo(() => {
+    return new Set(requests.map((r) => r.fromUserId))
+  }, [requests])
 
   const setParamsHandler = (key: string, value: string) => {
     const params = new URLSearchParams(searchParam.toString())
@@ -49,6 +66,9 @@ export default function FindPartnerGrid({
     const query = nameOrEmailParam.trim().toLowerCase()
 
     return users.filter((user) => {
+      // exclude incoming request senders
+      if (incomingSendersSet.has(user.id)) return false
+
       // role filter
       if (roleParam !== "ALL" && user.role !== roleParam) return false
 
@@ -62,7 +82,7 @@ export default function FindPartnerGrid({
       const searchText = `${user.name ?? ""} ${user.email ?? ""}`.toLowerCase()
       return searchText.includes(query)
     })
-  }, [users, nameOrEmailParam, roleParam, reqestedPartnerParam, requestedSet])
+  }, [users, nameOrEmailParam, roleParam, reqestedPartnerParam, requestedSet, incomingSendersSet])
 
   const clearAll = () => router.replace(pathname, { scroll: false })
 
