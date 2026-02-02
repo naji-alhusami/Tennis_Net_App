@@ -1,5 +1,4 @@
 "use client"
-
 import Image from "next/image"
 import axios from "axios"
 import { Button } from "@/components/ui/button"
@@ -13,19 +12,12 @@ import {
 } from "@/components/ui/table"
 import { Check, X } from "lucide-react"
 import { useRouter } from "next/navigation"
-
-type FriendRequest = {
-    id: string
-    name: string
-    image?: string | null
-    role: "PLAYER" | "COACH"
-    RequestDate: string
-}
+import { type IncomingRequest } from "@/lib/types/FriendRequest"
 
 export default function FriendRequestsTable({
     requests,
 }: {
-    requests: FriendRequest[]
+    requests: IncomingRequest[]
 }) {
     const router = useRouter()
 
@@ -92,7 +84,7 @@ export default function FriendRequestsTable({
                             </TableCell>
 
                             <TableCell>
-                                <span className="text-sm text-muted-foreground">{req.RequestDate}</span>
+                                <span className="text-sm text-muted-foreground">{req.requestDate}</span>
                             </TableCell>
 
                             <TableCell>

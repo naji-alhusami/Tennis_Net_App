@@ -13,7 +13,7 @@ export default async function FindPartnerPage() {
 
     // get the user loggedin id
     const currentUserId = session.user.id
-    
+
     // get all the users except the user loggedin
     const users = await getAllUsers(currentUserId)
 
@@ -21,17 +21,7 @@ export default async function FindPartnerPage() {
     const pendingRequests = await getAllPendingRequests(users, currentUserId)
     const requestedIds = pendingRequests.map((request) => request.toUserId)
 
-    const incomingRequests = await getIncomingFriendRequests(session.user.id)
-
-    const requests = incomingRequests.map((request) => ({
-        id: request.id,
-        RequestDate: request.createdAt.toISOString(),
-        name: request.fromUser?.name ?? "Unknown",
-        image: request.fromUser?.image ?? null,
-        role: request.fromUser?.role ?? "PLAYER",
-        fromUserId: request.fromUserId,
-        toUserId: request.toUserId,
-    }))
+    const requests = await getIncomingFriendRequests(session.user.id)
 
     return <FindPartnerGrid users={users} requests={requests} requestedIds={requestedIds} />
 }

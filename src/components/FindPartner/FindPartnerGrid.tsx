@@ -15,16 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { type User } from "@prisma/client"
-
-type FriendRequest = {
-  id: string
-  fromUserId: string
-  toUserId: string
-  name: string
-  image?: string | null
-  role: "PLAYER" | "COACH"
-  RequestDate: string
-}
+import { type IncomingRequest } from "@/lib/types/FriendRequest"
 
 export default function FindPartnerGrid({
   users,
@@ -33,7 +24,7 @@ export default function FindPartnerGrid({
 }: {
   users: User[]
   requestedIds: string[],
-  requests: FriendRequest[]
+  requests: IncomingRequest[]
 }) {
 
   const router = useRouter()

@@ -155,7 +155,7 @@ export default function FindPartner({
                         {pending ? (
                             requestSent ? "Canceling..." : "Sending..."
                         ) : requestSent ? (
-                            "Cancel request"
+                            "Cancel Request"
                         ) : (
                             <span className="inline-flex items-center gap-2">
                                 <UserPlus className="h-4 w-4" />
