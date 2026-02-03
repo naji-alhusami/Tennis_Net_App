@@ -71,7 +71,8 @@ model User {
    * All friend requests that this user has RECEIVED from others.
    * (toUserId = this user's id)
    */
-  friendRequestsReceived FriendRequest[] @relation("FriendRequestsReceived")
+  friendRequestsReceived   FriendRequest[]           @relation("FriendRequestsReceived")
+  conversationParticipants ConversationParticipant[]
 }
 
 model VerificationToken {
@@ -117,7 +118,24 @@ model Conversation {
   ownerId String? @db.ObjectId
   owner   User?   @relation(fields: [ownerId], references: [id])
 
-  messages Message[]
+  messages     Message[]
+  participants ConversationParticipant[]
+}
+
+model ConversationParticipant {
+  id             String @id @default(auto()) @map("_id") @db.ObjectId
+  conversationId String @db.ObjectId
+  userId         String @db.ObjectId
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  lastSeenAt DateTime?
+  joinedAt   DateTime  @default(now())
+
+  @@unique([conversationId, userId])
+  @@index([userId])
+  @@index([conversationId])
 }
 
 model Message {

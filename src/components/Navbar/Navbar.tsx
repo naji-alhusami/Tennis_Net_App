@@ -30,7 +30,7 @@ export default function Navbar() {
         { href: "/booking/court", label: "Book Court", icon: Calendar },
         // { href: "/player/coaches", label: "Find Couch", icon: MapPin },
         { href: "/find-partner", label: "Find Player/Coach", icon: Users },
-        { href: "/player/messages", label: "Messages", icon: MessageSquare },
+        { href: "/chat", label: "Chat", icon: MessageSquare },
     ];
 
     const coachNavItems: NavItems = [
