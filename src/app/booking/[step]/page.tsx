@@ -35,7 +35,6 @@ export default async function BookingPage({
     if (!session?.user?.id) redirect("/login")
 
     const userId = session.user.id
-    console.log("userId:", userId);
 
     const stepKeys = BOOKING_STEPS.map((s) => s.key)
     // get the param (step)

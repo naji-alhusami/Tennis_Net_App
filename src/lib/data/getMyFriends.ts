@@ -12,15 +12,18 @@ export async function getMyFriends(userId: string) {
     select: {
       userOneId: true,
       userTwoId: true,
-      userOne: { select: { id: true, name: true, image: true, email: true } },
-      userTwo: { select: { id: true, name: true, image: true, email: true } },
+      userOne: {
+        select: { id: true, name: true, image: true, email: true, role: true },
+      },
+      userTwo: {
+        select: { id: true, name: true, image: true, email: true, role: true },
+      },
     },
   });
 
   const friends = friendships.map((friend) =>
-    friend.userOneId === userId ? friend.userTwo : friend.userOne
+    friend.userOneId === userId ? friend.userTwo : friend.userOne,
   );
 
-  // return new Map(friends.map((friend) => [friend.id, friend])).values();
   return friends;
 }
