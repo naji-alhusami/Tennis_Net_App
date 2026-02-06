@@ -15,11 +15,11 @@ export default function ChatNavigation() {
 
     return <div className="fixed bottom-0 left-0 right-0 border-t bg-white/95 backdrop-blur">
         <div className="py-3 flex items-center justify-center gap-8">
-            <Link href="/chat">
+            <Link href="/chat/conversations">
                 <Button
                     size="icon"
-                    variant={isActive("/chat") ? "default" : "secondary"}
-                    className={`h-12 w-12 transition-colors ${isActive("/chat")
+                    variant={isActive("/chat/conversations") ? "default" : "secondary"}
+                    className={`h-12 w-12 transition-colors cursor-pointer ${isActive("/chat/conversations")
                         ? "bg-green-500 text-white hover:bg-green-600"
                         : ""
                         }`}
@@ -31,7 +31,7 @@ export default function ChatNavigation() {
                 <Button
                     size="icon"
                     variant={isActive("/chat/friends") ? "default" : "secondary"}
-                    className={`h-12 w-12 transition-colors ${isActive("/chat/friends")
+                    className={`h-12 w-12 transition-colors cursor-pointer ${isActive("/chat/friends")
                         ? "bg-green-500 text-white hover:bg-green-600"
                         : ""
                         }`}
@@ -40,10 +40,10 @@ export default function ChatNavigation() {
                 </Button>
             </Link>
             {/* TODO: Dark and Sun Mode */}
-            <Button variant="secondary" size="icon">
+            <Button variant="secondary" size="icon" className="cursor-pointer">
                 <Sun />
             </Button>
-            <Button variant="secondary" size="icon">
+            <Button variant="secondary" size="icon" className="cursor-pointer">
                 <Moon />
             </Button>
             {/*  */}
