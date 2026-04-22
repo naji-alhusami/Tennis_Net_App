@@ -21,25 +21,27 @@ export default function Services() {
 
     const listContainer: Variants = {
         hidden: {},
-        visible: { transition: { staggerChildren: 0.12 } },
+        visible: { transition: { staggerChildren: 0.15 } },
     };
 
     const listItem: Variants = {
-        hidden: { opacity: 0, y: -75 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+        hidden: { opacity: 0, y: 32 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
     };
 
     function ServiceCard({ service }: { service: ServiceItem }) {
         return (
             <motion.article
                 variants={listItem}
-                className="flex flex-col my-8 md:px-4 md:mx-4 bg-white rounded-md p-2"
+                className="group flex flex-col gap-4 bg-white rounded-xl p-7 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 border-t-4 border-t-green-600"
             >
-                <div className="font-bold text-2xl pb-6">
-                    <Image src={service.image} width={50} height={50} alt={service.title} />
-                    <h1>{service.title}</h1>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-green-50">
+                        <Image src={service.image} width={32} height={32} alt={service.title} />
+                    </div>
+                    <h3 className="font-bold text-xl text-gray-900">{service.title}</h3>
                 </div>
-                <p className="text-sm font-semibold text-gray-500 border-l-2 border-green-600 pl-6">
+                <p className="text-sm font-medium text-gray-500 leading-relaxed pl-4 border-l-2 border-green-500">
                     {service.description}
                 </p>
             </motion.article>
@@ -51,8 +53,8 @@ export default function Services() {
             variants={container}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-20% 0px -20% 0px" }}
-            className="pt-60 md:pt-50 md:py-40 md:px-15"
+            viewport={{ once: true, margin: "-10% 0px" }}
+            className="py-20 md:py-28 px-6 md:px-16 bg-gray-50"
         >
             <motion.div variants={fadeUp}>
                 <Header
@@ -65,7 +67,7 @@ export default function Services() {
 
             <motion.div
                 variants={listContainer}
-                className="p-10 md:p-0 lg:p-5 flex flex-col md:flex-row"
+                className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
             >
                 {servicesData.map((service: ServiceItem) => (
                     <ServiceCard key={service.id} service={service} />
@@ -74,4 +76,3 @@ export default function Services() {
         </motion.section>
     );
 }
-

@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { Home, Calendar, MapPin, Info, DollarSign, MessageSquare, Users, CalendarCheck, CircleGauge } from "lucide-react";
 
@@ -6,10 +7,18 @@ import Logo from "../ui/logo";
 import Wrapper from "../ui/wrapper";
 import GuestNavbar from "./GuestNavbar";
 import UserNavbar from "./UserNavbar";
+import { cn } from "@/lib/utils";
 import { type NavItems } from "@/lib/types/NavItems";
 
 export default function Navbar() {
     const { status, data: session } = useSession();
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 8);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => window.removeEventListener("scroll", onScroll);
+    }, []);
 
     const role = session?.user?.role as "PLAYER" | "COACH" | undefined;
 
@@ -28,9 +37,8 @@ export default function Navbar() {
         { href: "/", label: "Home", icon: Home },
         { href: "/dashboard", label: "Dashboard", icon: CircleGauge },
         { href: "/booking/court", label: "Book Court", icon: Calendar },
-        // { href: "/player/coaches", label: "Find Couch", icon: MapPin },
         { href: "/find-partner", label: "Find Player/Coach", icon: Users },
-        { href: "/chat", label: "Chat", icon: MessageSquare },
+        { href: "/chat/conversations", label: "Chat", icon: MessageSquare },
     ];
 
     const coachNavItems: NavItems = [
@@ -42,19 +50,23 @@ export default function Navbar() {
         { href: "/coach/messages", label: "Messages", icon: MessageSquare },
     ];
 
+    const navClass = cn(
+        "w-full bg-white/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-200",
+        scrolled ? "shadow-md" : "border-b border-gray-100"
+    );
+
     if (status === "loading") {
         return (
-            <nav className="w-full bg-white sticky z-50">
-                <Wrapper className="flex flex-row justify-between items-center h-18 border-b border-gray-300">
+            <nav className={navClass}>
+                <Wrapper className="flex flex-row justify-between items-center h-18">
                     <Logo />
-                    <div className="h-9 w-40" />
+                    <div className="h-9 w-40 animate-pulse rounded-md bg-gray-100" />
                 </Wrapper>
             </nav>
         );
     }
 
     let content;
-
     if (!session) {
         content = <GuestNavbar navItems={publicNavItems} />;
     } else if (!role) {
@@ -66,8 +78,8 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="w-full bg-white sticky z-50">
-            <Wrapper className="flex flex-row justify-between items-center h-18 border-b border-gray-300">
+        <nav className={navClass}>
+            <Wrapper className="flex flex-row justify-between items-center h-18">
                 <Logo />
                 {content}
             </Wrapper>

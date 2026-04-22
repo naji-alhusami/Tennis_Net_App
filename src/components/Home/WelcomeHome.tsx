@@ -1,108 +1,90 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
-
-import { buttonVariants } from "../ui/button";
-import SlowlyShow from "@/components/shared/SlowlyShow";
-import TypeWriter from "@/components/shared/TypeWriter";
 import Typewriter from "typewriter-effect";
-import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 
 function WelcomeHome() {
-    
-    return (
-        <div className="relative w-full h-[520px] md:h-[700px] overflow-hidden flex flex-row justify-between items-center">
-            {/* TEXT */}
-            <div className="relative z-20 mr-8 px-5 md:px-16 py-10 flex flex-col justify-center items-start gap-y-6 lg:gap-y-16 xl:pl-30">
-                <div>
-                    <div className="min-h-[56px] md:min-h-[80px] flex items-center">
-                        <h1 className="text-4xl font-bold md:text-7xl text-white lg:text-black">
-                            <div className="flex flex-row lg:hidden">
-                                Hi
-                                <span className="text-green-400 ml-4">..</span>
-                            </div>
+  return (
+    <div className="relative w-full min-h-[calc(100vh-72px)] overflow-hidden flex items-center">
+      {/* Full-screen video background — plays on all screen sizes */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover"
+      >
+        <source src="/naji.mp4" type="video/mp4" />
+      </video>
 
-                            <div className="hidden lg:flex flex-row">
-                                <TypeWriter text="Hi " delay={150} />
-                                <span className="text-green-400 ml-4">
-                                    <TypeWriter text=" .." delay={150} />
-                                </span>
-                            </div>
-                        </h1>
-                    </div>
+      {/* Left-to-right gradient: dark on left (text side) → fades right */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/25" />
 
-                    <div className="flex items-center h-[72px] md:h-[80px] lg:h-[64px]">
-                        <h1 className="text-green-400 font-bold my-4 text-3xl md:text-4xl lg:hidden leading-tight">
-                            <span className="inline-block">
-                                <Typewriter
-                                    onInit={(typewriter) => {
-                                        typewriter
-                                            .typeString("Join Our Tennis Club")
-                                            .pauseFor(2000)
-                                            .deleteAll()
-                                            .start();
-                                    }}
-                                    options={{ loop: true }}
-                                />
-                            </span>
-                        </h1>
+      {/* Bottom vignette for depth */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-                        <h1 className="hidden lg:flex text-green-400 font-bold my-4 text-3xl md:text-4xl leading-tight">
-                            Join Our Tennis Club
-                        </h1>
-                    </div>
-                </div>
+      {/* Content */}
+      <div className="relative z-10 w-full lg:w-[55%] px-6 md:px-14 xl:px-28 py-16 flex flex-col gap-8 items-center text-center lg:items-start lg:text-left">
+        {/* Badge */}
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-1.5 text-sm font-medium text-white/90">
+          <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+          Tennis Net Club — Since 2010
+        </span>
 
-
-                <div className="min-h-[80px] lg:min-h-[110px] text-lg font-semibold md:text-2xl text-gray-100 max-w-xl mb-6 lg:text-black">
-                    <SlowlyShow text="We invite you to join us in this journey. The court is set, the ball is in your court. Come be a part of TENNIS NET Club." />
-                </div>
-
-                <div className="flex flex-col gap-y-4">
-                    <Link
-                        href="/auth/signup"
-                        className={cn(
-                            buttonVariants({ size: "lg" }),
-                            "border border-white text-white bg-transparent",
-                            "lg:bg-primary lg:text-primary-foreground lg:border-transparent"
-                        )}
-                    >
-                        Become A Member →
-                    </Link>
-                    <Link href="/" className={buttonVariants({ variant: "outline" })}>
-                        Contact Us
-                    </Link>
-                </div>
-            </div>
-
-            {/* Video (Desktop) */}
-            <div className="hidden lg:flex w-1/2 h-full lg:z-30">
-                <video
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
-                    className="w-full h-full object-cover video-fade-left"
-                >
-                    <source src="/naji.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-
-            {/* Image (Mobile Only) */}
-            <div className="absolute inset-0 block lg:hidden w-full h-full brightness-80">
-                <Image
-                    src="/HomeImage.jpg"
-                    alt="home-background"
-                    width={1000}
-                    height={600}
-                    priority
-                    className="w-full h-full object-cover"
-                />
-            </div>
+        {/* Headline */}
+        <div>
+          <h1 className="text-5xl font-extrabold md:text-6xl xl:text-7xl text-white leading-tight drop-shadow-md">
+            Elevate Your
+          </h1>
+          <div className="text-4xl font-extrabold md:text-5xl xl:text-6xl text-green-400 mt-2 min-h-[3rem] md:min-h-[4rem] drop-shadow-md">
+            <Typewriter
+              options={{ loop: true }}
+              onInit={(tw) => {
+                tw.typeString("Tennis Game")
+                  .pauseFor(2500)
+                  .deleteAll()
+                  .typeString("Court Skills")
+                  .pauseFor(2500)
+                  .deleteAll()
+                  .typeString("Community")
+                  .pauseFor(2500)
+                  .deleteAll()
+                  .start();
+              }}
+            />
+          </div>
         </div>
-    );
+
+        {/* Description */}
+        <p className="text-base md:text-lg text-gray-200 max-w-md leading-relaxed">
+          Book courts, find playing partners, and train with certified coaches —
+          all in one place. The court is set.
+        </p>
+
+        {/* CTA buttons */}
+        <div className="flex flex-row flex-wrap gap-3 justify-center lg:justify-start">
+          <Link
+            href="/auth/signup"
+            className="inline-flex items-center px-7 py-3.5 rounded-xl bg-green-500 hover:bg-green-400 active:scale-[0.98] text-white font-semibold text-base transition-all shadow-lg shadow-green-900/40"
+          >
+            Become A Member →
+          </Link>
+          <Link
+            href="/booking/court"
+            className="inline-flex items-center px-7 py-3.5 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm text-white font-semibold text-base hover:bg-white/20 active:scale-[0.98] transition-all"
+          >
+            Book a Court
+          </Link>
+        </div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center text-white/50 animate-bounce">
+        <ChevronDown size={28} />
+      </div>
+    </div>
+  );
 }
 
 export default WelcomeHome;

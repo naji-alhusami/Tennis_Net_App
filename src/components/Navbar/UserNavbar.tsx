@@ -3,71 +3,54 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
 import MobileSidebar from "./MobileSidebar";
 import MessagesSidebar from "./MessagesSidebar";
 import AvatarMenu from "./AvatarMenu";
 import { type NavItems } from "@/lib/types/NavItems";
 
-type GuestNavbarProps = {
+type UserNavbarProps = {
     navItems: NavItems;
 };
 
-const UserNavbar = ({ navItems }: GuestNavbarProps) => {
-    const pathname = usePathname()
+const UserNavbar = ({ navItems }: UserNavbarProps) => {
+    const pathname = usePathname();
 
-    return <div>
-        <div className="flex flex-row items-center justify-center gap-1">
-            <div className="hidden lg:flex lg:gap-x-4">
+    return (
+        <div className="flex items-center gap-3">
+            {/* Desktop nav links */}
+            <nav className="hidden lg:flex items-center gap-1">
                 {navItems.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
-                        <Button
+                        <Link
                             key={href}
-                            asChild
-                            variant={active ? "secondary" : "ghost"}
+                            href={href}
+                            aria-current={active ? "page" : undefined}
                             className={cn(
-                                "justify-start",
-                                active && "bg-green-200 hover:bg-green-300 font-bold"
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150",
+                                active
+                                    ? "bg-green-50 text-green-700 font-semibold"
+                                    : "text-gray-600 hover:text-green-700 hover:bg-green-50"
                             )}
                         >
-                            <Link href={href} aria-current={active ? "page" : undefined}>
-                                {Icon ? <Icon className="mr-1 h-4 w-4" /> : null}
-                                {label}
-                            </Link>
-                        </Button>
+                            {Icon && <Icon className="h-4 w-4 shrink-0" />}
+                            {label}
+                        </Link>
                     );
                 })}
-            </div>
-            <span
-                className="hidden lg:flex h-6 w-px bg-gray-300"
-                aria-hidden="true"
-            />
-            <div className="px-2">
+            </nav>
+
+            <span className="hidden lg:block h-6 w-px bg-gray-200" aria-hidden="true" />
+
+            {/* Actions */}
+            <div className="flex items-center gap-1">
                 <MessagesSidebar />
-            </div>
-
-            <div className="flex items-center cursor-pointer">
                 <AvatarMenu />
+                <span className="h-6 w-px bg-gray-200 mx-1 lg:hidden" aria-hidden="true" />
+                <MobileSidebar navItems={navItems} />
             </div>
-            {/* <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="px-2 cursor-pointer"
-                onClick={() => signOut({ callbackUrl: "/auth/login" })}
-                aria-label="Log out"
-            >
-                <LogOut className="h-4 w-4" />
-                <span className="sr-only md:not-sr-only md:whitespace-nowrap">Logout</span>
-            </Button> */}
-            <span
-                className="flex h-6 ml-2 w-px bg-gray-300 md:hidden"
-                aria-hidden="true"
-            />
-            <MobileSidebar navItems={navItems} />
         </div>
-    </div>
-}
+    );
+};
 
-export default UserNavbar
+export default UserNavbar;
